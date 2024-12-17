@@ -54,7 +54,7 @@ if (!isset($_SESSION['user_id'])) {
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="ajustes.php" aria-current="page">
+                <a class="nav-link" href="perfil.php" aria-current="page">
                     Perfil 
                 </a>
             </li>
