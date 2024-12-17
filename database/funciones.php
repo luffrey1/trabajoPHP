@@ -15,9 +15,12 @@ function crearTabla() {
         id varchar(50) primary key not null,
         contra varchar(255) not null,
         direccion varchar(100) ,
-        CP varchar(20) ,
+        CP varchar(20),
         cVendidos int,
-        tlf varchar(25)
+        tlf varchar(25),
+        email varchar(50),
+        nombre varchar(50),
+        apellidos varchar(50)
         )";
          $conexion->query($sql);
 }
@@ -61,8 +64,8 @@ function insertarUsuario($id, $pass) {
     $prepared->execute();
 }
 function verificarUsuario($id, $contra) {
-    $conexion = conectar();
-    $sql = "SELECT contra from Usuario where id = ?";
+    $conexion = conectar(); 
+    $sql = "SELECT contra FROM Usuario WHERE id = ?";
     $prepared = $conexion->prepare($sql);
     $prepared->bind_param("s", $id);
     $prepared->execute();
@@ -71,24 +74,16 @@ function verificarUsuario($id, $contra) {
     if ($resultado->num_rows > 0) {
         $fila = $resultado->fetch_assoc();
         $hash = $fila["contra"];
-        if(password_verify($contra, $hash)) {
-            echo "<div class='alert alert-primary alert-dismissible fade show' role='alert'>
-            <strong>¡Éxito!</strong> Iniciaste Sesion!
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-        </div>";
+        if (password_verify($contra, $hash)) {
+            return true; 
         } else {
-             echo "<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-            <strong>¡Error!</strong> Contraseña incorrecta! 
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-        </div>";
+            return false; 
         }
     } else {
-        echo "<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-        <strong>¡Error!</strong> Este usuario no existe
-        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-    </div>";
+        return false; 
     }
-} 
+}
+
 function verificarId($id):bool {
     $conexion = conectar();
     $sql = "SELECT * from Usuario where id = ?";
@@ -98,10 +93,28 @@ function verificarId($id):bool {
     $resultado = $prepared->get_result();
     if ($resultado->num_rows > 0) { 
         return false;
-
-
     } else {
         return true;
+    }
+}
+function updateUsuario($id, $nombre, $apellidos, $direccion, $cp, $tlf, $email) {
+    $conexion = conectarBD();
+
+    $sql_update = "UPDATE Usuario SET 
+                    nombre = ?, 
+                    apellidos = ?, 
+                    direccion = ?, 
+                    CP = ?, 
+                    tlf = ?, 
+                    email = ? 
+                   WHERE id = ?";
+    $resultado = $conexion->prepare($sql_update);
+    $resultado->bind_param("sssssss", $nombre, $apellidos, $direccion, $cp, $tlf, $email, $id);
+
+    if ($stmt->$resultado()) {
+        return true; 
+    } else {
+        return false;
     }
 }
 
