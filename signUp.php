@@ -3,6 +3,7 @@ session_start();
 include("./model/Vehiculo.php");
 include("./model/Coche.php");
 include("./model/Moto.php");
+include("./model/Usuario.php");
 require("./database/funciones.php");
 crearTabla();
 crearTablaC();
@@ -55,7 +56,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
        if (!$errores) {
          // Podriamos poner en futuro que se envie un correo de verificacion, como en las paginas normales
          if (verificarId($id) == true ) {
-            insertarUsuario($id, $contra);
+            $usuario = new Usuario($id,$contra);
+            insertarUsuario($usuario);
              echo "<div class='alert alert-primary alert-dismissible fade show' role='alert'>
                     <strong>¡Éxito!</strong> $id Se ha registrado correctamente! <a class='nav-item nav-link' href='login.php'>Acceda al INICIO DE SESION: </a>
                     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
@@ -67,6 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
           </div>";
         }
+
          
    
      

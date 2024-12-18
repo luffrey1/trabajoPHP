@@ -2,15 +2,19 @@
 session_start();
 require("./database/funciones.php");
 
-// Verificar que el usuario esté logueado
+
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirigir a login si no está logueado
+    header("Location: login.php"); 
     exit();
 }
 
 $user_id = $_SESSION['user_id'];
-$usuario = obtenerDatosUsuario($user_id); // Función para obtener los datos del usuario desde la base de datos
-$imagen_perfil = obtenerImagenUsuario($user_id); // Función para obtener la imagen del usuario desde la base de datos
+
+
+
+
+$usuario = obtenerDatosUsuario( $user_id);
+$imagen_perfil = obtenerImagenUsuario($user_id); 
 
 if (!$usuario) {
     echo "No se han encontrado datos del usuario.";
@@ -151,27 +155,27 @@ if (!$usuario) {
                     <div class="col-md-8">
                         <div class="profile-section">
                             <p class="profile-header">ID de Usuario:</p>
-                            <p><?= $usuario['id'] ?></p>
+                            <p><?= $usuario->getId() ?></p>
                         </div>
                         <div class="profile-section">
                             <p class="profile-header">Nombre:</p>
-                            <p><?= $usuario['nombre'] ?> <?= $usuario['apellidos'] ?></p>
+                            <p><?= $usuario->getNombre() ?> <?= $usuario->getApellidos() ?></p>
                         </div>
                         <div class="profile-section">
                             <p class="profile-header">Correo Electrónico:</p>
-                            <p><?= $usuario['email'] ?></p>
+                            <p><?= $usuario->getEmail() ?></p>
                         </div>
                         <div class="profile-section">
                             <p class="profile-header">Teléfono:</p>
-                            <p><?= $usuario['tlf'] ?></p>
+                            <p><?= $usuario->getTlf() ?></p>
                         </div>
                         <div class="profile-section">
                             <p class="profile-header">Dirección:</p>
-                            <p><?= $usuario['direccion'] ?></p>
+                            <p><?= $usuario->getDireccion() ?></p>
                         </div>
                         <div class="profile-section">
                             <p class="profile-header">Código Postal:</p>
-                            <p><?= $usuario['cp'] ?></p>
+                            <p><?= $usuario->getCp() ?></p>
                         </div>
                     </div>
                 </div>

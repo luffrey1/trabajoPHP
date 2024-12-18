@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        console.log("********PAréntesis");
+        const q1 = /(ro){2}/;
+        console.log(q1.test("caro"));
+        console.log(q1.test("carroro"));
+        console.log(q1.test("grrrrrro"));
+        
+        //Parentesis 
+        console.clear();
+        console.log("******barra vertical - opción");
+        const q2 = /(don|doña)/i;
+        console.log(q2.test("don marcos"));
+        console.log(q2.test("doña ana"));
+        console.log(q2.test("señorita julia"));
+    </script>
+    
+</body>
+</html>

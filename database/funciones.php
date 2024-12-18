@@ -1,14 +1,16 @@
 <?php
+require(__DIR__ . '/../model/Usuario.php');
+
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
-    $pass = "1234"; // Sandia4you en clase
+    $pass = "Sandia4you"; // 1234 en clase
     $dbname = "daw";
     return new mysqli($server, $user, $pass, $dbname);
 }
 function crearTabla() {
     $conexion = conectar();
-    // estan sin not null porque eso luego se lo pedimos al usuario que 
+    // estan sin not null porque eso luego se lo pedimos al Usuario que 
     // lo actualicé antes de podeer poner a vender o comprar un coche.
     // me refiero a direccion, cp cvendidos y tlf
     $sql ="CREATE table if not exists Usuario (
@@ -21,7 +23,8 @@ function crearTabla() {
         email varchar(50),
         nombre varchar(50),
         apellidos varchar(50),
-        foto LONGBLOB
+        foto LONGBLOB,
+        tipo_foto VARCHAR(50)
         )";
          $conexion->query($sql);
 }
@@ -56,35 +59,44 @@ function crearTablaM() {
         )";
          $conexion->query($sql);
 }
-function insertarUsuario($id, $pass) {
+function insertarUsuario($Usuario) {
     $conexion = conectar();
-    $sql = "INSERT Into Usuario (id, contra) VALUES (?, ?)";
+    $sql = "INSERT Into Usuario (id, contra ,direccion,CP,cVendidos,tlf,email,nombre,apellidos,foto) VALUES (?, ?,?,?,?,?,?,?,?,?)";
     $prepared = $conexion->prepare($sql);
-    $pass = password_hash($pass, PASSWORD_DEFAULT);
-    $prepared->bind_param("ss", $id, $pass);
+    $pass = password_hash($Usuario->contra, PASSWORD_DEFAULT);
+    $prepared->bind_param("ssssisssss",
+    $Usuario->id,
+    $pass,
+    $Usuario->direccion,
+    $Usuario->cp,
+    $Usuario->cVendidos,
+    $Usuario->tlf,
+    $Usuario->email,
+    $Usuario->nombre,
+    $Usuario->apellidos,
+    $Usuario->imagen
+    );
     $prepared->execute();
 }
-function verificarUsuario($id, $contra) {
-    $conexion = conectar(); 
+
+function verificarUsuario( $id, $contra) {
+    $conexion = conectar();
     $sql = "SELECT contra FROM Usuario WHERE id = ?";
     $prepared = $conexion->prepare($sql);
     $prepared->bind_param("s", $id);
     $prepared->execute();
-    $resultado = $prepared->get_result();
     
-    if ($resultado->num_rows > 0) {
-        $fila = $resultado->fetch_assoc();
+    $result = $prepared->get_result();
+    if ($result->num_rows > 0) {
+        $fila = $result->fetch_assoc();
         $hash = $fila["contra"];
-        if (password_verify($contra, $hash)) {
-            return true; 
-        } else {
-            return false; 
-        }
-    } else {
-        return false; 
+        return password_verify($contra, $hash);
     }
+    return false;
 }
 
+
+// creo que esta funcion de abajo no se utiliza?¿?¿?
 function verificarId($id):bool {
     $conexion = conectar();
     $sql = "SELECT * from Usuario where id = ?";
@@ -98,10 +110,11 @@ function verificarId($id):bool {
         return true;
     }
 }
-function updateUsuario($user_id, $nombre, $apellidos, $direccion, $cp, $tlf, $email, $foto_url = null) {
+
+function actualizarUsuario($user_id, $nombre, $apellidos, $direccion, $cp, $tlf, $email, $foto_url = null) {
     $conexion = conectar();
     if ($foto_url !== null) { 
-        $sql = "UPDATE usuario
+        $sql = "UPDATE Usuario
         SET nombre = ?, apellidos = ?, direccion = ?, CP = ?, tlf = ?, email = ?, foto = ? 
         WHERE id = ?";
          if ($prepared = $conexion->prepare($sql)) {
@@ -109,7 +122,7 @@ function updateUsuario($user_id, $nombre, $apellidos, $direccion, $cp, $tlf, $em
         $prepared->bind_param("ssssssss", $nombre, $apellidos, $direccion, $cp, $tlf, $email, $foto_url, $user_id);
          }
     }  else {
-        $sql = "UPDATE usuario
+        $sql = "UPDATE Usuario
         SET nombre = ?, apellidos = ?, direccion = ?, CP = ?, tlf = ?, email = ?
         WHERE id = ?";
          if ($prepared = $conexion->prepare($sql)) {
@@ -129,62 +142,99 @@ function updateUsuario($user_id, $nombre, $apellidos, $direccion, $cp, $tlf, $em
     return false; // Si algo falló
     }
 
-function procesarImagenParaBD($input_name) {
-    if (isset($_FILES[$input_name]) && $_FILES[$input_name]['error'] === UPLOAD_ERR_OK) {
-        $foto = $_FILES[$input_name];
 
-        // Validar el tipo de archivo
-        $tipos_permitidos = ['image/jpeg', 'image/png', 'image/gif'];
-        if (!in_array($foto["type"], $tipos_permitidos)) {
-            return ['error' => "Formato de archivo no permitido. Solo se permiten JPEG, PNG o GIF."];
+
+
+
+function procesarImagenParaBD($campo) {
+    // Verificamos que se haya subido un archivo y no haya errores
+    if (isset($_FILES[$campo]) && $_FILES[$campo]['error'] === UPLOAD_ERR_OK) {
+        $foto_tmp = $_FILES[$campo]['tmp_name'];
+        $foto_tipo = $_FILES[$campo]['type'];
+        
+        // Verificamos si el archivo es una imagen válida (en este caso jpg o png)
+        if ($foto_tipo === 'image/jpeg' || $foto_tipo === 'image/png') {
+            // Leemos el contenido binario de la imagen
+            $foto_datos = file_get_contents($foto_tmp);
+            return ['datos' => $foto_datos, 'tipo' => $foto_tipo];
+        } else {
+            return ['error' => 'El archivo no es una imagen válida (debe ser JPG o PNG).'];
         }
-
-        // Leer el contenido del archivo como binario
-        $datos_imagen = file_get_contents($foto["tmp_name"]);
-        if ($datos_imagen === false) {
-            return ['error' => "Error al procesar la imagen."];
-        }
-
-        // Devolver los datos binarios de la imagen y su tipo MIME
-        return ['datos' => $datos_imagen, 'tipo' => $foto["type"]];
+    } else {
+        return ['error' => 'No se ha subido ninguna imagen o ha ocurrido un error en la carga.'];
     }
-
-    return ['error' => "No se ha seleccionado ninguna imagen o hubo un error en la subida."];
 }
+
+
+
 function obtenerImagenUsuario($user_id) {
-    $conexion = conectar();
-    
+    $conexion = conectar(); // Supongo que esta función está definida
     $sql = "SELECT foto FROM Usuario WHERE id = ?";
-    
     $prepared = $conexion->prepare($sql);
-    $prepared->bind_param("s", $user_id);
+    $prepared->bind_param("i", $user_id);
     $prepared->execute();
-    
-    $result = $prepared->get_result();
-    
-    if ($row = $result->fetch_assoc()) {
-        // Mensaje de depuración
-       
-        return $row['foto'];  // Esto devuelve la imagen en formato LONGBLOB
-    }
-    
-    return null;  // Si no se encuentra la imagen
+    $prepared->bind_result($foto);
+    $prepared->fetch();
+    return $foto; // Devuelve los datos binarios de la imagen
 }
-function obtenerDatosUsuario($user_id) {
+
+
+function obtenerDatosUsuario($id) {
     $conexion = conectar();
-    $sql = "SELECT id, nombre, apellidos, email, tlf, direccion, cp FROM Usuario WHERE id = ?";
+    if (!$conexion instanceof mysqli) {
+        die("Error: la conexión a la base de datos no es válida.");
+    }
+
+    // Definir la consulta SQL
+    $sql = "SELECT id, nombre, apellidos, email, tlf, direccion, cp, foto, cVendidos FROM Usuario WHERE id = ?";
+    
+    // Preparar la consulta
     $prepared = $conexion->prepare($sql);
-    $prepared->bind_param("i", $user_id);  // 'i' para un tipo entero
+    if ($prepared === false) {
+        die("Error al preparar la consulta: " . $conexion->error);
+    }
+
+    // Vincular el parámetro $id
+    $prepared->bind_param("s", $id); // "s" indica que el parámetro es una cadena (String)
+
+    // Ejecutar la consulta
     $prepared->execute();
+
+    // Obtener los resultados
     $result = $prepared->get_result();
+    
+    // Verificar si se obtuvieron resultados
+    $data = $result->fetch_assoc();
 
-    return $result->fetch_assoc();  // Devuelve un array asociativo con los datos del usuario
+    if ($data) {
+        // Aseguramos que cVendidos no sea nulo y sea un entero
+        $cVendidos = isset($data['cVendidos']) ? (int)$data['cVendidos'] : 0;
+
+        // Crear el objeto Usuario con los datos obtenidos
+        return new Usuario(
+            $data['id'], 
+            '', // Contraseña vacía, no se pasa
+            $data['direccion'], 
+            $data['cp'], 
+            $cVendidos, // Asignamos el valor de cVendidos
+            $data['tlf'], 
+            $data['email'], 
+            $data['nombre'], 
+            $data['apellidos'],
+            $data['foto']
+        );
+    }
+    return null; // No se encontró el Usuario
 }
-
-
-
-
-
 
 
 ?>
+
+
+
+
+
+
+
+
+

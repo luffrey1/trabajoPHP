@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!$errores) {
         if (verificarUsuario($id, $contra)) {
-            // Si el usuario es válido, almacenar sus datos en la sesión
+           $usuario = new Usuario($id,$contra);
             $_SESSION['user_id'] = $id; // ID del usuario
             header("Location: index.php"); // Redirigir a la página principal
             exit();
