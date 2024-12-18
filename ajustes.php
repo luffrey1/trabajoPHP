@@ -25,7 +25,7 @@ $cp = $usuario['CP'];
 $tlf = $usuario['tlf'];
 $email = $usuario['email'];
 $foto_datos = $usuario['foto']; // Esto contiene los datos binarios de la foto o null si no hay
-$foto_url = $foto_datos ? "./database/ver_imagen.php?id=$user_id" : "./database/default.jpg"; // Ruta para la imagen
+$foto_url = $foto_datos ? "./database/ver_imagen.php?id='$user_id'" : "./database/default.jpg"; // Ruta para la imagen
 
 $prepared->close();
 $conexion->close();
@@ -69,10 +69,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <div class="container rounded bg-white mt-5 mb-5">
-        <div class="row">
+         <div class="row">
             <div class="col-md-3 border-right">
                 <div class="d-flex flex-column align-items-center text-center p-3 py-5">
-                    <img class="rounded-circle mt-5" width="150px" src="<?= $foto_url ?>">
+                <?php if (isset($_SESSION['user_id'])): ?>
+                <img class="rounded-circle mt-5" width="150px" src="./database/ver_imagen.php?id=<?= $_SESSION['user_id'] ?>">
+                <?php else: ?>
+                    <img class="rounded-circle mt-5" width="150px"  src="./database/1.jpeg">
+                <?php endif; ?>
                 </div>
             </div>
             <div class="col-md-9">

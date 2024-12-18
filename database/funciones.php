@@ -168,10 +168,10 @@ function procesarImagenParaBD($campo) {
 
 
 function obtenerImagenUsuario($user_id) {
-    $conexion = conectar(); // Supongo que esta función está definida
+    $conexion = conectar(); 
     $sql = "SELECT foto FROM Usuario WHERE id = ?";
     $prepared = $conexion->prepare($sql);
-    $prepared->bind_param("i", $user_id);
+    $prepared->bind_param("s", $user_id);
     $prepared->execute();
     $prepared->bind_result($foto);
     $prepared->fetch();
