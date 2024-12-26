@@ -17,6 +17,16 @@ if (!isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
     echo "Bienvenido, usuario con ID: " . $user_id;
 }
+$pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+$vehiculos_por_pagina = 9;  // Tres por fila para que se vean tres cards por fila
+
+// Mostrar los vehículos
+
+
+
+
+// Calcular el total de páginas
+$total_paginas = calcularPaginas($vehiculos_por_pagina);
 ?>
 
 <!DOCTYPE html>
@@ -112,6 +122,37 @@ if (!isset($_SESSION['user_id'])) {
         </form>
     </div>
 </nav>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12 text-center">
+            <ul class="pagination justify-content-center">
+                <?php if ($pagina > 1): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?pagina=<?php echo $pagina - 1; ?>">Anterior</a>
+                    </li>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+                    <li class="page-item <?php if ($i == $pagina) echo 'active'; ?>">
+                        <a class="page-link" href="?pagina=<?php echo $i; ?>"><?php echo $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+
+                <?php if ($pagina < $total_paginas): ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?pagina=<?php echo $pagina + 1; ?>">Siguiente</a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </div>
+    </div>
+</div>
+ <div class="container mt-4">;
+<div class="row">;
+<?php  mostrarVehiculos($pagina, $vehiculos_por_pagina);?>
+
+</div>;
+</div>;
 
 
     

@@ -6,9 +6,26 @@ abstract class Vehiculo {
     protected String $combustible;
     protected float $precio;
     protected Usuario $vendedor;
+	public $imagen;
 
-public function __construct(String $matricula, String $color, String $combustible, float $precio, Usuario $vendedor){
-	$this->matricula = $matricula;$this->color = $color;$this->combustible = $combustible;$this->precio = $precio;$this->vendedor = $vendedor;}
+	public function __construct(String $matricula, String $color, String $combustible, float $precio, Usuario $vendedor){
+		$this->matricula = $matricula;
+		$this->color = $color;
+		$this->combustible = $combustible;
+		$this->precio = $precio;
+		$this->vendedor = $vendedor;
+	}
+
+	public function getMatricula(): String {return $this->matricula;}
+
+	public function getColor(): String {return $this->color;}
+	
+	public function getCombustible(): String {return $this->combustible;}
+	
+	public function getPrecio(): float {return $this->precio;}
+
+	public function getVendedor(): Usuario {return $this->vendedor;}
+
 	public function setMatricula(String $matricula): void {$this->matricula = $matricula;}
 
 	public function setColor(String $color): void {$this->color = $color;}
@@ -19,16 +36,9 @@ public function __construct(String $matricula, String $color, String $combustibl
 
 	public function setVendedor(Usuario $vendedor): void {$this->vendedor = $vendedor;}
 
+	public function setImagen($imagen): void {$this->imagen = $imagen;}
 
-	public function getMatricula(): String {return $this->matricula;}
-
-	public function getColor(): String {return $this->color;}
-
-	public function getCombustible(): String {return $this->combustible;}
-
-	public function getPrecio(): float {return $this->precio;}
-
-	public function getVendedor(): Usuario {return $this->vendedor;}
+	public function getImagen() {return $this->imagen;}
 
 
 	public function __toString(): string {

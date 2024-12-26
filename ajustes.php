@@ -3,42 +3,29 @@ session_start();
 require("./database/funciones.php");
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: login.php"); 
     exit();
 }
 
 $user_id = $_SESSION['user_id'];
 
-// Obtener datos actuales del usuario
-$conexion = conectar();
-$sql = "SELECT nombre, apellidos, direccion, CP, tlf, email, foto FROM Usuario WHERE id = ?";
-$prepared = $conexion->prepare($sql);
-$prepared->bind_param("s", $user_id);
-$prepared->execute();
-$result = $prepared->get_result();
-$usuario = $result->fetch_assoc();
-$imagen_perfil = obtenerImagenUsuario($user_id); 
+// Obtener los datos del usuario
+$usuario = obtenerDatosUsuario($user_id);
+$imagen_perfil = obtenerImagenUsuario($user_id);
 
-$nombre = $usuario['nombre'];
-$apellidos = $usuario['apellidos'];
-$direccion = $usuario['direccion'];
-$cp = $usuario['CP'];
-$tlf = $usuario['tlf'];
-$email = $usuario['email'];
-$foto_datos = $usuario['foto']; // Esto contiene los datos binarios de la foto o null si no hay
-$foto_url = $foto_datos ? "./database/ver_imagen.php?id='$user_id'" : "./database/default.jpg"; // Ruta para la imagen
+if (!$usuario) {
+    echo "No se han encontrado datos del usuario.";
+    exit();
+}
 
-$prepared->close();
-$conexion->close();
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") { 
-    // Validar campos enviados y mantener los existentes si están vacíos
-    $nombre = !empty($_POST["nombre"]) ? $_POST["nombre"] : $nombre;
-    $apellidos = !empty($_POST["apellidos"]) ? $_POST["apellidos"] : $apellidos;
-    $direccion = !empty($_POST["direccion"]) ? $_POST["direccion"] : $direccion;
-    $cp = !empty($_POST["cp"]) ? $_POST["cp"] : $cp;
-    $tlf = !empty($_POST["tlf"]) ? $_POST["tlf"] : $tlf;
-    $email = !empty($_POST["email"]) ? $_POST["email"] : $email;
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Procesar los cambios
+    $nombre = !empty($_POST["nombre"]) ? $_POST["nombre"] : $usuario['nombre'];
+    $apellidos = !empty($_POST["apellidos"]) ? $_POST["apellidos"] : $usuario['apellidos'];
+    $direccion = !empty($_POST["direccion"]) ? $_POST["direccion"] : $usuario['direccion'];
+    $cp = !empty($_POST["cp"]) ? $_POST["cp"] : $usuario['CP'];
+    $tlf = !empty($_POST["tlf"]) ? $_POST["tlf"] : $usuario['tlf'];
+    $email = !empty($_POST["email"]) ? $_POST["email"] : $usuario['email'];
 
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
         // Procesar la nueva foto
@@ -49,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $foto_datos = $resultado_imagen['datos'];
         }
     } else {
-        $foto_datos = null; // No cambiar la foto si no se sube ninguna
+        $foto_datos = null;
     }
 
     // Actualizar datos en la base de datos
@@ -160,6 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php else: ?>
             <img class="profile-image rounded-circle" width="150px" src="https://t4.ftcdn.net/jpg/03/49/49/79/360_F_349497933_Ly4im8BDmHLaLzgyKg2f2yZOvJjBtlw5.webp" alt="Imagen predeterminada">
         <?php endif; ?>
+        
     </div>
 </div>
 
@@ -172,27 +160,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <form action="ajustes.php" method="POST" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="nombre">Nombre:</label>
-                            <input type="text" class="form-control" id="nombre" name="nombre" value="<?= ($nombre) ?>">
+                            <input type="text" class="form-control" id="nombre" name="nombre" value="<?= $usuario->getNombre()?>">
+                            
                         </div>
                         <div class="form-group">
                             <label for="apellidos">Apellidos:</label>
-                            <input type="text" class="form-control" id="apellidos" name="apellidos" value="<?= ($apellidos) ?>">
+                            <input type="text" class="form-control" id="apellidos" name="apellidos" value="<?= $usuario->getApellidos()?>">
                         </div>
                         <div class="form-group">
                             <label for="direccion">Dirección:</label>
-                            <input type="text" class="form-control" id="direccion" name="direccion" value="<?= ($direccion) ?>">
+                            <input type="text" class="form-control" id="direccion" name="direccion" value="<?= $usuario->getDireccion()?>">
                         </div>
                         <div class="form-group">
                             <label for="cp">Código Postal:</label>
-                            <input type="text" class="form-control" id="cp" name="cp" value="<?= ($cp) ?>">
+                            <input type="text" class="form-control" id="cp" name="cp" value="<?= $usuario->getCp()?>">
                         </div>
                         <div class="form-group">
                             <label for="tlf">Teléfono:</label>
-                            <input type="text" class="form-control" id="tlf" name="tlf" value="<?= ($tlf) ?>">
+                            <input type="text" class="form-control" id="tlf" name="tlf" value="<?= $usuario->getTlf()?>">
                         </div>
                         <div class="form-group">
                             <label for="email">Email:</label>
-                            <input type="email" class="form-control" id="email" name="email" value="<?= ($email) ?>">
+                            <input type="email" class="form-control" id="email" name="email" value="<?= $usuario->getEmail()?>">
                         </div>
                         <div class="form-group">
                             <label for="foto">Foto (opcional):</label>

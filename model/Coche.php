@@ -8,9 +8,9 @@ class Coche extends Vehiculo {
 
 
     public function __construct(String $matricula, String $color, String $combustible, float $precio, 
-    Usuario $vendedor,int $puertas,int $caballos,String $carroceria,String $airbag){
+    Usuario $vendedor,int $puertas,int $caballos,String $carroceria,String $airbag, $imagen){
     
-        parent::__construct($matricula,$color,$combustible,$precio,$vendedor);
+        parent::__construct($matricula,$color,$combustible,$precio,$vendedor,$imagen);
         $this->puertas = $puertas;
         $this->caballos = $caballos;
         $this->carroceria = $carroceria;

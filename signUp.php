@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 include("./model/Vehiculo.php");
@@ -10,72 +9,78 @@ require("./database/funciones.php");
 crearTabla();
 crearTablaVehiculo();
 
-$id = $contra ="";
-$idErr = $contraErr = $contrasErr= $contra1Err ="";
+$id = $contra = $contra1 = "";
+$idErr = $contraErr = $contra1Err = $contrasErr = "";
 $errores = false;
-$contra = "";
-$contra1 ="";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    //Se hace la validacion de datos
-    if(!empty($_POST["id"])) {
-
-     $id = $_POST["id"];
+    // Validación de datos
+    if (!empty($_POST["id"])) {
+        $id = $_POST["id"];
     } else {
-     $idErr = "El nombre es obligatorio";
-     $errores = true;
+        $idErr = "El ID es obligatorio";
+        $errores = true;
     }
 
-    if(!empty($_POST["contra"])) {
+    if (!empty($_POST["contra"])) {
+        $contra = $_POST["contra"];
+    } else {
+        $contraErr = "Tienes que introducir la contraseña";
+        $errores = true;
+    }
 
-     $contra = $_POST["contra"];
-   
-    } else if(empty($_POST["pass"])) {
-     $contraErr = "Tienes que introducir la contraseña";
-     $errores = true;   
-    } 
-    if(!empty($_POST["contra1"])) {
+    if (!empty($_POST["contra1"])) {
+        $contra1 = $_POST["contra1"];
+    } else {
+        $contra1Err = "Tienes que introducir de nuevo la contraseña";
+        $errores = true;
+    }
 
-      $contra1 = $_POST["contra1"];
-    
-     } else if(empty($_POST["pass"])) {
-      $contra1Err = "Tienes que introducir de nuevo la contraseña";
-      $errores = true;   
-     } 
-     if(!empty($_POST["contra"] == $_POST["contra1"])) {
+    // Validar si las contraseñas coinciden
+    if ($contra !== $contra1) {
+        $contrasErr = "
+            <div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                <strong>¡Error!</strong> Las contraseñas no coinciden
+                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>";
+        $errores = true;
+    }
 
-      $contra = $_POST["contra"];
-    
-     } else if(empty($_POST["pass"])) {
-      $contrasErr = "
-               <div class='alert alert-danger alert-dismissible fade show' role='alert'>
-                    <strong>¡Error!</strong> Las contraseñas no coinciden
-                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                </div>";
-      $errores = true;   
-     } 
- 
-       if (!$errores) {
-         // Podriamos poner en futuro que se envie un correo de verificacion, como en las paginas normales
-         if (verificarId($id) == true ) {
-            insertarUsuario($id, $contra);
-             echo "<div class='alert alert-primary alert-dismissible fade show' role='alert'>
-                    <strong>¡Éxito!</strong> $id Se ha registrado correctamente! <a class='nav-item nav-link' href='login.php'>Acceda al INICIO DE SESION: </a>
+    // Si no hay errores, proceder con la inserción
+    if (!$errores) {
+        // Crear el objeto Usuario (asumiendo que la clase Usuario está definida en otro archivo)
+        $direccion = !empty($_POST["direccion"]) ? $_POST["direccion"] : NULL;
+        $cp = !empty($_POST["cp"]) ? $_POST["cp"] : NULL;
+        $cVendidos = !empty($_POST["cVendidos"]) ? $_POST["cVendidos"] : 0; // si pones 0 da error
+        $tlf = !empty($_POST["tlf"]) ? $_POST["tlf"] : NULL;
+        $email = !empty($_POST["email"]) ? $_POST["email"] : NULL;
+        $nombre = !empty($_POST["nombre"]) ? $_POST["nombre"] : NULL;
+        $apellidos = !empty($_POST["apellidos"]) ? $_POST["apellidos"] : NULL;
+        $imagen = !empty($_FILES["imagen"]["name"]) ? $_FILES["imagen"]["name"] : NULL;
+
+        // Crear el objeto usuario con los datos
+        $usuario = new Usuario($id, $contra, $direccion, $cp, $cVendidos, $tlf, $email, $nombre, $apellidos, $imagen);
+        
+        // Insertar el usuario
+        if (verificarId($id) == true) {
+            insertarUsuario($usuario);
+
+            echo "<div class='alert alert-primary alert-dismissible fade show' role='alert'>
+                    <strong>¡Éxito!</strong> El usuario $id se ha registrado correctamente. <a class='nav-item nav-link' href='login.php'>Accede al INICIO DE SESIÓN</a>
                     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
                 </div>";
         } else {
-         echo "
-         <div class='alert alert-danger alert-dismissible fade show' role='alert'>
-              <strong>¡Error!</strong> Este usuario ya está en uso.
-              <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-          </div>";
+            echo "
+            <div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                <strong>¡Error!</strong> Este usuario ya está en uso.
+                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>";
         }
-         
-   
-     
-}
+    }
 }
 ?>
+
+
 
 
 <!DOCTYPE html>

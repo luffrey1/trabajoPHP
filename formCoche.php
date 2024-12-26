@@ -6,63 +6,108 @@ include("./model/Vehiculo.php");
 include("./model/Coche.php");
 include("./model/Moto.php");
 require("./database/funciones.php");
+    crearTablaVehiculo();
 
-$matricula = $color = $combustible = $precio =
-$nPuertas = $caballos = $carroceria = $airbags= $vendedor = "";
-
-$matriculaErr = $colorErr = $combustibleErr = $precioErr =
-$nPuertasErr = $caballosErr = $carroceriaErr = $airbagsErr = $vendedorErr = "";
-
+$matricula = $color = $combustible = $precio = $nPuertas = $caballos = $carroceria = $airbags = "";
+$matriculaErr = $colorErr = $combustibleErr = $precioErr = $nPuertasErr = $caballosErr = $carroceriaErr = $airbagsErr = "";
 $errores = false;
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $user_id = $_SESSION['user_id'];
+    $vendedor = obtenerDatosUsuario($user_id);
 
-    if (!empty($_POST["matricula"])) {
-
-        $matricula = $_POST["matricula"];
-    } else{
-        $matriculaErr="Debes introducir una matrícula";
-        $errores=true;
+    // Validar los datos del vehículo antes de procesar el archivo
+    if (!$vendedor) {
+        echo "Error: No se pudo obtener la información del vendedor. Por favor, asegúrese de haber iniciado sesión correctamente.";
+        exit();
     }
-
-    if(!empty($_POST["color"])){
-
-        $color = $_POST["color"];
-
-    } else{
-
-        $colorErr="Debes introducir el color del vehículo";
-        $errores=true;
+    $foto_datos = null;
+    if (empty($matricula)) {
+        $matriculaErr = "La matrícula es obligatoria.";
+        $errores = true;
     }
-
-    if(!empty($_POST["combustible"])){
-
-        $combustible = $_POST["combustible"];
-
-    } else{
-
-        $combustibleErr="Debes introducir el tipo de combustible";
-        $errores=true;
+    if (empty($color)) {
+        $colorErr = "El color es obligatorio.";
+        $errores = true;
     }
-
-    if (!empty($_POST["precio"])) {
-
-        $precio = $_POST["precio"];
+    if (empty($combustible)) {
+        $combustibleErr = "El combustible es obligatorio.";
+        $errores = true;
+    }
+    if (empty($precio) || !is_numeric($precio)) {
+        $precioErr = "El precio es obligatorio y debe ser un número.";
+        $errores = true;
+    }
+    if (empty($nPuertas) || !is_numeric($nPuertas)) {
+        $nPuertasErr = "El número de puertas es obligatorio y debe ser un número.";
+        $errores = true;
+    }
+    if (empty($caballos) || !is_numeric($caballos)) {
+        $caballosErr = "Los caballos son obligatorios y deben ser un número.";
+        $errores = true;
+    }
+    if (empty($carroceria)) {
+        $carroceriaErr = "La carrocería es obligatoria.";
+        $errores = true;
+    }
+    if (empty($airbags) || !is_numeric($airbags)) {
+                $airbagsErr = "Los airbags son obligatorios y deben ser un número.";
+            }
         
-    } else{
-        $precioErr="Debes introducir el precio";
-        $errores=true;
-    }
-
-    if (!empty($_POST["nPuertas"])) {
-
-        $nPuertas = $_POST["nPuertas"];
         
-    } else{
-        $nPuertasErr="Debes introducir la cantidad de puertas";
-        $errores=true;
-    }
+    
 
+    // Si no hay errores, proceder con la inserción
+    // Si no hay errores, proceder con la inserción
+    if (!$errores) {
+        // Verificar si se ha subido un archivo
+        if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
+            $foto = $_FILES['foto'];
+            $foto_tmp = $foto['tmp_name'];
+            $foto_tipo = $foto['type'];
+            $foto_tamano = $foto['size'];
+            $max_file_size = 2 * 1024 * 1024; // 2MB
+            $permitidos = ['image/jpeg', 'image/png', 'image/gif'];
+
+            if (in_array($foto_tipo, $permitidos)) {
+                if ($foto_tamano <= $max_file_size) {
+                    // Leer el contenido del archivo
+                    $foto_datos = file_get_contents($foto_tmp);
+                    if ($foto_datos === false) {
+                        echo "Error al leer el archivo.";
+                        exit();
+                    }
+
+                    // Crear el objeto Coche
+                    $vehiculo = new Coche(
+                        $matricula, 
+                        $color, 
+                        $combustible, 
+                        $precio, 
+                        $vendedor, // Pasamos el objeto Usuario aquí
+                        $nPuertas, 
+                        $caballos, 
+                        $carroceria, 
+                        $airbags,
+                        $foto_datos // Pasamos los datos binarios de la imagen
+                    );
+
+                    // Insertar el coche en la base de datos
+                    insertarCoche($vehiculo);
+                } else {
+                    echo "El archivo es demasiado grande. El tamaño máximo permitido es 2MB.";
+                }
+            } else {
+                echo "Tipo de archivo no permitido.";
+            }
+        } else {
+            echo "Error al subir la foto.";
+        }
+    }
 }
 
 ?>
@@ -79,38 +124,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-<form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="POST">
+<form action="formCoche.php" method="POST" enctype="multipart/form-data">
+    <label>Matrícula: *</label>
+    <input type="text" name="matricula" value="<?php echo $matricula; ?>"><br>
+    <span class="errores"><?php echo $matriculaErr; ?></span><br>
+
+    <label>Color: *</label>
+    <input type="text" name="color" value="<?php echo $color; ?>"><br>
+    <span class="errores"><?php echo $colorErr; ?></span><br>
+
+    <label>Combustible: *</label>
+    <select name="combustible">
+        <option value="gasolina" <?php if($combustible=="gasolina") echo "selected"; ?>>Gasolina</option>
+        <option value="diesel" <?php if($combustible=="diesel") echo "selected"; ?>>Diesel</option>
+        <option value="gasNatural" <?php if($combustible=="gasNatural") echo "selected"; ?>>Gas Natural</option>
+        <option value="electricidad" <?php if($combustible=="electricidad") echo "selected"; ?>>Electricidad</option>
+    </select><br>
+    <span class="errores"><?php echo $combustibleErr; ?></span><br>
+
+    <label>Precio: *</label>
+    <input type="number" name="precio" value="<?php echo $precio; ?>"><br>
+    <span class="errores"><?php echo $precioErr; ?></span><br>
+
+    <label>Numero de Puertas: *</label>
+    <input type="number" name="nPuertas" value="<?php echo $nPuertas; ?>"><br>
+    <span class="errores"><?php echo $nPuertasErr; ?></span><br>
+
+    <label>Caballos: *</label>
+    <input type="number" name="caballos" value="<?php echo $caballos; ?>"><br>
+
+    <label>Carrocería: *</label>
+    <input type="text" name="carroceria" value="<?php echo $carroceria; ?>"><br>
+
+    <label>Airbags: *</label>
+    <input type="number" name="airbags" value="<?php echo $airbags; ?>"><br>
+
+    <label>Foto del vehiculo: *</label>
+    <input type="file" id="foto" name="foto"><br>
+
+ 
+
+    <input type="submit" value="Añadir Vehículo">
+</form>
 
 
-        <label>Matrícula: *</label>
-        <input type="text" name="matricula" value="<?php echo $matricula; ?>"><br>
-        <span class="errores"><?php echo $matriculaErr; ?></span><br>
-
-        <label>Color: *</label>
-        <input type="text" name="color"><br>
-        <span class="errores"><?php echo $colorErr; ?></span><br>
-
-        <label>Combustible: *</label>
-        <select class="form-select" id="pais">
-            <option name="combustible" value="gasolina" <?php if($combustible=="gasolina") echo "checked"?>>Gasolina</option>
-            <option name="combustible" value="diesel" <?php if($combustible=="diesel") echo "checked"?>>Diesel</option>
-            <option name="combustible" value="gasNatural" <?php if($combustible=="gasNatural") echo "checked"?>>Gas Natural</option>
-            <option name="combustible" value="electricidad" <?php if($combustible=="electricidad") echo "checked"?>>Electricidad</option>
-            <option name="combustible" value="etanol" <?php if($combustible=="etanol") echo "checked"?>>Etanol</option>
-
-        </select>
-        <span class="errores"><?php echo $combustibleErr; ?></span><br>
-
-        <label>Precio: *</label>
-        <input type="number" name="precio"><br>
-        <span class="errores"><?php echo $precioErr; ?></span><br>
-
-        <label>Numero de Puertas: *</label>
-        <input type="number" name="nPuertas"><br>
-        <span class="errores"><?php echo $nPuertasErr; ?></span><br>
-
-
-    </form>
     
 </body>
 </html>
