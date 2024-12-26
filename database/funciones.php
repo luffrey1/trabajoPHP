@@ -1,4 +1,6 @@
 <?php
+
+
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
@@ -14,44 +16,36 @@ function crearTabla() {
     $sql ="CREATE table if not exists Usuario (
         id varchar(50) primary key not null,
         contra varchar(255) not null,
+        nombre varchar(100) not null,
         direccion varchar(100) ,
         CP varchar(20) ,
-        cVendidos int,
         tlf varchar(25)
         )";
          $conexion->query($sql);
 }
-function crearTablaC() {
+
+function crearTablaVehiculo(){
     $conexion = conectar();
-    $sql ="CREATE table if not exists Coche (
-        matricula varchar(50) primary key,
-        color varchar(25) not null,
-        combustible varchar(100) not null,
-        precio varchar(20) not null,
-        vendedor varchar(100) not null,
-        comprador varchar(100) not null,
-        Puertas int not null,
-        CV int not null,
-        carroceria varchar(100) not null,
-        airbag int not null
-        )";
-         $conexion->query($sql);
+
+    $sql = "CREATE TABLE IF NOT EXISTS vehiculo (
+    matricula varchar(50) primary key,
+    tipo enum ('c', 'm') not null,
+    color varchar(25) not null,
+    combustible varchar(100) not null,
+    precio decimal(5,2) not null,
+    cv int default null, --ambos
+    n_puertas int default null, --coches
+    carroceria varchar(50) default null, --coches
+    airbag int default null, --coches
+    cc int default null, --motos
+    tipo_moto varchar(50) default null, --motos
+    baul bit default null, --motos
+    )";
+
+    $conexion->query($sql);
 }
-function crearTablaM() {
-    $conexion = conectar();
-    $sql ="CREATE table if not exists Moto (
-        matricula varchar(50) primary key,
-        color varchar(25) not null,
-        combustible varchar(100) not null,
-        precio varchar(20) not null,
-        vendedor varchar(100) not null,
-        comprador varchar(100) not null,
-        CC int not null,
-        tipo varchar(100) not null,
-        baul float
-        )";
-         $conexion->query($sql);
-}
+
+
 function insertarUsuario($id, $pass) {
     $conexion = conectar();
     $sql = "INSERT Into Usuario (id, contra) VALUES (?, ?)";
