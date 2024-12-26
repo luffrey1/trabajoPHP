@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="number" name="precio"><br>
         <span class="errores"><?php echo $precioErr; ?></span><br>
 
-        <label>Precio: *</label>
+        <label>Numero de Puertas: *</label>
         <input type="number" name="nPuertas"><br>
         <span class="errores"><?php echo $nPuertasErr; ?></span><br>
 
