@@ -1,6 +1,7 @@
 <?php
 
 session_start();
+
 include("./model/Vehiculo.php");
 include("./model/Coche.php");
 include("./model/Moto.php");

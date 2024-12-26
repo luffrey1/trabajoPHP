@@ -15,13 +15,13 @@ class Moto extends Vehiculo {
     }
     public function setCilindrada(int $cilindrada): void {$this->cilindrada = $cilindrada;}
 
-	public function setTipo(String $tipo_m): void {$this->tipo_m = $tipo_m;}
+	public function setTipo_m(String $tipo_m): void {$this->tipo_m = $tipo_m;}
 
 	public function setBaul(bool $baul): void {$this->baul = $baul;}
 
 	public function getCilindrada(): int {return $this->cilindrada;}
 
-	public function getTipo(): String {return $this->tipo_m;}
+	public function getTipo_m(): String {return $this->tipo_m;}
 
 	public function getBaul(): bool {return $this->baul;}
 
