@@ -1,53 +1,68 @@
 <?php
-
 class Usuario {
-    public String $id;
-	public String $nombre;
-    public String $contra;
-    public String $direccion;
-    public int $postal;
-    public int $cochesV;
-    public int $tlf;
+    public $id;
+    public $contra;
+    public $direccion;
+    public $cp;
+    public $cVendidos;
+    public $tlf;
+    public $email;
+    public $nombre;
+    public $apellidos;
+    public $imagen;
 
-    public function __construct(String $id, String $nombre, String $contra, String $direccion, int $postal, int $cochesV, int $tlf){
-		$this->id = $id;
-		$this->nombre = $nombre;
-		$this->contra = $contra;
-		$this->direccion = $direccion;
-		$this->postal = $postal;
-		$this->cochesV = $cochesV;
-		$this->tlf = $tlf;
-	}
-	
-	public function setId(String $id): void {$this->id = $id;}
+    // Constructor con parámetros opcionales y permitiendo que algunos sean null
+    public function __construct(
+        string $id, 
+        string $contra, 
+        ?string $direccion = null,  // Permite null por el ?
+        ?string $cp = null,         // Permite null
+        int $cVendidos = 0, 
+        ?string $tlf = null,        // Permite null
+        ?string $email = null,      // Permite null
+        ?string $nombre = '',       // Permite null, valor por defecto es una cadena vacía
+        ?string $apellidos = '',    // Permite null, valor por defecto es una cadena vacía
+        $imagen = null
+    ) {
+        $this->id = $id;
+        $this->contra = $contra;
+        $this->direccion = $direccion;
+        $this->cp = $cp;
+        $this->cVendidos = $cVendidos;
+        $this->tlf = $tlf;
+        $this->email = $email;
+        $this->nombre = $nombre;
+        $this->apellidos = $apellidos;
+        $this->imagen = $imagen;
+    }
 
-	public function setNombre(String $nombre){$this->nombre = $nombre;}
-	public function setContra(String $contra): void {$this->contra = $contra;}
+    // Métodos Setters
+    public function setId(string $id): void { $this->id = $id; }
+    public function setContra(string $contra): void { $this->contra = $contra; }
+    public function setDireccion(?string $direccion): void { $this->direccion = $direccion; }
+    public function setCp(?string $cp): void { $this->cp = $cp; }
+    public function setCVendidos(int $cVendidos): void { $this->cVendidos = $cVendidos; }
+    public function setTlf(?string $tlf): void { $this->tlf = $tlf; }
+    public function setEmail(?string $email): void { $this->email = $email; }
+    public function setNombre(?string $nombre): void { $this->nombre = $nombre; }
+    public function setApellidos(?string $apellidos): void { $this->apellidos = $apellidos; }
+    public function setImagen($imagen): void { $this->imagen = $imagen; }
 
-	public function setDireccion(String $direccion): void {$this->direccion = $direccion;}
+    // Métodos Getters
+    public function getId(): string { return $this->id; }
+    public function getContra(): string { return $this->contra; }
+    public function getDireccion(): string { return $this->direccion ?? ''; }
+    public function getCp(): string { return $this->cp ?? ''; }
+    public function getCVendidos(): int { return $this->cVendidos; }
+    public function getTlf(): string { return $this->tlf ?? ''; }
+    public function getEmail(): string { return $this->email ?? ''; }
+    public function getNombre(): string { return $this->nombre ?? ''; }
+    public function getApellidos(): string { return $this->apellidos ?? ''; }
+    public function getImagen() { return $this->imagen; }
 
-	public function setPostal(int $postal): void {$this->postal = $postal;}
-
-	public function setCochesV(int $cochesV): void {$this->cochesV = $cochesV;}
-
-	public function setTlf(int $tlf): void {$this->tlf = $tlf;}
-
-	public function getId(): String {return $this->id;}
-
-	public function getNombre(): String {return $this->nombre;}
-
-	public function getContra(): String {return $this->contra;}
-
-	public function getDireccion(): String {return $this->direccion;}
-
-	public function getPostal(): int {return $this->postal;}
-
-	public function getCochesV(): int {return $this->cochesV;}
-
-	public function getTlf(): int {return $this->tlf;}
-
-	
-    
+    // Método mágico __toString para representar el objeto como string
+    public function __toString() {
+        return "Usuario: {$this->id}, Nombre: {$this->nombre} {$this->apellidos}";
+    }
 }
-
 ?>

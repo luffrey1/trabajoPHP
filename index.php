@@ -1,3 +1,24 @@
+<?php
+session_start(); 
+include("./model/Vehiculo.php");
+include("./model/Coche.php");
+include("./model/Moto.php");
+require("./database/funciones.php");
+
+crearTabla();
+
+
+// Verificar si el usuario está autenticado
+if (!isset($_SESSION['user_id'])) {
+    echo "No ha iniciado sesión.";
+    // Si no está autenticado, redirigir o mostrar el mensaje correspondiente
+} else {
+    // Si el usuario está autenticado, acceder a la sesión
+    $user_id = $_SESSION['user_id'];
+    echo "Bienvenido, usuario con ID: " . $user_id;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,6 +50,11 @@
             <li class="nav-item">
                 <a class="nav-link active" href="index.php" aria-current="page">
                     Home <span class="visually-hidden">(current)</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="perfil.php" aria-current="page">
+                    Perfil 
                 </a>
             </li>
             <li class="nav-item dropdown">
