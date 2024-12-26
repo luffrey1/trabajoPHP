@@ -21,7 +21,7 @@ class Usuario {
 	
 	public function setId(String $id): void {$this->id = $id;}
 
-	public function setNombre(String $nombre){this->nombre = $nombre;}
+	public function setNombre(String $nombre){$this->nombre = $nombre;}
 	public function setContra(String $contra): void {$this->contra = $contra;}
 
 	public function setDireccion(String $direccion): void {$this->direccion = $direccion;}
