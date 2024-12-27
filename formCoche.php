@@ -4,7 +4,6 @@ session_start();
 
 include("./model/Vehiculo.php");
 include("./model/Coche.php");
-include("./model/Moto.php");
 require("./database/funciones.php");
 
 // Crear tabla de vehículo si no existe

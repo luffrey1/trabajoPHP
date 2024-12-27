@@ -5,7 +5,7 @@ include("./model/Usuario.php");
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
-    $pass = "1234"; // Sandia4you
+    $pass = "Sandia4you"; // Sandia4you/1234
     $dbname = "daw";
     return new mysqli($server, $user, $pass, $dbname);
 }
@@ -193,14 +193,14 @@ function insertarMoto($moto){
 // v: esta tabla es para almacenar todos los vehículos comprados, por el usuario que fueron comprados,
 // su vendedor y la fecha en que fueron comprados. de esta tabla se puede sacar la cantidad de coches
 // comprados o vendidos por un usuario tb, a través de un SELECT.
-function crearTablaVentas(){
+function crearTablaVenta(){
     $c = conectar();
 
-    $sql = "CREATE TABLE IF NOT EXISTS ventas(
+    $sql = "CREATE TABLE IF NOT EXISTS venta(
         codigo_venta VARCHAR(50) PRIMARY KEY,
         id_vehiculo VARCHAR(50) NOT NULL,
-        id_vendedor VARCHAR(50) NOT NULL,
         id_comprador VARCHAR(50) NOT NULL,
+        id_vendedor VARCHAR(50) NOT NULL,
         fecha_venta DATE NOT NULL,
         FOREIGN KEY (id_vehiculo) REFERENCES vehiculo(matricula),
         FOREIGN KEY (id_vendedor) REFERENCES Usuario(id),
@@ -212,12 +212,27 @@ function crearTablaVentas(){
 
 
 }
-
 //esta función será para insertas una venta. Lo que podemos hacer es en el catalogo poner botones en cada coche que pnga
 // "comprar" y que por ahora así se realice la compra. Lo de las tarjetas a lo mejor se podría hacer más tarde
-//pero por ahora que sea algo así, de forma simbolica
+//pero por ahora que sea algo así, de forma simbolica.
 function nuevaVenta($venta){
-    
+    $c = conectar();
+
+    $sql = "INSERT INTO venta (codigo_venta, id_vehiculo, id_comprador, id_vendedor, fecha_venta) VALUES
+            (?,?,?,?,?)";      
+            
+    $pS = $c->prepare($sql);
+
+    $codigo_venta = uniqid('v-', true);
+    $id_vehiculo = $venta->getIdVehiculo();
+    $id_comprador = $venta->getIdComprador();
+    $id_vendedor = $venta->getIdVendedor();
+    $fecha_venta = $venta->getFechaVenta();
+
+    $pS->bind_param('sssss', $codigo_venta, $id_vehiculo, $id_comprador, $id_vendedor, $fecha_venta);
+
+    return $pS->execute();
+
 }
 
 function verificarUsuario( $id, $contra) {
@@ -391,7 +406,7 @@ function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
     $conexion = conectar();
 
     // Calcular el punto de inicio de la consulta para la paginación
-    $inicio = ($pagina - 1) * $vehiculos_por_pagina;
+    $inicio = 0;
 
     // Consulta SQL para obtener los datos de los vehículos
     $sql = "SELECT matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto FROM vehiculo LIMIT ?, ?";
