@@ -8,12 +8,13 @@ abstract class Vehiculo {
     protected Usuario $vendedor;
 	public $imagen;
 
-	public function __construct(String $matricula, String $color, String $combustible, float $precio, Usuario $vendedor){
+	public function __construct(String $matricula, String $color, String $combustible, float $precio, Usuario $vendedor, $imagen){
 		$this->matricula = $matricula;
 		$this->color = $color;
 		$this->combustible = $combustible;
 		$this->precio = $precio;
 		$this->vendedor = $vendedor;
+		$this->imagen = $imagen;
 	}
 
 	public function getMatricula(): String {return $this->matricula;}

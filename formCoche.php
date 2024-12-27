@@ -6,110 +6,86 @@ include("./model/Vehiculo.php");
 include("./model/Coche.php");
 include("./model/Moto.php");
 require("./database/funciones.php");
-    crearTablaVehiculo();
 
+// Crear tabla de vehículo si no existe
+crearTablaVehiculo();
+
+// Inicializar variables y errores
 $matricula = $color = $combustible = $precio = $nPuertas = $caballos = $carroceria = $airbags = "";
 $matriculaErr = $colorErr = $combustibleErr = $precioErr = $nPuertasErr = $caballosErr = $carroceriaErr = $airbagsErr = "";
 $errores = false;
 
+// Verificar si el usuario está autenticado
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
+// Función para validar campos
+
+
+// Procesar formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user_id = $_SESSION['user_id'];
     $vendedor = obtenerDatosUsuario($user_id);
 
-    // Validar los datos del vehículo antes de procesar el archivo
     if (!$vendedor) {
-        echo "Error: No se pudo obtener la información del vendedor. Por favor, asegúrese de haber iniciado sesión correctamente.";
+        echo "Error: No se pudo obtener la información del vendedor. Por favor, inicie sesión nuevamente.";
         exit();
     }
-    $foto_datos = null;
-    if (empty($matricula)) {
-        $matriculaErr = "La matrícula es obligatoria.";
-        $errores = true;
-    }
-    if (empty($color)) {
-        $colorErr = "El color es obligatorio.";
-        $errores = true;
-    }
-    if (empty($combustible)) {
-        $combustibleErr = "El combustible es obligatorio.";
-        $errores = true;
-    }
-    if (empty($precio) || !is_numeric($precio)) {
-        $precioErr = "El precio es obligatorio y debe ser un número.";
-        $errores = true;
-    }
-    if (empty($nPuertas) || !is_numeric($nPuertas)) {
-        $nPuertasErr = "El número de puertas es obligatorio y debe ser un número.";
-        $errores = true;
-    }
-    if (empty($caballos) || !is_numeric($caballos)) {
-        $caballosErr = "Los caballos son obligatorios y deben ser un número.";
-        $errores = true;
-    }
-    if (empty($carroceria)) {
-        $carroceriaErr = "La carrocería es obligatoria.";
-        $errores = true;
-    }
-    if (empty($airbags) || !is_numeric($airbags)) {
-                $airbagsErr = "Los airbags son obligatorios y deben ser un número.";
-            }
-        
 
-    // Si no hay errores, proceder con la inserción
-    // Si no hay errores, proceder con la inserción
-    if (!$errores) {
-        // Verificar si se ha subido un archivo
-        if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
-            $foto = $_FILES['foto'];
-            $foto_tmp = $foto['tmp_name'];
-            $foto_tipo = $foto['type'];
-            $foto_tamano = $foto['size'];
-            $max_file_size = 2 * 1024 * 1024; // 2MB
-            $permitidos = ['image/jpeg', 'image/png', 'image/gif'];
+    // Asignar los valores del formulario a las variables
+    $matricula = $_POST['matricula'] ?? '';
+    $color = $_POST['color'] ?? '';
+    $combustible = $_POST['combustible'] ?? '';
+    $precio = (float) ($_POST['precio'] ?? 0);  // Convertir precio a float
+    $nPuertas = (int) ($_POST['nPuertas'] ?? 0);  // Convertir número de puertas a int
+    $caballos = (int) ($_POST['caballos'] ?? 0);  // Convertir caballos a int
+    $carroceria = $_POST['carroceria'] ?? '';
+    $airbags = (int) ($_POST['airbags'] ?? 0);  // Convertir airbags a int
 
-            if (in_array($foto_tipo, $permitidos)) {
-                if ($foto_tamano <= $max_file_size) {
-                    // Leer el contenido del archivo
-                    $foto_datos = file_get_contents($foto_tmp);
-                    if ($foto_datos === false) {
-                        echo "Error al leer el archivo.";
-                        exit();
-                    }
+    // Validar los campos 
 
-                    // Crear el objeto Coche
-                    $vehiculo = new Coche(
-                        $matricula, 
-                        $color, 
-                        $combustible, 
-                        $precio, 
-                        $vendedor, // Pasamos el objeto Usuario aquí
-                        $nPuertas, 
-                        $caballos, 
-                        $carroceria, 
-                        $airbags,
-                        $foto_datos // Pasamos los datos binarios de la imagen
-                    );
-
-                    // Insertar el coche en la base de datos
-                    insertarCoche($vehiculo);
-                } else {
-                    echo "El archivo es demasiado grande. El tamaño máximo permitido es 2MB.";
-                }
-            } else {
-                echo "Tipo de archivo no permitido.";
-            }
-        } else {
-            echo "Error al subir la foto.";
+    // Procesar la imagen
+ 
+    if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
+        $foto_datos = file_get_contents($_FILES['foto']['tmp_name']);
+        if ($foto_datos === false) {
+            die("Error al leer los datos del archivo.");
         }
+        echo "Tamaño de los datos de la imagen: " . strlen($foto_datos) . " bytes.";
+    } else {
+        die("Error al subir la imagen: " . $_FILES['foto']['error']);
+    }
+    
+    if (!isset($_FILES['foto']) || $_FILES['foto']['error'] != 0) {
+        die("Error al subir la imagen: " . $_FILES['foto']['error']);
+    }
+    
+
+    // Crear el objeto Coche
+    $vehiculo = new Coche(
+        $matricula,
+        $color,
+        $combustible,
+        $precio,
+        $vendedor, 
+        $nPuertas,
+        $caballos,
+        $carroceria,
+        $airbags,
+        $foto_datos 
+    );
+
+    // Insertar el coche en la base de datos
+    if (insertarCoche($vehiculo)) {
+        echo "Vehículo registrado con éxito.";
+    } else {
+        echo "Error al registrar el vehículo.";
     }
 }
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -123,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-<form action="./perfil.php" method="POST">
+<form action="./formCoche.php" method="POST" enctype="multipart/form-data">
 
 <div class="mb-3 row"></div>
     <label for="id" class="col-4 col-form-label">

@@ -20,11 +20,6 @@ if (!isset($_SESSION['user_id'])) {
 $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 $vehiculos_por_pagina = 9;  // Tres por fila para que se vean tres cards por fila
 
-// Mostrar los vehículos
-
-
-
-
 // Calcular el total de páginas
 $total_paginas = calcularPaginas($vehiculos_por_pagina);
 ?>
@@ -149,6 +144,7 @@ $total_paginas = calcularPaginas($vehiculos_por_pagina);
 </div>
  <div class="container mt-4">;
 <div class="row">;
+    
 <?php  mostrarVehiculos($pagina, $vehiculos_por_pagina);?>
 
 </div>;

@@ -1,13 +1,11 @@
 <?php
-include_once("./model/Usuario.php");
-include_once("./model/Vehiculo.php");
-include_once("./model/Coche.php");
-include_once("./model/Moto.php");
+include("./model/Usuario.php");
+
 
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
-    $pass = "Sandia4you"; // Sandia4you
+    $pass = "1234"; // Sandia4you
     $dbname = "daw";
     return new mysqli($server, $user, $pass, $dbname);
 }
@@ -115,7 +113,7 @@ function insertarCoche($coche) {
         die("Error: El vendedor no existe en la base de datos.");
     }
 
-    // Si el vendedor existe, proceder con la inserción del coche
+    // Insertar los datos en la tabla vehiculo
     $sql = "INSERT INTO vehiculo (tipo, matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -133,15 +131,24 @@ function insertarCoche($coche) {
     $airbag = $coche->getAirbag();
     $vendedor = $coche->getVendedor()->getId(); // Obtener el id del vendedor
     $imagen = $coche->getImagen();
-    // Ahora pasamos los parámetros de manera correcta
+
+    // Vincular los parámetros
     $preparedStatement->bind_param(
-        'ssssdiisiss',
+        'ssssdiisisb',
         $tipo, $matricula, $color, $combustible, $precio, $cv, 
         $n_puertas, $carroceria, $airbag, $vendedor, $imagen
     );
+    
+    
 
-    return $preparedStatement->execute();
+    // Ejecutar la consulta y verificar
+    if (!$preparedStatement->execute()) {
+        die("Error al insertar el vehículo: " . $conexion->error);
+    }
+
+    return true;
 }
+
 
 
 function insertarMoto($moto){
@@ -295,23 +302,13 @@ function actualizarUsuario($user_id, $nombre, $apellidos, $direccion, $cp, $tlf,
 
 
 function procesarImagenParaBD($campo) {
-    // Verificamos que se haya subido un archivo y no haya errores
-    if (isset($_FILES[$campo]) && $_FILES[$campo]['error'] === UPLOAD_ERR_OK) {
-        $foto_tmp = $_FILES[$campo]['tmp_name'];
-        $foto_tipo = $_FILES[$campo]['type'];
-        
-        // Verificamos si el archivo es una imagen válida (en este caso jpg o png)
-        if ($foto_tipo === 'image/jpeg' || $foto_tipo === 'image/png') {
-            // Leemos el contenido binario de la imagen
-            $foto_datos = file_get_contents($foto_tmp);
-            return ['datos' => $foto_datos, 'tipo' => $foto_tipo];
-        } else {
-            return ['error' => 'El archivo no es una imagen válida (debe ser JPG o PNG).'];
-        }
-    } else {
-        return ['error' => 'No se ha subido ninguna imagen o ha ocurrido un error en la carga.'];
+    if (isset($_FILES[$campo]) && $_FILES[$campo]['error'] == 0) {
+        $datos = file_get_contents($_FILES[$campo]['tmp_name']);
+        return ['datos' => $datos];
     }
+    return ['error' => 'Error al procesar la imagen.'];
 }
+
 
 
 
@@ -326,15 +323,21 @@ function obtenerImagenUsuario($user_id) {
     return $foto; // Devuelve los datos binarios de la imagen
 }
 function obtenerImagenVehiculo($matricula) {
-    $conexion = conectar(); 
-    $sql = "SELECT foto FROM Vehiculo WHERE matricula = ?";
-    $prepared = $conexion->prepare($sql);
-    $prepared->bind_param("s", $matricula);
-    $prepared->execute();
-    $prepared->bind_result($foto);
-    $prepared->fetch();
-    return $foto; // Devuelve los datos binarios de la imagen
+    $conexion = conectar();
+
+    $sql = "SELECT foto FROM vehiculo WHERE matricula = ?";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("s", $matricula);
+    $stmt->execute();
+    $stmt->bind_result($foto);
+    $stmt->fetch();
+
+    $stmt->close();
+    $conexion->close();
+
+    return $foto ? $foto : null;
 }
+
 
 
 function obtenerDatosUsuario($id) {
@@ -371,7 +374,7 @@ function obtenerDatosUsuario($id) {
         // Crear el objeto Usuario con los datos obtenidos
         return new Usuario(
             $data['id'], 
-            '', // Contraseña vacía, no se pasa
+            '', // No se devuelve la contraseña
             $data['direccion'], 
             $data['cp'], 
             $cVendidos, // Asignamos el valor de cVendidos
@@ -384,46 +387,44 @@ function obtenerDatosUsuario($id) {
     }
     return null; // No se encontró el Usuario
 }
-// Función para mostrar todos los vehículos con paginación
-// Función para mostrar todos los vehículos con paginación usando Cards de Bootstrap
 function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
     $conexion = conectar();
-    
+
     // Calcular el punto de inicio de la consulta para la paginación
     $inicio = ($pagina - 1) * $vehiculos_por_pagina;
 
-    // Consulta SQL para obtener los vehículos con límite y desplazamiento
-    $sql = "SELECT * FROM vehiculo LIMIT ?, ?";
-    $preparedStatement = $conexion->prepare($sql);
-    $preparedStatement->bind_param("ii", $inicio, $vehiculos_por_pagina);
-    $preparedStatement->execute();
+    // Consulta SQL para obtener los datos de los vehículos
+    $sql = "SELECT matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto FROM vehiculo LIMIT ?, ?";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("ii", $inicio, $vehiculos_por_pagina);
+    $stmt->execute();
 
-    // Obtener los resultados
-    $result = $preparedStatement->get_result();
-    
-    // Mostrar los vehículos como Cards
+    $result = $stmt->get_result();
+
+    // Generar las tarjetas de Bootstrap
     while ($row = $result->fetch_assoc()) {
+        // Codificar la imagen en base64 si existe
+        $imgBase64 = $row['foto'] ? "data:image/jpeg;base64," . base64_encode($row['foto']) : "1.jpeg"; // Ruta de imagen predeterminada
+
         echo '<div class="col-md-4 mb-4">';
         echo '    <div class="card">';
-        // $imagen = base64_encode($imagen_Vehiculo);
-        echo '        <img src="ruta_de_imagen.jpg" class="card-img-top" alt="Imagen del vehículo">';  // Cambia la imagen si es necesario
+        echo '        <img src="' . $imgBase64 . '" class="card-img-top" alt="Imagen del vehículo">';
         echo '        <div class="card-body">';
-        echo '            <h5 class="card-title">Matrícula: ' . $row['matricula'] . '</h5>';
-        echo '            <p class="card-text">Color: ' . $row['color'] . '</p>';
-        echo '            <p class="card-text">Combustible: ' . $row['combustible'] . '</p>';
+        echo '            <h5 class="card-title">Matrícula: ' . htmlspecialchars($row['matricula']) . '</h5>';
+        echo '            <p class="card-text">Color: ' . htmlspecialchars($row['color']) . '</p>';
+        echo '            <p class="card-text">Combustible: ' . htmlspecialchars($row['combustible']) . '</p>';
         echo '            <p class="card-text">Precio: €' . number_format($row['precio'], 2) . '</p>';
-        echo '            <p class="card-text">Caballos: ' . $row['cv'] . '</p>';
-        echo '            <p class="card-text">Número de Puertas: ' . $row['n_puertas'] . '</p>';
-        echo '            <p class="card-text">Carrocería: ' . $row['carroceria'] . '</p>';
-        echo '            <p class="card-text">Airbags: ' . $row['airbag'] . '</p>';
-        echo '            <p class="card-text">Vendedor: ' . $row['vendedor'] . '</p>';
+        echo '            <p class="card-text">Caballos: ' . htmlspecialchars($row['cv']) . '</p>';
+        echo '            <p class="card-text">Número de Puertas: ' . htmlspecialchars($row['n_puertas']) . '</p>';
+        echo '            <p class="card-text">Carrocería: ' . htmlspecialchars($row['carroceria']) . '</p>';
+        echo '            <p class="card-text">Airbags: ' . htmlspecialchars($row['airbag']) . '</p>';
+        echo '            <p class="card-text">Vendedor: ' . htmlspecialchars($row['vendedor']) . '</p>';
         echo '            <a href="#" class="btn btn-primary">Contactar</a>';
         echo '        </div>';
         echo '    </div>';
         echo '</div>';
     }
 
-    // Liberar la memoria
     $result->free();
     $conexion->close();
 }
