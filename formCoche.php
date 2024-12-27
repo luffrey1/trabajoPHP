@@ -11,6 +11,7 @@ require("./database/funciones.php");
 $matricula = $color = $combustible = $precio = $nPuertas = $caballos = $carroceria = $airbags = "";
 $matriculaErr = $colorErr = $combustibleErr = $precioErr = $nPuertasErr = $caballosErr = $carroceriaErr = $airbagsErr = "";
 $errores = false;
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
@@ -58,8 +59,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $airbagsErr = "Los airbags son obligatorios y deben ser un número.";
             }
         
-        
-    
 
     // Si no hay errores, proceder con la inserción
     // Si no hay errores, proceder con la inserción
@@ -124,9 +123,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-<form action="formCoche.php" method="POST" enctype="multipart/form-data">
-    <label>Matrícula: *</label>
-    <input type="text" name="matricula" value="<?php echo $matricula; ?>"><br>
+<form action="./perfil.php" method="POST">
+
+<div class="mb-3 row"></div>
+    <label for="id" class="col-4 col-form-label">
+        Matrícula: *
+    </label>
+
+    <div class="col-8">
+        <input type="text" name="matricula" value="<?php echo $matricula; ?>">
+        <small id="emailHelpId" class="form-text text-muted">
+            <?php
+            if (!empty($idErr)) {
+                echo "<div class='text-danger'>$idErr</div>"; 
+            } 
+            ?>
+        </small>
+    </div>
+
     <span class="errores"><?php echo $matriculaErr; ?></span><br>
 
     <label>Color: *</label>

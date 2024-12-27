@@ -98,11 +98,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?= $contrasErr ?? ''; ?>
 <form method="POST" action="./signUp.php"> 
       <div class="mb-3 row">
-         <label
-            for="id"
-            class="col-4 col-form-label"
-            >Nombre de usuario: *</label
-         >
+         <label for="id" class="col-4 col-form-label">
+            Nombre de usuario: *
+         </label>
          <div
             class="col-8"
          >
