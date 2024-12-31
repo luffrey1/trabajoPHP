@@ -100,60 +100,75 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <form action="./formCoche.php" method="POST" enctype="multipart/form-data">
 
-<div class="mb-3 row"></div>
-    <label for="id" class="col-4 col-form-label">
-        Matrícula: *
-    </label>
+    <div class="mb-3 row">
 
-    <div class="col-8">
-        <input type="text" name="matricula" value="<?php echo $matricula; ?>">
-        <small id="emailHelpId" class="form-text text-muted">
-            <?php
-            if (!empty($idErr)) {
-                echo "<div class='text-danger'>$idErr</div>"; 
-            } 
-            ?>
-        </small>
+        <label for="id" class="col-4 col-form-label"> Matrícula: *</label>
+        <div class="col-8">
+            <input type="text" class="form-control" name="matricula" value="<?php echo $matricula; ?>">
+            <small id="emailHelpId" class="form-text text-muted">
+                <?php
+                if (!empty($idErr)) {
+                    echo "<div class='text-danger'>$idErr</div>"; 
+                } 
+                ?>
+            </small>
+            <span class="errores"><small><?php echo $matriculaErr; ?></small></span><br>
+        </div>
+
+        <label for="color" class="col-4 col-form-label">Color: *</label>
+        <div class="col-8">
+            <input type="text" name="color" class="form-control" value="<?php echo $color; ?>">
+            <span class="errores"><?php echo $colorErr; ?></span><br>
+        </div>
+    
+        <label for="combustible" class="col-4 col-form-label">Combustible: *</label>
+        <div class="col-8">
+            <select name="combustible"  class="form-control">
+                <option value="gasolina" <?php if($combustible=="gasolina") echo "selected"; ?>>Gasolina</option>
+                <option value="diesel" <?php if($combustible=="diesel") echo "selected"; ?>>Diesel</option>
+                <option value="gasNatural" <?php if($combustible=="gasNatural") echo "selected"; ?>>Gas Natural</option>
+                <option value="electricidad" <?php if($combustible=="electricidad") echo "selected"; ?>>Electricidad</option>
+            </select>
+            <span class="errores"><?php echo $combustibleErr; ?></span><br>        
+        </div>
+
+        <label for="precio" class="col-4 col-form-label">Precio: *</label>
+        <div class="col-8">
+            <input type="number" step="0.01" class="form-control" name="precio" value="<?php echo $precio; ?>"><br>
+            <span class="errores"><?php echo $precioErr; ?></span><br>
+        </div>
+
+        <label for="nPuertas" class="col-4 col-form-label">Numero de Puertas: *</label>
+        <div class="col-8">
+            <input type="number" name="nPuertas" class="form-control" value="<?php echo $nPuertas; ?>"><br>
+            <span class="errores"><?php echo $nPuertasErr; ?></span><br>
+        </div>
+
+        <label for="caballos" class="col-4 col-form-label">Caballos: *</label>
+        <div class="col-8">
+            <input type="number" name="caballos" class="form-control" value="<?php echo $caballos; ?>"><br>
+        </div>
+
+        <label for="carroceria" class="col-4 col-form-label">Carrocería: *</label>
+        <div class="col-8">
+            <input type="text" name="carroceria" class="form-control" value="<?php echo $carroceria; ?>"><br>
+        </div>
+
+        <label for="airgbags" class="col-4 col-form-label">Airbags: *</label>
+        <div class="col-8">
+            <input type="number" name="airbags" class="form-control" value="<?php echo $airbags; ?>"><br>
+        </div>
+
+        <label for="fotoV" class="col-4 col-form-label">Foto del vehiculo: *</label>
+        <div class="col-8">
+            <input type="file" id="foto" name="foto" class="form-control"><br>
+        </div>
     </div>
 
-    <span class="errores"><?php echo $matriculaErr; ?></span><br>
+    <button type="submit" class="btn btn-primary">Añadir Vehículo</button>
 
-    <label>Color: *</label>
-    <input type="text" name="color" value="<?php echo $color; ?>"><br>
-    <span class="errores"><?php echo $colorErr; ?></span><br>
 
-    <label>Combustible: *</label>
-    <select name="combustible">
-        <option value="gasolina" <?php if($combustible=="gasolina") echo "selected"; ?>>Gasolina</option>
-        <option value="diesel" <?php if($combustible=="diesel") echo "selected"; ?>>Diesel</option>
-        <option value="gasNatural" <?php if($combustible=="gasNatural") echo "selected"; ?>>Gas Natural</option>
-        <option value="electricidad" <?php if($combustible=="electricidad") echo "selected"; ?>>Electricidad</option>
-    </select><br>
-    <span class="errores"><?php echo $combustibleErr; ?></span><br>
 
-    <label>Precio: *</label>
-    <input type="number" name="precio" value="<?php echo $precio; ?>"><br>
-    <span class="errores"><?php echo $precioErr; ?></span><br>
-
-    <label>Numero de Puertas: *</label>
-    <input type="number" name="nPuertas" value="<?php echo $nPuertas; ?>"><br>
-    <span class="errores"><?php echo $nPuertasErr; ?></span><br>
-
-    <label>Caballos: *</label>
-    <input type="number" name="caballos" value="<?php echo $caballos; ?>"><br>
-
-    <label>Carrocería: *</label>
-    <input type="text" name="carroceria" value="<?php echo $carroceria; ?>"><br>
-
-    <label>Airbags: *</label>
-    <input type="number" name="airbags" value="<?php echo $airbags; ?>"><br>
-
-    <label>Foto del vehiculo: *</label>
-    <input type="file" id="foto" name="foto"><br>
-
- 
-
-    <input type="submit" value="Añadir Vehículo">
 </form>
 
 

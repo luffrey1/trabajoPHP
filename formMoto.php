@@ -98,13 +98,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <form action="./formCoche.php" method="POST" enctype="multipart/form-data">
 
-<div class="mb-3 row"></div>
+<div class="mb-3 row">
+
     <label for="id" class="col-4 col-form-label">
         Matrícula: *
     </label>
 
     <div class="col-8">
-        <input type="text" name="matricula" value="<?php echo $matricula; ?>">
+        <input type="text" class="form-control" name="matricula" value="<?php echo $matricula; ?>">
         <small id="emailHelpId" class="form-text text-muted">
             <?php
             if (!empty($idErr)) {
@@ -113,40 +114,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ?>
         </small>
     </div>
-
     <span class="errores"><?php echo $matriculaErr; ?></span><br>
 
-    <label>Color: *</label>
-    <input type="text" name="color" value="<?php echo $color; ?>"><br>
-    <span class="errores"><?php echo $colorErr; ?></span><br>
 
-    <label>Combustible: *</label>
-    <select name="combustible">
-        <option value="gasolina" <?php if($combustible=="gasolina") echo "selected"; ?>>Gasolina</option>
-        <option value="diesel" <?php if($combustible=="diesel") echo "selected"; ?>>Diesel</option>
-        <option value="gasNatural" <?php if($combustible=="gasNatural") echo "selected"; ?>>Gas Natural</option>
-        <option value="electricidad" <?php if($combustible=="electricidad") echo "selected"; ?>>Electricidad</option>
-    </select><br>
-    <span class="errores"><?php echo $combustibleErr; ?></span><br>
+    <label for="color" class="col-4 col-form-label">Color: *</label>
+    <div class="col-8">
+        <input type="text" name="color" class="form-control" value="<?php echo $color; ?>"><br>
+        <span class="errores"><?php echo $colorErr; ?></span><br>
+    </div>
 
-    <label>Precio: *</label>
-    <input type="number" name="precio" value="<?php echo $precio; ?>"><br>
-    <span class="errores"><?php echo $precioErr; ?></span><br>
+    <label for="color" class="col-4 col-form-label">Combustible: *</label>
+    <div class="col-8">
+        <select name="combustible" class="form-control">
+            <option value="gasolina" <?php if($combustible=="gasolina") echo "selected"; ?>>Gasolina</option>
+            <option value="diesel" <?php if($combustible=="diesel") echo "selected"; ?>>Diesel</option>
+            <option value="gasNatural" <?php if($combustible=="gasNatural") echo "selected"; ?>>Gas Natural</option>
+            <option value="electricidad" <?php if($combustible=="electricidad") echo "selected"; ?>>Electricidad</option>
+        </select><br>
+        <span class="errores"><?php echo $combustibleErr; ?></span><br>
+    </div>
 
-    <label>Cilindrada: *</label>
-    <input type="number" name="cilindrada" value="<?php echo $cilindrada; ?>"><br>
 
-    <label>Tipo de moto: *</label>
-    <input type="text" name="tipo_moto" value="<?php echo $tipo_moto; ?>"><br>
+    <label for="precio" class="col-4 col-form-label">Precio: *</label>
+    <div class="col-8">
+        <input type="number" step="0.01" class="form-control" name="precio" value="<?php echo $precio; ?>"><br>
+        <span class="errores"><?php echo $precioErr; ?></span><br>
+    </div>
 
-    <label>:Baul: *</label>
-    <input type="checkbox" name="baul" value="<?php echo $baul; ?>"><br>
 
-    <label>Foto del vehiculo: *</label>
-    <input type="file" id="foto" name="foto"><br>
+    <label for="cilindrada" class="col-4 col-form-label">Cilindrada: *</label>
+    <div class="col-8">
+    <input type="number" name="cilindrada" class="form-control" value="<?php echo $cilindrada; ?>"><br>
+    </div>
 
+    <label for="tipo_moto" class="col-4 col-form-label">Tipo de moto: *</label>
+    <div class="col-8">
+    <input type="text" name="tipo_moto" class="form-control" value="<?php echo $tipo_moto; ?>"><br>
+    </div>
+    
+    <label for="baul" class="col-4 col-form-label">Baul: *</label>
+    <div class="col-8">
+        <input type="checkbox" name="baul" value="<?php echo $baul; ?>"><br>
+    </div>
  
-    <input type="submit" value="Añadir Vehículo">
+
+    <label for="fotoV" class="col-4 col-form-label">Foto del vehiculo: *</label>
+    <div class="col-8">
+        <input type="file" id="foto" name="foto" class="form-control"><br>
+    </div>
+</div>
+
+    <button type="submit" class="btn btn-primary">Añadir Vehículo</button>
 </form>
 
 
