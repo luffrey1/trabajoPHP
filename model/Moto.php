@@ -6,8 +6,8 @@ class Moto extends Vehiculo {
     public bool $baul;
 
 
-    public function __construct(String $matricula, String $color, String $combustible, float $precio, Usuario $vendedor, int $cilindrada, String $tipo_m, bool $baul){
-        parent::__construct($matricula,$color,$combustible,$precio,$vendedor);
+    public function __construct(String $matricula, String $color, String $combustible, float $precio, Usuario $vendedor, int $cilindrada, String $tipo_m, bool $baul, $imagen){
+        parent::__construct($matricula,$color,$combustible,$precio,$vendedor,$imagen);
         $this->cilindrada = $cilindrada;
         $this->tipo_m = $tipo_m;
         $this->baul = $baul;

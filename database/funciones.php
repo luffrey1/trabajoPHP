@@ -5,7 +5,7 @@ include("./model/Usuario.php");
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
-    $pass = "Sandia4you"; // Sandia4you/1234
+    $pass = "1234"; // Sandia4you/1234
     $dbname = "daw";
     return new mysqli($server, $user, $pass, $dbname);
 }
@@ -110,12 +110,16 @@ function insertarCoche($coche) {
 
     // Si el vendedor no existe, lanzar un error
     if ($result->num_rows == 0) {
+        $preparedUsuario->close();
+        $conexion->close();
         die("Error: El vendedor no existe en la base de datos.");
     }
 
+    $preparedUsuario->close();
+
     // Insertar los datos en la tabla vehiculo
     $sql = "INSERT INTO vehiculo (tipo, matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $preparedStatement = $conexion->prepare($sql);
 
@@ -132,19 +136,41 @@ function insertarCoche($coche) {
     $vendedor = $coche->getVendedor()->getId(); // Obtener el id del vendedor
     $imagen = $coche->getImagen();
 
-    // Vincular los parámetros
+    // Vincular los parámetros excepto el BLOB
+    $null = null; // Placeholder para el campo de imagen
     $preparedStatement->bind_param(
         'ssssdiisisb',
         $tipo, $matricula, $color, $combustible, $precio, $cv, 
-        $n_puertas, $carroceria, $airbag, $vendedor, $imagen
+        $n_puertas, $carroceria, $airbag, $vendedor, $null
     );
-    
-    
+
+    // Enviar el contenido del BLOB
+    if (!empty($imagen)) {
+        $preparedStatement->send_long_data(10, $imagen); // Índice 10 corresponde a 'foto'
+    }
 
     // Ejecutar la consulta y verificar
     if (!$preparedStatement->execute()) {
-        die("Error al insertar el vehículo: " . $conexion->error);
+        $preparedStatement->close();
+        $conexion->close();
+        die("Error al insertar el vehículo: " . $preparedStatement->error);
     }
+
+    // Guardar los datos en el objeto Coche (POO)
+    $coche->setMatricula($matricula);
+    $coche->setColor($color);
+    $coche->setCombustible($combustible);
+    $coche->setPrecio($precio);
+    $coche->setCaballos($cv);
+    $coche->setPuertas($n_puertas);
+    $coche->setCarroceria($carroceria);
+    $coche->setAirbag($airbag);
+    $coche->setVendedor($coche->getVendedor()); // Mantiene el vendedor original
+    $coche->setImagen($imagen); // Guardar la imagen también
+
+    // Liberar recursos
+    $preparedStatement->close();
+    $conexion->close();
 
     return true;
 }
@@ -152,44 +178,91 @@ function insertarCoche($coche) {
 
 
 function insertarMoto($moto){
-
-    $c = conectar();
-
+    $conexion = conectar();
+    
     // Verificar que el vendedor existe en la tabla Usuario
     $sqlUsuario = "SELECT id FROM Usuario WHERE id = ?";
-    $preparedUsuario = $c->prepare($sqlUsuario);
+    $preparedUsuario = $conexion->prepare($sqlUsuario);
     $user_id = $moto->getVendedor()->getId(); // Obtener el id del vendedor (Usuario)
     $preparedUsuario->bind_param("s", $user_id);
     $preparedUsuario->execute();
     $result = $preparedUsuario->get_result();
 
-    // Si el vendedor no existe, lanzar un error
     if ($result->num_rows == 0) {
+        $preparedUsuario->close();
+        $conexion->close();
         die("Error: El vendedor no existe en la base de datos.");
     }
+    $preparedUsuario->close();
 
-    $sql = "INSERT INTO
-    vehiculo (tipo, matricula, color, combustible, precio, cc, tipo_moto, baul, vendedor)
-    VALUES (?,?,?,?,?,?,?,?,?)";
+    // Insertar datos en la tabla vehiculo
+    $sql = "INSERT INTO vehiculo (tipo, matricula, color, combustible, precio, cc, tipo_moto, baul, vendedor,foto)
+            VALUES (?,?,?,?,?,?,?,?,?,?)";
 
-    $preparedStatement=$c->prepare($sql);
+    $preparedStatement = $conexion->prepare($sql);
 
-    $tipo = 'm';
+    // Obtener valores del objeto
+    $tipo = 'm'; 
     $matricula = $moto->getMatricula();
     $color = $moto->getColor();
     $combustible = $moto->getCombustible();
     $precio = $moto->getPrecio();
     $cc = $moto->getCilindrada();
     $tipo_moto = $moto->getTipo_m();
-    $baul=$moto->getBaul();
-    $vendedor = $moto->getVendedor();
+    $baul = $moto->getBaul();
+    $vendedor = $moto->getVendedor()->getId();
+    $imagen = $moto->getImagen();
+    $null = null; // Placeholder para el campo de imagen
 
-    $preparedStatement->bind_param('ssssdisis', $tipo, $matricula, $color, $combustible,
-    $precio, $cc, $tipo_moto, $baul, $vendedor);
+    // Verificar que los valores están correctamente pasados
 
-    return $preparedStatement->execute();
+    $preparedStatement->bind_param(
+        'ssssdisssb', 
+        $tipo, 
+        $matricula, 
+        $color, 
+        $combustible, 
+        $precio, 
+        $cc, 
+        $tipo_moto, 
+        $baul, 
+        $vendedor, 
+        $null
+    );
+    
 
+
+    if (!empty($imagen)) {
+        $preparedStatement->send_long_data(9, $imagen); 
+    }
+
+   
+    // Ejecutar la consulta y verificar
+    if (!$preparedStatement->execute()) {
+        echo "Error al insertar vehículo: " . $preparedStatement->error;
+        $preparedStatement->close();
+        $conexion->close();
+        return false;
+    }
+
+    // Guardar datos en el objeto
+    $moto->setMatricula($matricula);
+    $moto->setColor($color);
+    $moto->setCombustible($combustible);
+    $moto->setPrecio($precio);
+    $moto->setCilindrada($cc);
+    $moto->setTipo_m($tipo_moto);
+    $moto->setBaul($baul);
+    $moto->setVendedor($moto->getVendedor());
+    $moto->setImagen($imagen);
+
+    // Liberar recursos
+    $preparedStatement->close();
+    $conexion->close();
+
+    return true;
 }
+
 // v: esta tabla es para almacenar todos los vehículos comprados, por el usuario que fueron comprados,
 // su vendedor y la fecha en que fueron comprados. de esta tabla se puede sacar la cantidad de coches
 // comprados o vendidos por un usuario tb, a través de un SELECT.
@@ -406,52 +479,202 @@ function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
     $conexion = conectar();
 
     // Calcular el punto de inicio de la consulta para la paginación
-    $inicio = 0;
+    $inicio = ($pagina - 1) * $vehiculos_por_pagina;
 
-    // Consulta SQL para obtener los datos de los vehículos
-    $sql = "SELECT matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto FROM vehiculo LIMIT ?, ?";
+    // Obtener los filtros de la URL
+    $tipo = isset($_GET['tipo']) ? $_GET['tipo'] : '';
+    $precio = isset($_GET['precio']) ? $_GET['precio'] : '';
+    $color = isset($_GET['color']) ? $_GET['color'] : '';
+    $cv = isset($_GET['cv']) ? $_GET['cv'] : '';
+    $carroceria = isset($_GET['carroceria']) ? $_GET['carroceria'] : '';
+    $combustible = isset($_GET['combustible']) ? $_GET['combustible'] : '';
+    $n_puertas = isset($_GET['n_puertas']) ? $_GET['n_puertas'] : '';
+    $airbag = isset($_GET['airbag']) ? $_GET['airbag'] : '';
+    $cc = isset($_GET['cc']) ? $_GET['cc'] : '';
+    $tipo_moto = isset($_GET['tipo_moto']) ? $_GET['tipo_moto'] : '';
+    $baul = isset($_GET['baul']) ? $_GET['baul'] : '';
+
+    // Construir la consulta SQL con los filtros
+    $sql = "SELECT matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto 
+            FROM vehiculo 
+            WHERE 1=1"; // Comienza la consulta con un WHERE siempre verdadero
+
+    // Filtrar por tipo de vehículo
+    if ($tipo) {
+        $sql .= " AND tipo = '$tipo'";
+    }
+
+    // Filtrar por precio
+    if ($precio) {
+        $sql .= " AND precio <= $precio";
+    }
+
+    // Filtrar por color
+    if ($color) {
+        $sql .= " AND color LIKE '%$color%'";
+    }
+
+    // Filtrar por caballos
+    if ($cv) {
+        $sql .= " AND cv >= $cv";
+    }
+
+    // Filtrar por carrocería
+    if ($carroceria) {
+        $sql .= " AND carroceria LIKE '%$carroceria%'";
+    }
+
+    // Filtrar por combustible
+    if ($combustible) {
+        $sql .= " AND combustible = '$combustible'";
+    }
+
+    // Filtrar por número de puertas
+    if ($n_puertas) {
+        $sql .= " AND n_puertas = $n_puertas";
+    }
+
+    // Filtrar por airbags
+    if ($airbag) {
+        $sql .= " AND airbag >= $airbag";
+    }
+
+    // Filtrar por cilindrada (cc)
+    if ($cc) {
+        $sql .= " AND cc >= $cc";
+    }
+
+    // Filtrar por tipo de moto
+    if ($tipo_moto) {
+        $sql .= " AND tipo_moto = '$tipo_moto'";
+    }
+
+    // Filtrar por baúl
+    if ($baul !== '') {
+        $sql .= " AND baul = $baul";
+    }
+
+    // Añadir la paginación
+    $sql .= " LIMIT ?, ?"; // El límite de la consulta
+
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("ii", $inicio, $vehiculos_por_pagina);
     $stmt->execute();
 
     $result = $stmt->get_result();
 
-    // Generar las tarjetas de Bootstrap
-    while ($row = $result->fetch_assoc()) {
-        // Codificar la imagen en base64 si existe
-        $imgBase64 = $row['foto'] ? "data:image/jpeg;base64," . base64_encode($row['foto']) : "1.jpeg"; // Ruta de imagen predeterminada
+    $contador = 0; // Contador para las tarjetas por fila
 
-        echo '<div class="col-md-4 mb-4">';
+    echo '<div class="container">'; // Contenedor principal
+
+    while ($row = $result->fetch_assoc()) {
+        // Abrir una nueva fila si es la primera tarjeta o cada 3 tarjetas
+        if ($contador % 3 === 0) {
+            if ($contador > 0) {
+                echo '</div>'; // Cerrar la fila anterior
+            }
+            echo '<div class="row">'; // Abrir una nueva fila
+        }
+
+        // Codificar la imagen en base64 si existe
+        $imgBase64 = $row['foto'] ? "data:image/jpeg;base64," . base64_encode($row['foto']) : "./database/1.jpeg"; // Ruta de imagen predeterminada
+
+        echo '<div class="col-md-4 mb-4">'; // Columna para cada tarjeta
         echo '    <div class="card">';
         echo '        <img src="' . $imgBase64 . '" class="card-img-top" alt="Imagen del vehículo">';
         echo '        <div class="card-body">';
-        echo '            <h5 class="card-title">Matrícula: ' . htmlspecialchars($row['matricula']) . '</h5>';
-        echo '            <p class="card-text">Color: ' . htmlspecialchars($row['color']) . '</p>';
-        echo '            <p class="card-text">Combustible: ' . htmlspecialchars($row['combustible']) . '</p>';
+        echo '            <h5 class="card-title">Matrícula: ' . ($row['matricula']) . '</h5>';
+        echo '            <p class="card-text">Color: ' . ($row['color']) . '</p>';
+        echo '            <p class="card-text">Combustible: ' . ($row['combustible']) . '</p>';
         echo '            <p class="card-text">Precio: €' . number_format($row['precio'], 2) . '</p>';
-        echo '            <p class="card-text">Caballos: ' . htmlspecialchars($row['cv']) . '</p>';
-        echo '            <p class="card-text">Número de Puertas: ' . htmlspecialchars($row['n_puertas']) . '</p>';
-        echo '            <p class="card-text">Carrocería: ' . htmlspecialchars($row['carroceria']) . '</p>';
-        echo '            <p class="card-text">Airbags: ' . htmlspecialchars($row['airbag']) . '</p>';
-        echo '            <p class="card-text">Vendedor: ' . htmlspecialchars($row['vendedor']) . '</p>';
+        echo '            <p class="card-text">Caballos: ' . ($row['cv']) . '</p>';
+        echo '            <p class="card-text">Número de Puertas: ' . ($row['n_puertas']) . '</p>';
+        echo '            <p class="card-text">Carrocería: ' . ($row['carroceria']) . '</p>';
+        echo '            <p class="card-text">Airbags: ' . ($row['airbag']) . '</p>';
+        echo '            <p class="card-text">Vendedor: ' . ($row['vendedor']) . '</p>';
         echo '            <a href="#" class="btn btn-primary">Contactar</a>';
         echo '        </div>';
         echo '    </div>';
         echo '</div>';
+
+        $contador++; // Incrementar el contador
     }
+
+    // Cerrar la última fila si no está completa
+    if ($contador % 3 !== 0) {
+        echo '</div>';
+    }
+
+    echo '</div>'; // Cerrar el contenedor principal
 
     $result->free();
     $conexion->close();
 }
 
 
-// Función para calcular el número total de páginas
-function calcularPaginas($vehiculos_por_pagina = 10) {
+
+
+
+function calcularPaginas($vehiculos_por_pagina = 10, $tipo = null, $precio = null, $color = null, $cv = null, $carroceria = null) {
     $conexion = conectar();
     
+   
+    $sql = "SELECT COUNT(*) AS total FROM vehiculo WHERE 1";
+    
+   
+    if ($tipo) {
+        $sql .= " AND tipo = ?";
+    }
+    if ($precio) {
+        $sql .= " AND precio <= ?";
+    }
+    if ($color) {
+        $sql .= " AND color LIKE ?";
+    }
+    if ($cv) {
+        $sql .= " AND cv >= ?";
+    }
+    if ($carroceria) {
+        $sql .= " AND carroceria LIKE ?";
+    }
+    
+    $stmt = $conexion->prepare($sql);
+    
+    // Vincular los parámetros de la consulta dependiendo de los filtros
+    $params = [];
+    $types = '';
+    
+    if ($tipo) {
+        $params[] = $tipo;
+        $types .= 's';  // tipo es un string
+    }
+    if ($precio) {
+        $params[] = $precio;
+        $types .= 'i';  // precio es un int
+    }
+    if ($color) {
+        $params[] = "%$color%";
+        $types .= 's';  // color es un string (con comodines)
+    }
+    if ($cv) {
+        $params[] = $cv;
+        $types .= 'i';  // cv es un int
+    }
+    if ($carroceria) {
+        $params[] = "%$carroceria%";
+        $types .= 's';  // carrocería es un string (con comodines)
+    }
+    
+    // Vincular los parámetros
+    if (!empty($params)) {
+        $stmt->bind_param($types, ...$params);
+    }
+    
+    // Ejecutar la consulta
+    $stmt->execute();
+    
     // Obtener el número total de vehículos
-    $sql = "SELECT COUNT(*) AS total FROM vehiculo";
-    $result = $conexion->query($sql);
+    $result = $stmt->get_result();
     $total_vehiculos = $result->fetch_assoc()['total'];
     
     // Calcular el número total de páginas
@@ -459,6 +682,7 @@ function calcularPaginas($vehiculos_por_pagina = 10) {
 
     return $total_paginas;
 }
+
 
 
 ?>

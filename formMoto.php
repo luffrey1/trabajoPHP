@@ -40,11 +40,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $precio = $_POST['precio'] ?? '';  
     $cilindrada = ($_POST['cilindrada'] ?? '');  // Convertir número de puertas a int
     $tipo_moto = $_POST['tipo_moto'] ?? '';  
-    $baul = $_POST['baul'] ?? '';
+    $baul = isset($_POST['baul']) ? 1 : 0;  // Si está marcado, asigna 1; si no está marcado, asigna 0.
 
-    // Validar los campos 
 
-    // Procesar la imagen
+
  
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
         $foto_datos = file_get_contents($_FILES['foto']['tmp_name']);
@@ -61,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     
 
-    // Crear el objeto Coche
+    // Crear el objeto MOTO
     $vehiculo = new Moto(
         $matricula,
         $color,
@@ -71,6 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $cilindrada,
         $tipo_moto,
         $baul,
+        $foto_datos 
         
     );
 
@@ -96,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-<form action="./formCoche.php" method="POST" enctype="multipart/form-data">
+<form action="./formMoto.php" method="POST" enctype="multipart/form-data">
 
 <div class="mb-3 row">
 
