@@ -97,79 +97,150 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    <title>FormularioCoche</title>
 </head>
 <body>
-
-<form action="./formCoche.php" method="POST" enctype="multipart/form-data">
-
-    <div class="mb-3 row">
-
-        <label for="id" class="col-4 col-form-label"> Matrícula: *</label>
-        <div class="col-8">
-            <input type="text" class="form-control" name="matricula" value="<?php echo $matricula; ?>">
-            <small id="emailHelpId" class="form-text text-muted">
-                <?php
-                if (!empty($idErr)) {
-                    echo "<div class='text-danger'>$idErr</div>"; 
-                } 
-                ?>
-            </small>
-            <span class="errores"><small><?php echo $matriculaErr; ?></small></span><br>
-        </div>
-
-        <label for="color" class="col-4 col-form-label">Color: *</label>
-        <div class="col-8">
-            <input type="text" name="color" class="form-control" value="<?php echo $color; ?>">
-            <span class="errores"><?php echo $colorErr; ?></span><br>
-        </div>
+<nav class="navbar navbar-expand-sm navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">MotoCoches</a>
+    <button
+        class="navbar-toggler d-lg-none"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapsibleNavId"
+        aria-controls="collapsibleNavId"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+    ></button>
     
-        <label for="combustible" class="col-4 col-form-label">Combustible: *</label>
-        <div class="col-8">
-            <select name="combustible"  class="form-control">
+    <div class="collapse navbar-collapse" id="collapsibleNavId">
+        <!-- Menú principal de navegación -->
+        <ul class="navbar-nav me-auto mt-2 mt-lg-0">
+            <li class="nav-item">
+                <a class="nav-link " href="index.php" aria-current="page">
+                    Home <span class="visually-hidden">(current)</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="perfil.php" aria-current="page">
+                    Perfil 
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    id="dropdownId"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                >
+                    ¿Vender?
+                </a>
+                <div class="dropdown-menu " aria-labelledby="dropdownId">
+                    <a class="dropdown-item active" href="formCoche.php">Coches</a>
+                    <a class="dropdown-item " href="formMoto.php">Motos</a>
+                </div>
+            </li>
+        </ul>
+        
+        <!-- Botones de sesión y registro -->
+        <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+            <!-- Botón Iniciar sesión -->
+            <li class="nav-item">
+                <div class="d-grid gap-3">
+                    <a href="login.php">
+                        <button type="button" class="btn btn-danger">
+                            Iniciar sesión
+                        </button>
+                    </a>
+                </div>
+            </li>
+            <!-- Botón Registro -->
+            <li class="nav-item">
+                <div class="d-grid gap-3 ms-4"> <!-- ms-4 agrega margen izquierdo entre los botones -->
+                    <a href="signUp.php">
+                        <button type="button" class="btn btn-danger">
+                            Registro
+                        </button>
+                    </a>
+                </div>
+            </li>
+        </ul>
+
+        <!-- Formulario de búsqueda -->
+        <form class="d-flex my-2 my-lg-0 ms-lg-4">
+            <input
+                class="form-control me-sm-2"
+                type="text"
+                placeholder="Search"
+            />
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+                Search
+            </button>
+        </form>
+    </div>
+</nav>
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <form action="./formCoche.php" method="POST" enctype="multipart/form-data" class="p-4 bg-light rounded shadow">
+        <div class="mb-3">
+            <label for="matricula" class="form-label">Matrícula: *</label>
+            <input type="text" class="form-control" name="matricula" value="<?php echo $matricula; ?>">
+            <small class="form-text text-muted">
+                <?php if (!empty($idErr)) { echo "<div class='text-danger'>$idErr</div>"; } ?>
+            </small>
+            <span class="errores"><small><?php echo $matriculaErr; ?></small></span>
+        </div>
+
+        <div class="mb-3">
+            <label for="color" class="form-label">Color: *</label>
+            <input type="text" name="color" class="form-control" value="<?php echo $color; ?>">
+            <span class="errores"><?php echo $colorErr; ?></span>
+        </div>
+
+        <div class="mb-3">
+            <label for="combustible" class="form-label">Combustible: *</label>
+            <select name="combustible" class="form-control">
                 <option value="gasolina" <?php if($combustible=="gasolina") echo "selected"; ?>>Gasolina</option>
                 <option value="diesel" <?php if($combustible=="diesel") echo "selected"; ?>>Diesel</option>
                 <option value="gasNatural" <?php if($combustible=="gasNatural") echo "selected"; ?>>Gas Natural</option>
                 <option value="electricidad" <?php if($combustible=="electricidad") echo "selected"; ?>>Electricidad</option>
             </select>
-            <span class="errores"><?php echo $combustibleErr; ?></span><br>        
+            <span class="errores"><?php echo $combustibleErr; ?></span>
         </div>
 
-        <label for="precio" class="col-4 col-form-label">Precio: *</label>
-        <div class="col-8">
-            <input type="number" step="0.01" class="form-control" name="precio" value="<?php echo $precio; ?>"><br>
-            <span class="errores"><?php echo $precioErr; ?></span><br>
+        <div class="mb-3">
+            <label for="precio" class="form-label">Precio: *</label>
+            <input type="number" step="0.01" class="form-control" name="precio" value="<?php echo $precio; ?>">
+            <span class="errores"><?php echo $precioErr; ?></span>
         </div>
 
-        <label for="nPuertas" class="col-4 col-form-label">Numero de Puertas: *</label>
-        <div class="col-8">
-            <input type="number" name="nPuertas" class="form-control" value="<?php echo $nPuertas; ?>"><br>
-            <span class="errores"><?php echo $nPuertasErr; ?></span><br>
+        <div class="mb-3">
+            <label for="nPuertas" class="form-label">Número de Puertas: *</label>
+            <input type="number" name="nPuertas" class="form-control" value="<?php echo $nPuertas; ?>">
+            <span class="errores"><?php echo $nPuertasErr; ?></span>
         </div>
 
-        <label for="caballos" class="col-4 col-form-label">Caballos: *</label>
-        <div class="col-8">
-            <input type="number" name="caballos" class="form-control" value="<?php echo $caballos; ?>"><br>
+        <div class="mb-3">
+            <label for="caballos" class="form-label">Caballos: *</label>
+            <input type="number" name="caballos" class="form-control" value="<?php echo $caballos; ?>">
         </div>
 
-        <label for="carroceria" class="col-4 col-form-label">Carrocería: *</label>
-        <div class="col-8">
-            <input type="text" name="carroceria" class="form-control" value="<?php echo $carroceria; ?>"><br>
+        <div class="mb-3">
+            <label for="carroceria" class="form-label">Carrocería: *</label>
+            <input type="text" name="carroceria" class="form-control" value="<?php echo $carroceria; ?>">
         </div>
 
-        <label for="airgbags" class="col-4 col-form-label">Airbags: *</label>
-        <div class="col-8">
-            <input type="number" name="airbags" class="form-control" value="<?php echo $airbags; ?>"><br>
+        <div class="mb-3">
+            <label for="airbags" class="form-label">Airbags: *</label>
+            <input type="number" name="airbags" class="form-control" value="<?php echo $airbags; ?>">
         </div>
 
-        <label for="fotoV" class="col-4 col-form-label">Foto del vehiculo: *</label>
-        <div class="col-8">
-            <input type="file" id="foto" name="foto" class="form-control"><br>
+        <div class="mb-3">
+            <label for="foto" class="form-label">Foto del vehículo: *</label>
+            <input type="file" id="foto" name="foto" class="form-control">
         </div>
-    </div>
 
-    <button type="submit" class="btn btn-primary">Añadir Vehículo</button>
-
-
-
-</form>
+        <button type="submit" class="btn btn-primary w-100">Añadir Vehículo</button>
+    </form>
+</div>
 
 
     

@@ -12,6 +12,12 @@ $user_id = $_SESSION['user_id'];
 // Obtener los datos del usuario
 $usuario = obtenerDatosUsuario($user_id);
 $imagen_perfil = obtenerImagenUsuario($user_id);
+$nombre = null;
+$apellidos = null;
+$direccion = null;
+$cp = null;
+$tlf = null;
+$email = null;
 
 if (!$usuario) {
     echo "No se han encontrado datos del usuario.";

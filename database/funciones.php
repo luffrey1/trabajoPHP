@@ -5,7 +5,7 @@ include("./model/Usuario.php");
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
-    $pass = "1234"; // Sandia4you/1234
+    $pass = "Sandia4you"; // Sandia4you/1234
     $dbname = "daw";
     return new mysqli($server, $user, $pass, $dbname);
 }
@@ -592,7 +592,10 @@ function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
         echo '            <p class="card-text">Carrocería: ' . ($row['carroceria']) . '</p>';
         echo '            <p class="card-text">Airbags: ' . ($row['airbag']) . '</p>';
         echo '            <p class="card-text">Vendedor: ' . ($row['vendedor']) . '</p>';
-        echo '            <a href="#" class="btn btn-primary">Contactar</a>';
+          // para guardar los datos de cada coche para reutilizar en contactar.php
+          echo '            <a href="./contactar.php?matricula=' . urlencode($row['matricula']) . '" class="btn btn-primary">Contactar</a>';
+
+
         echo '        </div>';
         echo '    </div>';
         echo '</div>';
@@ -662,7 +665,8 @@ function calcularPaginas($vehiculos_por_pagina = 10, $tipo = null, $precio = nul
     }
     if ($carroceria) {
         $params[] = "%$carroceria%";
-        $types .= 's';  // carrocería es un string (con comodines)
+        $types .= 's';  // carrocería es un string (con comodines) // por ejemplo sedan deportivo, 
+        //busca cualquiera que tenga "sedan"
     }
     
     // Vincular los parámetros
@@ -682,6 +686,34 @@ function calcularPaginas($vehiculos_por_pagina = 10, $tipo = null, $precio = nul
 
     return $total_paginas;
 }
+function obtenerDatosVehiculo($matricula) {
+    $conexion = conectar();
+
+    // Consulta para obtener los detalles del vehículo
+    $sql = "SELECT matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto 
+            FROM vehiculo 
+            WHERE matricula = ?";
+    
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("s", $matricula);
+    $stmt->execute();
+    
+    $result = $stmt->get_result();
+    
+    // Verifica si se encuentra el vehículo
+    if ($row = $result->fetch_assoc()) {
+        return $row;
+    } else {
+        return false;
+    }
+
+    $stmt->close();
+    $conexion->close();
+}
+
+
+
+
 
 
 
