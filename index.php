@@ -258,7 +258,7 @@ $total_paginas = calcularPaginas($vehiculos_por_pagina);
 <?php 
     mostrarVehiculos($pagina, $vehiculos_por_pagina);
 ?>
-
+<?php include('footer.php'); ?>
 
 
     

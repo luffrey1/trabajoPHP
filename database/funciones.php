@@ -1,5 +1,8 @@
 <?php
-include("./model/Usuario.php");
+require_once __DIR__ . '/../model/Usuario.php';
+require_once __DIR__ . '/../model/Vehiculo.php';
+require_once __DIR__ . '/../model/Coche.php';
+require_once __DIR__ . '/../model/Moto.php';
 
 
 function conectar() {
@@ -217,7 +220,7 @@ function insertarMoto($moto){
     // Verificar que los valores están correctamente pasados
 
     $preparedStatement->bind_param(
-        'ssssdisssb', 
+        'ssssdisisb', 
         $tipo, 
         $matricula, 
         $color, 
@@ -430,9 +433,6 @@ function obtenerImagenVehiculo($matricula) {
 
 function obtenerDatosUsuario($id) {
     $conexion = conectar();
-    if (!$conexion instanceof mysqli) {
-        die("Error: la conexión a la base de datos no es válida.");
-    }
 
     // Definir la consulta SQL
     $sql = "SELECT id, nombre, apellidos, email, tlf, direccion, cp, foto, cVendidos FROM Usuario WHERE id = ?";
@@ -475,6 +475,7 @@ function obtenerDatosUsuario($id) {
     }
     return null; // No se encontró el Usuario
 }
+
 function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
     $conexion = conectar();
 
@@ -495,7 +496,7 @@ function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
     $baul = isset($_GET['baul']) ? $_GET['baul'] : '';
 
     // Construir la consulta SQL con los filtros
-    $sql = "SELECT matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto 
+    $sql = "SELECT tipo,matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto 
             FROM vehiculo 
             WHERE 1=1"; // Comienza la consulta con un WHERE siempre verdadero
 
@@ -592,8 +593,8 @@ function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
         echo '            <p class="card-text">Carrocería: ' . ($row['carroceria']) . '</p>';
         echo '            <p class="card-text">Airbags: ' . ($row['airbag']) . '</p>';
         echo '            <p class="card-text">Vendedor: ' . ($row['vendedor']) . '</p>';
-          // para guardar los datos de cada coche para reutilizar en contactar.php
-          echo '            <a href="./contactar.php?matricula=' . urlencode($row['matricula']) . '" class="btn btn-primary">Contactar</a>';
+          echo '            <a href="./contactar.php?matricula=' . urlencode($row['matricula']) . '&tipo=' . urlencode($row['tipo']) . '" class="btn btn-primary">Contactar</a>';
+
 
 
         echo '        </div>';
@@ -686,30 +687,87 @@ function calcularPaginas($vehiculos_por_pagina = 10, $tipo = null, $precio = nul
 
     return $total_paginas;
 }
-function obtenerDatosVehiculo($matricula) {
+function obtenerDatosVehiculo($matricula,$tipo) {
     $conexion = conectar();
-
-    // Consulta para obtener los detalles del vehículo
-    $sql = "SELECT matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto 
-            FROM vehiculo 
-            WHERE matricula = ?";
+    if ($tipo == "c") {
+        $sql = "SELECT v.matricula, v.color, v.combustible, v.precio, v.cv, v.n_puertas, v.carroceria, v.airbag, 
+        v.foto, u.id AS vendedor_id
+    FROM vehiculo v
+    JOIN Usuario u ON v.vendedor = u.id
+    WHERE v.matricula = ?";
     
-    $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("s", $matricula);
-    $stmt->execute();
-    
-    $result = $stmt->get_result();
-    
-    // Verifica si se encuentra el vehículo
-    if ($row = $result->fetch_assoc()) {
-        return $row;
-    } else {
-        return false;
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("s", $matricula);
+        $stmt->execute();
+        
+        $result = $stmt->get_result();
+        $data = $result->fetch_assoc();
+        
+        if ($data) {
+            $vendedor = new Usuario($data['vendedor_id']); 
+            // DUDA SETE poner null a contraseña o poner la contraseña aquí 
+            return new Coche(
+                $data['matricula'], 
+                $data['color'], 
+                $data['combustible'], 
+                $data['precio'], 
+                $vendedor,
+                $data['n_puertas'], 
+                $data['cv'],
+                $data['carroceria'],
+                $data['airbag'], 
+                $data['foto']
+            );
+        }
+     } else if ($tipo == "m") {
+            $sql = "SELECT v.matricula, v.color, v.combustible, v.precio, v.cc, v.tipo_moto, v.baul, 
+            v.foto, u.id AS vendedor_id
+        FROM vehiculo v
+        JOIN Usuario u ON v.vendedor = u.id
+        WHERE v.matricula = ?";
+        
+            $stmt = $conexion->prepare($sql);
+            $stmt->bind_param("s", $matricula);
+            $stmt->execute();
+            
+            $result = $stmt->get_result();
+            $data = $result->fetch_assoc();
+            
+            if ($data) {
+                $vendedor = new Usuario($data['vendedor_id']); 
+                // DUDA SETE poner null a contraseña o poner la contraseña aquí 
+                return new Moto(
+                    $data['matricula'], 
+                    $data['color'], 
+                    $data['combustible'], 
+                    $data['precio'], 
+                    $vendedor,
+                    $data['cc'], 
+                    $data['tipo_moto'],
+                    $data['baul'], 
+                    $data['foto']
+                );
+            }
+        }
     }
+   
 
-    $stmt->close();
-    $conexion->close();
+
+
+
+function obtenerNombreUsuario($user_id) {
+    $conexion = conectar(); 
+    $sql = "SELECT nombre FROM Usuario WHERE id = ?";
+    $prepared = $conexion->prepare($sql);
+    $prepared->bind_param("s", $user_id);
+    $prepared->execute();
+    $prepared->bind_result($nombre);
+    $prepared->fetch();
+    return $nombre; 
 }
+
+
+
 
 
 

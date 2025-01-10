@@ -40,7 +40,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $precio = $_POST['precio'] ?? '';  
     $cilindrada = ($_POST['cilindrada'] ?? '');  // Convertir número de puertas a int
     $tipo_moto = $_POST['tipo_moto'] ?? '';  
-    $baul = isset($_POST['baul']) ? 1 : 0;  // Si está marcado, asigna 1; si no está marcado, asigna 0.
+    $baul = isset($_POST['baul']) ? 1 : 0;
+
+
+    
 
 
 
@@ -90,6 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    <meta charset="UTF-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
    <title>Motos</title>
@@ -220,7 +224,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <div class="mb-3 form-check">
-            <input type="checkbox" name="baul" class="form-check-input" value="<?php echo $baul; ?>">
+        <input type="checkbox" name="baul" class="form-check-input" <?php if($baul == 1) echo 'checked'; ?>>
             <label for="baul" class="form-check-label">Baul: *</label>
         </div>
 
@@ -233,6 +237,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </form>
 </div>
 
+<?php include('includes/footer.php'); ?>
 
 
     

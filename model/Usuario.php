@@ -14,7 +14,7 @@ class Usuario {
     // Constructor con parámetros opcionales y permitiendo que algunos sean null
     public function __construct(
         string $id, 
-        string $contra, 
+        ?string $contra = null, 
         ?string $direccion = null,  // Permite null por el ?
         ?string $cp = null,         // Permite null
         int $cVendidos = 0, 
@@ -62,7 +62,7 @@ class Usuario {
 
     // Método mágico __toString para representar el objeto como string
     public function __toString() {
-        return "Usuario: {$this->id}, Nombre: {$this->nombre} {$this->apellidos}";
+        return "{$this->id}";
     }
 }
 ?>

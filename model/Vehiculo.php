@@ -24,8 +24,10 @@ abstract class Vehiculo {
 	public function getCombustible(): String {return $this->combustible;}
 	
 	public function getPrecio(): float {return $this->precio;}
-
-	public function getVendedor(): Usuario {return $this->vendedor;}
+	public function getVendedor() {
+		return $this->vendedor;
+	}
+	
 
 	public function setMatricula(String $matricula): void {$this->matricula = $matricula;}
 
