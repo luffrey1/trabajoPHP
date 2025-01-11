@@ -1,96 +1,103 @@
 <?php
-require 'vendor/autoload.php'; 
+session_start(); 
+require 'vendor/autoload.php';
+require("./database/funciones.php");
 
-// Configuración de Stripe con tu clave secreta
 \Stripe\Stripe::setApiKey('sk_test_51QfhMpFhEizoamwmJ1MvAyB1ChTNVbxyzoSfuGeRbIn1X2W2bjFjM75gecEnDWZ0PzHmJoay01V6z7TBScQkG1r200DmG6LFkE');
+if (isset($_GET['matricula'])) {
+    $matricula = $_GET['matricula'];
+    // Guardamos los detalles del vehículo en la sesión
+    if (isset($_GET['tipo'])) {
+        $tipo = $_GET['tipo'];
+    
+        
+        $vehiculo = obtenerDatosVehiculo($matricula,$tipo);
+    }
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $token = $_POST['stripeToken'];
 
-// Obtener el precio del producto desde contact.php (puedes enviarlo con una solicitud GET o POST)
-$precio = isset($_POST['precio']) ? $_POST['precio'] : 100;  // Si no se pasa el precio, usamos 100 como valor predeterminado
+    // Verifica que el token haya sido recibido
+    if (!$token) {
+        die('Error: No se ha recibido el token de Stripe');
+    }
 
-// Recibir datos de la tarjeta desde el frontend (JavaScript)
-$token = $_POST['stripeToken'];  // El token generado por Stripe JS
+    try {
+        // Realiza el cargo a la tarjeta usando el token
+        $charge = \Stripe\Charge::create([
+            'amount' => 1000,  // Monto en centavos (ej. 10.00€)
+            'currency' => 'eur',
+            'source' => $token,
+            'description' => 'Compra de Vehículo',
+        ]);
 
-// Crear un cargo a la tarjeta
-try {
-    $charge = \Stripe\Charge::create([
-        'amount' => $precio * 100,  // El monto se da en centavos
-        'currency' => 'usd',  // Puedes cambiar la moneda si es necesario
-        'source' => $token,  // El token generado por Stripe.js
-        'description' => 'Pago por producto',
-    ]);
-
-    // Si el pago es exitoso, respondemos con un mensaje de éxito
-    echo json_encode(['status' => 'success', 'message' => 'Pago realizado con éxito']);
-} catch (\Stripe\Exception\CardException $e) {
-    // Si hay un error con la tarjeta, lo mostramos
-    echo json_encode(['status' => 'error', 'message' => $e->getError()->message]);
+        // Verifica si el pago fue exitoso
+        if ($charge->status == 'succeeded') {
+            echo "Pago realizado exitosamente. Gracias por su compra.";
+            // Aquí puedes agregar lógica para redirigir a una página de confirmación o gracias.
+        } else {
+            echo "El pago no se pudo procesar.";
+        }
+    } catch (\Stripe\Exception\CardException $e) {
+        // Captura errores de Stripe
+        echo 'Error: ' . $e->getMessage();
+    }
+}
 }
 ?>
-<!-- contact.php -->
-<html>
+
+<!DOCTYPE html>
+<html lang="es">
 <head>
-    <script src="https://js.stripe.com/v3/"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagar Vehículo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h2>Formulario de Pago</h2>
-    <form action="api_pago.php" method="POST" id="payment-form">
-        <label for="card-element">
-            Tarjeta de Crédito
-        </label>
-        <div id="card-element">
-            <!-- Un elemento de tarjeta será insertado aquí -->
-        </div>
-
-        <div id="card-errors" role="alert"></div>
-        <button type="submit" id="submit-button">Pagar</button>
+<div class="container mt-5">
+    <h1 class="text-center">Pagar Vehículo</h1>
+    <p class="text-center">Vehículo con matrícula: <strong><?php echo $vehiculo->getMatricula(); ?></strong></p>
+    <p class="text-center">El precio del vehículo es: <strong><?php echo number_format($vehiculo->getPrecio() / 100, 2); ?> €</strong></p>
+    
+    <form id="payment-form" method="POST" action="confirmacion.php">
+        <div id="card-element" class="form-control my-4"></div>
+        <div id="card-errors" role="alert" class="text-danger"></div>
+        
+        <input type="hidden" name="precio" value="<?php echo $vehiculo->getPrecio(); ?>"> <!-- Precio en centavos -->
+        <input type="hidden" name="matricula" value="<?php echo $vehiculo->getMatricula(); ?>"> <!-- ID del vehículo -->
+        
+        <button class="btn btn-success w-100" type="submit">Proceder al Pago</button>
     </form>
+</div>
 
-    <script>
-        var stripe = Stripe('pk_test_your_publishable_key_here');  // Usa tu clave publicable de Stripe
-        var elements = stripe.elements();
-        var style = {
-            base: {
-                color: "#32325d",
-                fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-                fontSmoothing: "antialiased",
-                fontSize: "16px",
-                "::placeholder": {
-                    color: "#aab7c4"
-                }
-            },
-            invalid: {
-                color: "#fa755a",
-                iconColor: "#fa755a"
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    var stripe = Stripe('pk_test_51QfhMpFhEizoamwmxovNYyIv902Go0fxzV3z6GtTmVmyn4UznJzbsJFfS9quht5iAZFlJwTDCjGNEyenXbD9L5E000ujzClQsz'); // Reemplaza con tu clave publicable
+    var elements = stripe.elements();
+    var card = elements.create('card');
+    card.mount('#card-element');
+
+    var form = document.getElementById('payment-form');
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        stripe.createToken(card).then(function(result) {
+            if (result.error) {
+                var errorElement = document.getElementById('card-errors');
+                errorElement.textContent = result.error.message;
+            } else {
+                var hiddenInput = document.createElement('input');
+                hiddenInput.setAttribute('type', 'hidden');
+                hiddenInput.setAttribute('name', 'stripeToken');
+                hiddenInput.setAttribute('value', result.token.id);
+                form.appendChild(hiddenInput);
+
+                form.submit();
             }
-        };
-
-        // Crear el elemento de tarjeta
-        var card = elements.create("card", { style: style });
-        card.mount("#card-element");
-
-        // Manejo del formulario de pago
-        var form = document.getElementById('payment-form');
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            stripe.createToken(card).then(function(result) {
-                if (result.error) {
-                    // Informar al usuario si hay un error
-                    var errorElement = document.getElementById('card-errors');
-                    errorElement.textContent = result.error.message;
-                } else {
-                    // Enviar el token a tu servidor
-                    var form = document.getElementById('payment-form');
-                    var tokenInput = document.createElement('input');
-                    tokenInput.setAttribute('type', 'hidden');
-                    tokenInput.setAttribute('name', 'stripeToken');
-                    tokenInput.setAttribute('value', result.token.id);
-                    form.appendChild(tokenInput);
-                    form.submit();
-                }
-            });
         });
-    </script>
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

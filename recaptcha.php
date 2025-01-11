@@ -1,6 +1,6 @@
 <?php
 session_start(); // Iniciar la sesión
-
+// 
 // Verificar si el formulario ha sido enviado
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obtener la respuesta del reCAPTCHA

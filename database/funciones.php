@@ -8,7 +8,7 @@ require_once __DIR__ . '/../model/Moto.php';
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
-    $pass = "Sandia4you"; // Sandia4you/1234
+    $pass = "1234"; // Sandia4you/1234
     $dbname = "daw";
     return new mysqli($server, $user, $pass, $dbname);
 }
@@ -91,7 +91,8 @@ function crearTablaVehiculo() {
         baul TINYINT(1) DEFAULT NULL, -- motos
         vendedor VARCHAR(50), -- Hace referencia a Usuario.id
         FOREIGN KEY (vendedor) REFERENCES Usuario(id),
-        foto LONGBLOB
+        foto LONGBLOB,
+        comprado ENUM('s', 'n') DEFAULT 'n'
   
     )";
 
@@ -765,6 +766,16 @@ function obtenerNombreUsuario($user_id) {
     $prepared->fetch();
     return $nombre; 
 }
+function comprarVehiculo($matricula) {
+    $conexion = conectar(); 
+    $sql = "UPDATE Vehiculo SET comprado = 's' WHERE matricula = ?";
+    $prepared = $conexion->prepare($sql);
+    $prepared->bind_param("s", $matricula);
+    $prepared->execute();
+    $prepared->close();
+    $conexion->close();
+}
+
 
 
 

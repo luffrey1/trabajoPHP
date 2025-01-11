@@ -246,10 +246,14 @@ if ($tipo == "c") {
 }
 ?>
 
-                    <div class="mt-4 text-center">
-                        <!-- Botón para proceder a la compra -->
-                        <a href="sandbox_de_tarjetas.php" class="buy-button">Comprar Coche</a>
-                    </div>
+<div class="mt-4 text-center">
+    <!-- Botón para proceder a la compra -->
+    <a href="/pago.php?matricula=<?php echo urlencode($vehiculo->getMatricula()); ?>&tipo=<?php echo urlencode($tipo); ?>" class="buy-button">Comprar coche</a>
+
+  
+    
+</div>
+
                 </div>
             </div>
             <div class="card mb-4" style="max-width: 300px; border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
@@ -268,6 +272,8 @@ if ($tipo == "c") {
 
         <!-- Botón para contactar -->
         <a href="contactar.php" class="btn btn-primary mt-3">Contactar</a>
+      
+
     </div>
 </div>
 
