@@ -248,7 +248,7 @@ if ($tipo == "c") {
 
 <div class="mt-4 text-center">
     <!-- Botón para proceder a la compra -->
-    <a href="/pago.php?matricula=<?php echo urlencode($vehiculo->getMatricula()); ?>&tipo=<?php echo urlencode($tipo); ?>" class="buy-button">Comprar coche</a>
+    <a href="pago.php?matricula=<?php echo urlencode($vehiculo->getMatricula()); ?>&tipo=<?php echo urlencode($tipo); ?>" class="buy-button">Comprar coche</a>
 
   
     

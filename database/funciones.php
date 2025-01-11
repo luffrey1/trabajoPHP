@@ -8,7 +8,7 @@ require_once __DIR__ . '/../model/Moto.php';
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
-    $pass = "1234"; // Sandia4you/1234
+    $pass = "Sandia4you"; // Sandia4you/1234
     $dbname = "daw";
     return new mysqli($server, $user, $pass, $dbname);
 }
@@ -33,6 +33,16 @@ function crearTabla() {
  
         )";
          $conexion->query($sql);
+}
+
+function securizar($data) {
+    if (is_null($data) || $data === '') {
+        return '';
+    }
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
 }
 
 
@@ -333,9 +343,6 @@ function verificarUsuario( $id, $contra) {
 }
 
 
-// creo que esta funcion de abajo no se utiliza?¿?¿?
-
-//v:creo que tampoco se utiliza si tenemos la de verificarUsuario
 function verificarId($id):bool {
     $conexion = conectar();
     $sql = "SELECT * from Usuario where id = ?";
@@ -615,8 +622,6 @@ function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
     $result->free();
     $conexion->close();
 }
-
-
 
 
 

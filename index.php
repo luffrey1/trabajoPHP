@@ -6,7 +6,7 @@ include("./model/Moto.php");
 require("./database/funciones.php");
 
 crearTabla();
-
+crearTablaVehiculo();
 
 if (!isset($_SESSION['recaptcha_verified']) || $_SESSION['recaptcha_verified'] !== true) {
     // Si no está verificado, redirigir a recaptcha.php

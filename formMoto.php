@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 session_start();
 
@@ -11,7 +14,7 @@ crearTablaVehiculo();
 
 // Inicializar variables y errores
 $matricula = $color = $combustible = $precio = $cilindrada = $tipo_moto = $baul ="";
-$matriculaErr = $colorErr = $combustibleErr = $precioErr = $cilindradaErr = $tipo_motoErr = $baulErr = "";
+$matriculaErr = $colorErr = $combustibleErr = $precioErr = $cilindradaErr = $tipo_motoErr = $baulErr = $fotoErr= "";
 $errores = false;
 
 // Verificar si el usuario está autenticado
@@ -34,56 +37,80 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Asignar los valores del formulario a las variables
-    $matricula = $_POST['matricula'] ?? '';
-    $color = $_POST['color'] ?? '';
-    $combustible = $_POST['combustible'] ?? '';
-    $precio = $_POST['precio'] ?? '';  
-    $cilindrada = ($_POST['cilindrada'] ?? '');  // Convertir número de puertas a int
-    $tipo_moto = $_POST['tipo_moto'] ?? '';  
+    $matricula = securizar($_POST['matricula'] ?? '');
+    if(empty($matricula)){
+        $matriculaErr = "Es obligatorio rellenar este campo.";
+        $errores=true;
+    }
+    
+    $color = securizar($_POST['color'] ?? '');
+    if(empty($color)){
+        $colorErr = "Es obligatorio rellenar este campo.";
+        $errores=true;
+    }
+  
+    $combustible = securizar($_POST['combustible']);
+
+    $precio = (float)securizar($_POST['precio']);
+
+    if(empty($precio)){
+        $precioErr = "Es obligatorio rellenar este campo.";
+        $errores=true;
+    }
+
+    $cilindrada = (int)securizar($_POST['cilindrada']);
+
+    if ($cilindrada <= 0) {
+        $cilindradaErr = "Es obligatorio rellenar este campo.";
+        $errores = true;
+    }
+    
+    $tipo_moto = securizar($_POST['tipo_moto'] ?? '');
+
+    if(empty($tipo_moto)){
+        $tipo_motoErr = "Es obligatorio rellenar este campo.";
+        $errores=true;
+    }
+
     $baul = isset($_POST['baul']) ? 1 : 0;
 
-
-    
-
-
-
  
-    if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
+    if (isset($_FILES['foto']) && $_FILES['foto']['error'] === 0) {
         $foto_datos = file_get_contents($_FILES['foto']['tmp_name']);
-        if ($foto_datos === false) {
-            die("Error al leer los datos del archivo.");
+    } else {
+        $fotoErr = "Es obligatorio subir una imagen.";
+        $errores = true;
+        $foto_datos = ""; // Asignar un valor vacío para evitar errores
+    }
+    
+
+    if ($errores) {
+        echo "<div class='alert alert-danger'>No enviado.</div>";
+    } else {
+
+        // Crear el objeto MOTO
+        $vehiculo = new Moto(
+            $matricula,
+            $color,
+            $combustible,
+            $precio,
+            $vendedor,
+            $cilindrada,
+            $tipo_moto,
+            isset($_POST['baul']) ? 1 : 0,
+            $foto_datos
+        );
+
+        // Insertar el coche en la base de datos
+        if (insertarMoto($vehiculo)) {
+            echo "<div class='alert alert-success'>Vehículo registrado con éxito.</div>";
+        } else {
+            echo "<div class='alert alert-danger'>Error al registrar el vehículo.</div>";
         }
-        echo "Tamaño de los datos de la imagen: " . strlen($foto_datos) . " bytes.";
-    } else {
-        die("Error al subir la imagen: " . $_FILES['foto']['error']);
     }
-    
-    if (!isset($_FILES['foto']) || $_FILES['foto']['error'] != 0) {
-        die("Error al subir la imagen: " . $_FILES['foto']['error']);
-    }
-    
-
-    // Crear el objeto MOTO
-    $vehiculo = new Moto(
-        $matricula,
-        $color,
-        $combustible,
-        $precio,
-        $vendedor, 
-        $cilindrada,
-        $tipo_moto,
-        $baul,
-        $foto_datos 
-        
-    );
-
-    // Insertar el coche en la base de datos
-    if (insertarMoto($vehiculo)) {
-        echo "Vehículo registrado con éxito.";
-    } else {
-        echo "Error al registrar el vehículo.";
-    }
+   
 }
+
 ?>
 
 
@@ -98,6 +125,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
    <title>Motos</title>
 </head>
+<style>
+    body {
+    display: flex;
+    flex-direction: column;
+    }
+
+    .container {
+    flex: 1;
+    display: flex; /* El contenedor ocupa el espacio restante */
+    }
+
+    .vehiculo {
+    max-width: 500px;
+    }
+
+    .errores {
+        color: red;
+    }
+</style>
 <body>
 <nav class="navbar navbar-expand-sm navbar-dark bg-primary">
     <a class="navbar-brand" href="#">MotoCoches</a>
@@ -180,10 +226,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </nav>
 <div class="container d-flex justify-content-center align-items-center vh-100">
-    <form action="./formMoto.php" method="POST" enctype="multipart/form-data" class="p-4 bg-light rounded shadow">
+    <form action="./formMoto.php" method="POST" enctype="multipart/form-data" class="vahiculo p-4 bg-light rounded shadow">
         <div class="mb-3">
             <label for="matricula" class="form-label">Matrícula: *</label>
-            <input type="text" class="form-control" name="matricula" value="<?php echo $matricula; ?>">
+            <input type="text" class="form-control" maxlength="7" size="7" name="matricula" value="<?php echo $matricula; ?>">
             <small class="form-text text-muted">
                 <?php if (!empty($idErr)) { echo "<div class='text-danger'>$idErr</div>"; } ?>
             </small>
@@ -216,6 +262,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="mb-3">
             <label for="cilindrada" class="form-label">Cilindrada: *</label>
             <input type="number" name="cilindrada" class="form-control" value="<?php echo $cilindrada; ?>">
+            <span class="errores"><?php echo $cilindradaErr; ?></span>
         </div>
 
         <div class="mb-3">
@@ -231,13 +278,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="mb-3">
             <label for="foto" class="form-label">Foto del vehículo: *</label>
             <input type="file" id="foto" name="foto" class="form-control">
+            <span class="errores"><?php echo $fotoErr; ?></span>
         </div>
 
         <button type="submit" class="btn btn-primary w-100">Añadir Vehículo</button>
     </form>
 </div>
 
-<?php include('includes/footer.php'); ?>
+<?php include('footer.php'); ?>
 
 
     
