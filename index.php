@@ -60,9 +60,18 @@ if (!isset($_SESSION['user_id'])) {
     
     <div class="row">
         <!-- Sidebar -->
-        <div class="col-md-3 sidebar">
-        <!-- no eliminar esto(es para la estructura de la pagina)--> 
-        </div>
+
+        <?php
+            if (!isset($_SESSION['user_id'])) {
+                
+                // Si no está autenticado, redirigir o mostrar el mensaje correspondiente
+            } else {
+                echo '<div class="col-md-3 sidebar">';
+  
+                echo '</div>';
+
+            }
+            ?>
         <div class="col-md-9">
             <div class="container">
                 <div class="row">

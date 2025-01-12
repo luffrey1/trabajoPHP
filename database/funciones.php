@@ -8,7 +8,7 @@ require_once __DIR__ . '/../model/Moto.php';
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
-    $pass = "1234"; // Sandia4you/1234
+    $pass = "Sandia4you"; // Sandia4you/1234
     $dbname = "daw";
     return new mysqli($server, $user, $pass, $dbname);
 }
@@ -757,10 +757,6 @@ function obtenerDatosVehiculo($matricula,$tipo) {
         }
     }
    
-
-
-
-
 function obtenerNombreUsuario($user_id) {
     $conexion = conectar(); 
     $sql = "SELECT nombre FROM Usuario WHERE id = ?";
@@ -778,6 +774,175 @@ function comprarVehiculo($matricula) {
     $prepared->bind_param("s", $matricula);
     $prepared->execute();
     $prepared->close();
+    $conexion->close();
+}
+
+// pensar si es necesaria esta función (supongo qu sí pero tengo dudas)
+function editarVehiculo(){
+  $conexion = conectar();
+  
+  $sql= '';
+}
+
+
+function borrarVehiculo($matricula) {
+    $conexion = conectar(); // Conexión a la base de datos
+    $sql = "DELETE FROM vehiculo WHERE matricula = ?";
+    $pS = $conexion->prepare($sql);
+    $pS->bind_param("s", $matricula);
+
+    if ($pS->execute()) {
+        $resultado = true; 
+    } else {
+        $resultado = false; 
+    }
+    
+    $pS->close();
+    $conexion->close();
+    
+    return $resultado;
+}
+
+
+function vehiculosUsuario($id,$pagina = 1, $vehiculos_por_pagina = 3) {
+    $conexion = conectar();
+
+    // Calcular el punto de inicio de la consulta para la paginación
+    $inicio = ($pagina - 1) * $vehiculos_por_pagina;
+
+    // Obtener los filtros de la URL
+    $tipo = isset($_GET['tipo']) ? $_GET['tipo'] : '';
+    $precio = isset($_GET['precio']) ? $_GET['precio'] : '';
+    $color = isset($_GET['color']) ? $_GET['color'] : '';
+    $cv = isset($_GET['cv']) ? $_GET['cv'] : '';
+    $carroceria = isset($_GET['carroceria']) ? $_GET['carroceria'] : '';
+    $combustible = isset($_GET['combustible']) ? $_GET['combustible'] : '';
+    $n_puertas = isset($_GET['n_puertas']) ? $_GET['n_puertas'] : '';
+    $airbag = isset($_GET['airbag']) ? $_GET['airbag'] : '';
+    $cc = isset($_GET['cc']) ? $_GET['cc'] : '';
+    $tipo_moto = isset($_GET['tipo_moto']) ? $_GET['tipo_moto'] : '';
+    $baul = isset($_GET['baul']) ? $_GET['baul'] : '';
+
+    // Construir la consulta SQL con los filtros
+    $sql = "SELECT tipo,matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto 
+            FROM vehiculo 
+            WHERE 1=1 AND comprado = 'n' AND vendedor='$id'"; // Comienza la consulta con un WHERE siempre verdadero
+
+    // Filtrar por tipo de vehículo
+    if ($tipo) {
+        $sql .= " AND tipo = '$tipo'";
+    }
+
+    // Filtrar por precio
+    if ($precio) {
+        $sql .= " AND precio <= $precio";
+    }
+
+    // Filtrar por color
+    if ($color) {
+        $sql .= " AND color LIKE '%$color%'";
+    }
+
+    // Filtrar por caballos
+    if ($cv) {
+        $sql .= " AND cv >= $cv";
+    }
+
+    // Filtrar por carrocería
+    if ($carroceria) {
+        $sql .= " AND carroceria LIKE '%$carroceria%'";
+    }
+
+    // Filtrar por combustible
+    if ($combustible) {
+        $sql .= " AND combustible = '$combustible'";
+    }
+
+    // Filtrar por número de puertas
+    if ($n_puertas) {
+        $sql .= " AND n_puertas = $n_puertas";
+    }
+
+    // Filtrar por airbags
+    if ($airbag) {
+        $sql .= " AND airbag >= $airbag";
+    }
+
+    // Filtrar por cilindrada (cc)
+    if ($cc) {
+        $sql .= " AND cc >= $cc";
+    }
+
+    // Filtrar por tipo de moto
+    if ($tipo_moto) {
+        $sql .= " AND tipo_moto = '$tipo_moto'";
+    }
+
+    // Filtrar por baúl
+    if ($baul !== '') {
+        $sql .= " AND baul = $baul";
+    }
+
+    // Añadir la paginación
+    $sql .= " LIMIT ?, ?"; // El límite de la consulta
+
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("ii", $inicio, $vehiculos_por_pagina);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    $contador = 0; // Contador para las tarjetas por fila
+
+    echo '<div class="container">'; // Contenedor principal
+
+    while ($row = $result->fetch_assoc()) {
+        // Abrir una nueva fila si es la primera tarjeta o cada 3 tarjetas
+        if ($contador % 3 === 0) {
+            if ($contador > 0) {
+                echo '</div>'; // Cerrar la fila anterior
+            }
+            echo '<div class="row">'; // Abrir una nueva fila
+        }
+
+        // Codificar la imagen en base64 si existe
+        $imgBase64 = $row['foto'] ? "data:image/jpeg;base64," . base64_encode($row['foto']) : "./database/1.jpeg"; // Ruta de imagen predeterminada
+
+        echo '<div class="col-md-4 mb-4">'; // Columna para cada tarjeta
+        echo '    <div class="card">';
+        echo '        <img src="' . $imgBase64 . '" class="card-img-top" alt="Imagen del vehículo">';
+        echo '        <div class="card-body">';
+        echo '            <h5 class="card-title">Matrícula: ' . ($row['matricula']) . '</h5>';
+        echo '            <p class="card-text">Color: ' . ($row['color']) . '</p>';
+        echo '            <p class="card-text">Combustible: ' . ($row['combustible']) . '</p>';
+        echo '            <p class="card-text">Precio: €' . number_format($row['precio'], 2) . '</p>';
+        echo '            <p class="card-text">Caballos: ' . ($row['cv']) . '</p>';
+        echo '            <p class="card-text">Número de Puertas: ' . ($row['n_puertas']) . '</p>';
+        echo '            <p class="card-text">Carrocería: ' . ($row['carroceria']) . '</p>';
+        echo '            <p class="card-text">Airbags: ' . ($row['airbag']) . '</p>';
+        echo '            <p class="card-text">Vendedor: ' . ($row['vendedor']) . '</p>';
+        echo '            <form method="POST" action="" class="d-inline">';
+        echo '                <input type="hidden" name="matricula" value="' . htmlspecialchars($row['matricula']) . '">';
+        echo '                <button type="submit" name="borrar" class="btn btn-danger">Borrar</button>';
+        echo '            </form>';
+
+
+
+        echo '        </div>';
+        echo '    </div>';
+        echo '</div>';
+
+        $contador++; // Incrementar el contador
+    }
+
+    // Cerrar la última fila si no está completa
+    if ($contador % 3 !== 0) {
+        echo '</div>';
+    }
+
+    echo '</div>'; // Cerrar el contenedor principal
+
+    $result->free();
     $conexion->close();
 }
 

@@ -71,9 +71,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
    <title>Login</title>
 </head>
+
 <body>
-<div class="container">
-   <form method="POST" action="login.php"> 
+<div class="container d-flex justify-content-center align-items-center vh-100">
+   <form method="POST" action="login.php">
+        <div class="mb-5 text-center">
+            <h2>Iniciar Sesión</h2>
+        </div>
       <div class="mb-3 row">
          <label for="id" class="col-4 col-form-label">Nombre de usuario: *</label>
          <div class="col-8">

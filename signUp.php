@@ -94,39 +94,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    <title>signUp</title>
 </head>
 <body>
-<div class="container">
+<div class="container d-flex justify-content-center align-items-center vh-100">
+
 <?= $contrasErr ?? ''; ?>
 <form method="POST" action="./signUp.php"> 
+      <div class="mb-5 text-center">
+            <h2>Registro</h2>
+      </div>
       <div class="mb-3 row">
-         <label for="id" class="col-4 col-form-label">
-            Nombre de usuario: *
-         </label>
-         <div
-            class="col-8"
-         >
-            <input
-               type="text"
-               class="form-control"
-               name="id"
-          
-               value="<?php echo $id; ?>"
-               
-            />
-            <small id="emailHelpId" class="form-text text-muted"
-                > <?php if (!empty($idErr)) {
+         <label for="id" class="col-4 col-form-label">Nombre de usuario: *</label>
+         <div class="col-8">
+            <input type="text" class="form-control" name="id" value="<?php echo $id; ?>"/>
+            <small id="emailHelpId" class="form-text text-muted">
+               <?php if (!empty($idErr)) {
                  echo "<div class='text-danger'>$idErr</div>"; 
                  } 
-                 ?></small>
+               ?>
+            </small>
+
          </div>
-         <div class="mb-3 row">
-         <label
-            for="id"
-            class="col-4 col-form-label"
-            >Contraseña: *</label
-         >
-         <div
-            class="col-8"
-         >
+      </div>
+
+      <div class="mb-3 row">
+         <label for="id" class="col-4 col-form-label">
+            Contraseña: *
+         </label>
+         <div class="col-8">
             <input
                type="password"
                class="form-control"
@@ -138,20 +131,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                  } 
                  ?></small>
          </div>
-         <div class="mb-3 row">
-         <label
-            for="id"
-            class="col-4 col-form-label"
-            >Repita la contraseña: *</label
-         >
-         <div
-            class="col-8"
-         >
+      </div>
+      <div class="mb-3 row">
+         <label for="id" class="col-4 col-form-label">Repita la contraseña: *</label>
+         <div class="col-8">
             <input
                type="password"
                class="form-control"
                name="contra1"
-               
             />
             <small id="emailHelpId" class="form-text text-muted"
                 > <?php if (!empty($contra1Err)) {
@@ -159,24 +146,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                  } 
                  ?></small>
          </div>
-         <div class="mb-12 row">
-         <div
-            class="col-12"
-         >
-         <button
-            type="submit"
-            class="btn btn-primary"
-         >
-            Submit
-         </button>
-         
-               </div>
+      </div>
 
-               </div>
+      <div class="mb-12 row">
+         <div class="col-12">
+            <button type="submit" class="btn btn-primary">
+               Submit
+            </button>
+      
+         </div>
+  
       </div>
      
    </form>
-</div>
+</>
 
 
 

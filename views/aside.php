@@ -67,16 +67,16 @@ $imagen_perfil = obtenerImagenUsuario($user_id);
         <strong><?= $usuario->getId()?></strong>
       </a>
       <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-        <li><a class="dropdown-item" href="#">Ver mis vehiculos...</a></li>
-        <li><a class="dropdown-item" href="../ajustes.php">Ajustes</a></li>
-        <li><a class="dropdown-item" href="../perfil.php">Perfil</a></li>
+        <li><a class="dropdown-item" href='/trabajoPHP/vehiculos.php'>Ver mis vehiculos...</a></li>
+        <li><a class="dropdown-item" href='/trabajoPHP/ajustes.php'>Ajustes</a></li>
+        <li><a class="dropdown-item" href='/trabajoPHP/perfil.php'>Perfil</a></li>
         <li><hr class="dropdown-divider"></li>
         
         <!-- Formulario de Cerrar sesión -->
         <li>
             <form method="POST" class="d-inline">
                 <button type="submit" name="logout" class="dropdown-item btn btn-link text-decoration-none">Cerrar sesión</button>
-            </form>
+            </form> 
         </li>
       </ul>
     </div>

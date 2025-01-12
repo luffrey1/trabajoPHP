@@ -13,6 +13,7 @@ crearTablaVehiculo();
 $matricula = $color = $combustible = $precio = $nPuertas = $caballos = $carroceria = $airbags = "";
 $matriculaErr = $colorErr = $combustibleErr = $precioErr = $nPuertasErr = $caballosErr = $carroceriaErr = $airbagsErr = $fotoErr= "";
 $errores = false;
+$notificacionEx='';
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['user_id'])) {
@@ -93,10 +94,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores = true;
         $foto_datos = ""; 
     }
+
     
     if ($errores) {
-        $notificacionError = "<div class='alert alert-danger'>No enviado.</div>";
+        $notificacionErr = "<div class='alert alert-danger alerta'>No enviado.</div>";
     }else{
+        $notificacionEx = "<div class='alert alert-success alerta2'>Subido.</div>";
         // Crear el objeto Coche
         $vehiculo = new Coche(
         $matricula,
@@ -135,98 +138,120 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    <title>FormularioCoche</title>
 </head>
 <style>
-       body {
-
+body {
            display: flex;
            flex-direction: column;
+           height: 100vh;
+           margin: 0;
        }
-
        .container {
+            margin-top:100px;
            flex: 1;
-           display: flex; 
-      
+           display: flex;
+           justify-content: center;
+           align-items: center;
        }
-
        .vehiculo {
-           max-width: 500px;
+           max-width: 600px;
+           width: 100%;
+           padding: 30px;
+           background-color: #f8f9fa;
+           border-radius: 8px;
+           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+       }
+       .errores {
+           color: red;
        }
 
-       .errores{
-            color: red;
+       .alerta{
+        margin-top: 50px;
+       }
+
+       .alerta2{
+        margin-top: 30px;
        }
    </style>
 <body>
 <?php include('./views/header.php'); ?>
-<?php   if ($errores) {
-echo $notificacionError;
-}  ?>
+
+<?php
+    if ($errores) {
+        echo $notificacionErr;
+    } else if ($errores!=true) {
+        echo $notificacionEx;
+    }
+?>
+
 <div class="container d-flex justify-content-center align-items-center vh-100">
-    <form action="./formCoche.php" method="POST" enctype="multipart/form-data" class="vehiculo p-4 bg-light rounded shadow">
-        <div class="mb-3 mt-5">
-            <label for="matricula" class="form-label">Matrícula: *</label>
-            <input type="text" class="form-control" maxlength="7" size="7" name="matricula" value="<?php echo $matricula; ?>">
-            <small class="form-text text-muted">
-                <?php if (!empty($idErr)) { echo "<div class='text-danger'>$idErr</div>"; } ?>
-            </small>
-            <span class="errores"><?php echo $matriculaErr; ?></span>
+    <form action="./formCoche.php" method="POST" enctype="multipart/form-data" class="vehiculo p-4 bg-light rounded shadow w-100">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="matricula" class="form-label">Matrícula: *</label>
+                <input type="text" class="form-control" maxlength="7" size="7" name="matricula" value="<?php echo $matricula; ?>">
+                <span class="errores"><?php echo $matriculaErr; ?></span>
+            </div>
+            <div class="col-md-6">
+                <label for="color" class="form-label">Color: *</label>
+                <input type="text" name="color" class="form-control" value="<?php echo $color; ?>">
+                <span class="errores"><?php echo $colorErr; ?></span>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label for="color" class="form-label">Color: *</label>
-            <input type="text" name="color" class="form-control" value="<?php echo $color; ?>">
-            <span class="errores"><?php echo $colorErr; ?></span>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="combustible" class="form-label">Combustible: *</label>
+                <select name="combustible" class="form-control">
+                    <option value="gasolina" <?php if($combustible=="gasolina") echo "selected"; ?>>Gasolina</option>
+                    <option value="diesel" <?php if($combustible=="diesel") echo "selected"; ?>>Diesel</option>
+                    <option value="gasNatural" <?php if($combustible=="gasNatural") echo "selected"; ?>>Gas Natural</option>
+                    <option value="electricidad" <?php if($combustible=="electricidad") echo "selected"; ?>>Electricidad</option>
+                </select>
+                <span class="errores"><?php echo $combustibleErr; ?></span>
+            </div>
+            <div class="col-md-6">
+                <label for="precio" class="form-label">Precio: *</label>
+                <input type="number" step="0.01" class="form-control" name="precio" value="<?php echo $precio; ?>">
+                <span class="errores"><?php echo $precioErr; ?></span>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label for="combustible" class="form-label">Combustible: *</label>
-            <select name="combustible" class="form-control">
-                <option value="gasolina" <?php if($combustible=="gasolina") echo "selected"; ?>>Gasolina</option>
-                <option value="diesel" <?php if($combustible=="diesel") echo "selected"; ?>>Diesel</option>
-                <option value="gasNatural" <?php if($combustible=="gasNatural") echo "selected"; ?>>Gas Natural</option>
-                <option value="electricidad" <?php if($combustible=="electricidad") echo "selected"; ?>>Electricidad</option>
-            </select>
-            <span class="errores"><?php echo $combustibleErr; ?></span>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="nPuertas" class="form-label">Número de Puertas: *</label>
+                <input type="number" name="nPuertas" class="form-control" value="<?php echo $nPuertas; ?>">
+                <span class="errores"><?php echo $nPuertasErr; ?></span>
+            </div>
+            <div class="col-md-6">
+                <label for="caballos" class="form-label">Caballos: *</label>
+                <input type="number" name="caballos" class="form-control" value="<?php echo $caballos; ?>">
+                <span class="errores"><?php echo $caballosErr; ?></span>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label for="precio" class="form-label">Precio: *</label>
-            <input type="number" step="0.01" class="form-control" name="precio" value="<?php echo $precio; ?>">
-            <span class="errores"><?php echo $precioErr; ?></span>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="carroceria" class="form-label">Carrocería: *</label>
+                <input type="text" name="carroceria" class="form-control" value="<?php echo $carroceria; ?>">
+                <span class="errores"><?php echo $carroceriaErr; ?></span>
+            </div>
+            <div class="col-md-6">
+                <label for="airbags" class="form-label">Airbags: *</label>
+                <input type="number" name="airbags" class="form-control" value="<?php echo $airbags; ?>">
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label for="nPuertas" class="form-label">Número de Puertas: *</label>
-            <input type="number" name="nPuertas" class="form-control" value="<?php echo $nPuertas; ?>">
-            <span class="errores"><?php echo $nPuertasErr; ?></span>
-        </div>
-
-        <div class="mb-3">
-            <label for="caballos" class="form-label">Caballos: *</label>
-            <input type="number" name="caballos" class="form-control" value="<?php echo $caballos; ?>">
-            <span class="errores"><?php echo $caballosErr; ?></span>
-        </div>
-
-        <div class="mb-3">
-            <label for="carroceria" class="form-label">Carrocería: *</label>
-            <input type="text" name="carroceria" class="form-control" value="<?php echo $carroceria; ?>">
-            <span class="errores"><?php echo $carroceriaErr; ?></span>
-
-        </div>
-
-        <div class="mb-3">
-            <label for="airbags" class="form-label">Airbags: *</label>
-            <input type="number" name="airbags" class="form-control" value="<?php echo $airbags; ?>">
-        </div>
-
-        <div class="mb-3">
-            <label for="foto" class="form-label">Foto del vehículo: *</label>
-            <input type="file" id="foto" name="foto" class="form-control">
-            <span class="errores"><?php echo $fotoErr; ?></span>
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="foto" class="form-label">Foto del vehículo: *</label>
+                <input type="file" id="foto" name="foto" class="form-control">
+                <span class="errores"><?php echo $fotoErr; ?></span>
+            </div>
         </div>
 
         <button type="submit" class="btn btn-primary w-100">Añadir Vehículo</button>
     </form>
 </div>
+
 
 
 <?php include('./views/footer.php'); ?>

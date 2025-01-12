@@ -65,14 +65,14 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
             <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
                 <li class="nav-item">
                     <div class="d-grid gap-2 d-md-block">
-                        <a href="login.php">
+                        <a href="/trabajoPHP/login.php">
                             <button type="button" class="btn btn-danger">Iniciar sesión</button>
                         </a>
                     </div>
                 </li>
                 <li class="nav-item">
                     <div class="d-grid gap-2 d-md-block ms-2">
-                        <a href="signUp.php">
+                        <a href="/trabajoPHP/signUp.php">
                             <button type="button" class="btn btn-danger">Registro</button>
                         </a>
                     </div>
