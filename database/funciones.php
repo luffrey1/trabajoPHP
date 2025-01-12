@@ -8,7 +8,7 @@ require_once __DIR__ . '/../model/Moto.php';
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
-    $pass = "Sandia4you"; // Sandia4you/1234
+    $pass = "1234"; // Sandia4you/1234
     $dbname = "daw";
     return new mysqli($server, $user, $pass, $dbname);
 }
@@ -506,7 +506,7 @@ function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
     // Construir la consulta SQL con los filtros
     $sql = "SELECT tipo,matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto 
             FROM vehiculo 
-            WHERE 1=1"; // Comienza la consulta con un WHERE siempre verdadero
+            WHERE 1=1 AND comprado = 'n'"; // Comienza la consulta con un WHERE siempre verdadero
 
     // Filtrar por tipo de vehículo
     if ($tipo) {

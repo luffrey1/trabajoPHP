@@ -10,7 +10,18 @@ crearTabla();
 $id = $contra = "";
 $idErr = $contraErr = "";
 $errores = false;
+//Si hay sesion activa redirige al index
+if (isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
 
+// Esto es para iniciar sesion con la cookie
+if (isset($_COOKIE['user_id'])) {
+    $_SESSION['user_id'] = $_COOKIE['user_id']; 
+    header("Location: index.php");
+    exit();
+}
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST["id"])) {
         $id = $_POST["id"];
@@ -28,14 +39,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!$errores) {
         if (verificarUsuario($id, $contra)) {
-           $usuario = new Usuario($id,$contra);
-            $_SESSION['user_id'] = $id; // ID del usuario
+            $usuario = new Usuario($id, $contra);
+            $_SESSION['user_id'] = $id; 
+    
+            
+            if (isset($_POST['mantenerSesion'])) {
+              
+                setcookie('user_id', $id, time() + (30 * 24 * 60 * 60), "/"); //  30 dias
+            }
+    
             header("Location: index.php"); // Redirigir a la página principal
             exit();
         } else {
             $contraErr = "Usuario o contraseña incorrectos";
         }
     }
+    
 }
 ?>
 
@@ -76,6 +95,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <div class="mb-12 row">
          <div class="col-12">
             <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+            <div class="btn-group" role="group" data-bs-toggle="buttons">
+                <label
+                    class="btn btn-success active"
+                >
+                    <input
+                        type="checkbox"
+                        class="me-2"
+                        name="mantenerSesion"
+                        id="mantenerSesion"
+                        checked
+                        autocomplete="off"
+                    />
+                    ¿Desea mantener la sesion iniciada?
+                </label>
+               
+            </div>
+            
          </div>
       </div>
    </form>

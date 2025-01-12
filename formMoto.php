@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
 
     if ($errores) {
-        echo "<div class='alert alert-danger'>No enviado.</div>";
+       $notificacionError=  "<div class='alert alert-danger'>No enviado.</div>";
     } else {
 
         // Crear el objeto MOTO
@@ -124,124 +124,67 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
    <title>Motos</title>
+   <style>
+       body {
+           display: flex;
+           flex-direction: column;
+           height: 100vh;
+           margin: 0;
+       }
+       .container {
+           flex: 1;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+       }
+       .vehiculo {
+           max-width: 600px;
+           width: 100%;
+           padding: 30px;
+           background-color: #f8f9fa;
+           border-radius: 8px;
+           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+       }
+       .errores {
+           color: red;
+       }
+       @media (max-width: 768px) {
+           .vehiculo {
+               padding: 20px;
+           }
+       }
+   </style>
 </head>
-<style>
-    body {
-    display: flex;
-    flex-direction: column;
-    }
-
-    .container {
-    flex: 1;
-    display: flex; /* El contenedor ocupa el espacio restante */
-    }
-
-    .vehiculo {
-    max-width: 500px;
-    }
-
-    .errores {
-        color: red;
-    }
-</style>
 <body>
-<nav class="navbar navbar-expand-sm navbar-dark bg-primary">
-    <a class="navbar-brand" href="#">MotoCoches</a>
-    <button
-        class="navbar-toggler d-lg-none"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapsibleNavId"
-        aria-controls="collapsibleNavId"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-    ></button>
-    
-    <div class="collapse navbar-collapse" id="collapsibleNavId">
-        <!-- Menú principal de navegación -->
-        <ul class="navbar-nav me-auto mt-2 mt-lg-0">
-            <li class="nav-item">
-                <a class="nav-link " href="index.php" aria-current="page">
-                    Home <span class="visually-hidden">(current)</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="perfil.php" aria-current="page">
-                    Perfil 
-                </a>
-            </li>
-            <li class="nav-item dropdown">
-                <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    id="dropdownId"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                >
-                    ¿Vender?
-                </a>
-                <div class="dropdown-menu " aria-labelledby="dropdownId">
-                    <a class="dropdown-item " href="formCoche.php">Coches</a>
-                    <a class="dropdown-item active" href="formMoto.php">Motos</a>
-                </div>
-            </li>
-        </ul>
-        
-        <!-- Botones de sesión y registro -->
-        <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-            <!-- Botón Iniciar sesión -->
-            <li class="nav-item">
-                <div class="d-grid gap-3">
-                    <a href="login.php">
-                        <button type="button" class="btn btn-danger">
-                            Iniciar sesión
-                        </button>
-                    </a>
-                </div>
-            </li>
-            <!-- Botón Registro -->
-            <li class="nav-item">
-                <div class="d-grid gap-3 ms-4"> <!-- ms-4 agrega margen izquierdo entre los botones -->
-                    <a href="signUp.php">
-                        <button type="button" class="btn btn-danger">
-                            Registro
-                        </button>
-                    </a>
-                </div>
-            </li>
-        </ul>
 
-        <!-- Formulario de búsqueda -->
-        <form class="d-flex my-2 my-lg-0 ms-lg-4">
-            <input
-                class="form-control me-sm-2"
-                type="text"
-                placeholder="Search"
-            />
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-                Search
-            </button>
-        </form>
+<?php include('./views/header.php'); ?>
+
+<?php if ($errores): ?>
+    <div class="alert alert-danger" role="alert">
+        <?php echo $notificacionError; ?>
     </div>
-</nav>
-<div class="container d-flex justify-content-center align-items-center vh-100">
-    <form action="./formMoto.php" method="POST" enctype="multipart/form-data" class="vahiculo p-4 bg-light rounded shadow">
+<?php endif; ?>
+
+<div class="container">
+    <form action="./formMoto.php" method="POST" enctype="multipart/form-data" class="vehiculo">
+        
+
+        <!-- Matrícula -->
         <div class="mb-3">
             <label for="matricula" class="form-label">Matrícula: *</label>
             <input type="text" class="form-control" maxlength="7" size="7" name="matricula" value="<?php echo $matricula; ?>">
-            <small class="form-text text-muted">
-                <?php if (!empty($idErr)) { echo "<div class='text-danger'>$idErr</div>"; } ?>
-            </small>
+            <small class="form-text text-muted"><?php if (!empty($idErr)) { echo "<div class='text-danger'>$idErr</div>"; } ?></small>
             <span class="errores"><?php echo $matriculaErr; ?></span>
         </div>
 
+        <!-- Precio -->
         <div class="mb-3">
             <label for="precio" class="form-label">Precio: *</label>
             <input type="number" step="0.01" class="form-control" name="precio" value="<?php echo $precio; ?>">
             <span class="errores"><?php echo $precioErr; ?></span>
         </div>
 
+        <!-- Combustible -->
         <div class="mb-3">
             <label for="combustible" class="form-label">Combustible: *</label>
             <select name="combustible" class="form-control">
@@ -253,41 +196,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <span class="errores"><?php echo $combustibleErr; ?></span>
         </div>
 
+        <!-- Color -->
         <div class="mb-3">
             <label for="color" class="form-label">Color: *</label>
             <input type="text" name="color" class="form-control" value="<?php echo $color; ?>">
             <span class="errores"><?php echo $colorErr; ?></span>
         </div>
 
+        <!-- Cilindrada -->
         <div class="mb-3">
             <label for="cilindrada" class="form-label">Cilindrada: *</label>
             <input type="number" name="cilindrada" class="form-control" value="<?php echo $cilindrada; ?>">
             <span class="errores"><?php echo $cilindradaErr; ?></span>
         </div>
 
+        <!-- Tipo de moto -->
         <div class="mb-3">
             <label for="tipo_moto" class="form-label">Tipo de moto: *</label>
             <input type="text" name="tipo_moto" class="form-control" value="<?php echo $tipo_moto; ?>">
         </div>
 
+        <!-- Baúl -->
         <div class="mb-3 form-check">
-        <input type="checkbox" name="baul" class="form-check-input" <?php if($baul == 1) echo 'checked'; ?>>
+            <input type="checkbox" name="baul" class="form-check-input" <?php if($baul == 1) echo 'checked'; ?>>
             <label for="baul" class="form-check-label">Baul: *</label>
         </div>
 
+        <!-- Foto -->
         <div class="mb-3">
             <label for="foto" class="form-label">Foto del vehículo: *</label>
             <input type="file" id="foto" name="foto" class="form-control">
             <span class="errores"><?php echo $fotoErr; ?></span>
         </div>
 
+        <!-- Botón de Enviar -->
         <button type="submit" class="btn btn-primary w-100">Añadir Vehículo</button>
     </form>
 </div>
 
-<?php include('footer.php'); ?>
+<?php include('./views/footer.php'); ?>
 
-
-    
 </body>
 </html>

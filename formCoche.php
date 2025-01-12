@@ -91,11 +91,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $fotoErr = "Es obligatorio subir una imagen.";
         $errores = true;
-        $foto_datos = ""; // Asignar un valor vacío para evitar errores
+        $foto_datos = ""; 
     }
     
     if ($errores) {
-        echo "<div class='alert alert-danger'>No enviado.</div>";
+        $notificacionError = "<div class='alert alert-danger'>No enviado.</div>";
     }else{
         // Crear el objeto Coche
         $vehiculo = new Coche(
@@ -143,7 +143,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
        .container {
            flex: 1;
-           display: flex; /* El contenedor ocupa el espacio restante */
+           display: flex; 
+      
        }
 
        .vehiculo {
@@ -155,90 +156,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
        }
    </style>
 <body>
-<nav class="navbar navbar-expand-sm navbar-dark bg-primary">
-    <a class="navbar-brand" href="#">MotoCoches</a>
-    <button
-        class="navbar-toggler d-lg-none"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapsibleNavId"
-        aria-controls="collapsibleNavId"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-    ></button>
-    
-    <div class="collapse navbar-collapse" id="collapsibleNavId">
-        <!-- Menú principal de navegación -->
-        <ul class="navbar-nav me-auto mt-2 mt-lg-0">
-            <li class="nav-item">
-                <a class="nav-link " href="index.php" aria-current="page">
-                    Home <span class="visually-hidden">(current)</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="perfil.php" aria-current="page">
-                    Perfil 
-                </a>
-            </li>
-            <li class="nav-item dropdown">
-                <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    id="dropdownId"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                >
-                    ¿Vender?
-                </a>
-                <div class="dropdown-menu " aria-labelledby="dropdownId">
-                    <a class="dropdown-item active" href="formCoche.php">Coches</a>
-                    <a class="dropdown-item " href="formMoto.php">Motos</a>
-                </div>
-            </li>
-        </ul>
-        
-        <!-- Botones de sesión y registro -->
-        <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-            <!-- Botón Iniciar sesión -->
-            <li class="nav-item">
-                <div class="d-grid gap-3">
-                    <a href="login.php">
-                        <button type="button" class="btn btn-danger">
-                            Iniciar sesión
-                        </button>
-                    </a>
-                </div>
-            </li>
-            <!-- Botón Registro -->
-            <li class="nav-item">
-                <div class="d-grid gap-3 ms-4"> <!-- ms-4 agrega margen izquierdo entre los botones -->
-                    <a href="signUp.php">
-                        <button type="button" class="btn btn-danger">
-                            Registro
-                        </button>
-                    </a>
-                </div>
-            </li>
-        </ul>
-
-        <!-- Formulario de búsqueda -->
-        <form class="d-flex my-2 my-lg-0 ms-lg-4">
-            <input
-                class="form-control me-sm-2"
-                type="text"
-                placeholder="Search"
-            />
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-                Search
-            </button>
-        </form>
-    </div>
-</nav>
-
+<?php include('./views/header.php'); ?>
+<?php   if ($errores) {
+echo $notificacionError;
+}  ?>
 <div class="container d-flex justify-content-center align-items-center vh-100">
     <form action="./formCoche.php" method="POST" enctype="multipart/form-data" class="vehiculo p-4 bg-light rounded shadow">
-        <div class="mb-3">
+        <div class="mb-3 mt-5">
             <label for="matricula" class="form-label">Matrícula: *</label>
             <input type="text" class="form-control" maxlength="7" size="7" name="matricula" value="<?php echo $matricula; ?>">
             <small class="form-text text-muted">
@@ -305,7 +229,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </div>
 
 
-<?php include('footer.php'); ?>
+<?php include('./views/footer.php'); ?>
 
 </body>
 </html>

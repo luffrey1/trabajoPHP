@@ -14,6 +14,7 @@ if (isset($_GET['matricula'])) {
         $id = $vehiculo->getVendedor();
         $imagen = obtenerImagenUsuario($id);
         $nombre = obtenerNombreUsuario($id);
+        
      
 
     }
@@ -104,86 +105,7 @@ if (isset($_GET['matricula'])) {
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-sm navbar-dark bg-primary">
-    <a class="navbar-brand" href="#">MotoCoches</a>
-    <button
-        class="navbar-toggler d-lg-none"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapsibleNavId"
-        aria-controls="collapsibleNavId"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-    ></button>
-    
-    <div class="collapse navbar-collapse" id="collapsibleNavId">
-        <!-- Menú principal de navegación -->
-        <ul class="navbar-nav me-auto mt-2 mt-lg-0">
-            <li class="nav-item">
-                <a class="nav-link " href="index.php" aria-current="page">
-                    Home <span class="visually-hidden">(current)</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="perfil.php" aria-current="page">
-                    Perfil 
-                </a>
-            </li>
-            <li class="nav-item dropdown">
-                <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    id="dropdownId"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                >
-                    ¿Vender?
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownId">
-                    <a class="dropdown-item" href="formCoche.php">Coches</a>
-                    <a class="dropdown-item" href="formMoto.php">Motos</a>
-                </div>
-            </li>
-        </ul>
-        
-        <!-- Botones de sesión y registro -->
-        <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-            <!-- Botón Iniciar sesión -->
-            <li class="nav-item">
-                <div class="d-grid gap-3">
-                    <a href="login.php">
-                        <button type="button" class="btn btn-danger">
-                            Iniciar sesión
-                        </button>
-                    </a>
-                </div>
-            </li>
-            <!-- Botón Registro -->
-            <li class="nav-item">
-                <div class="d-grid gap-3 ms-4"> <!-- ms-4 agrega margen izquierdo entre los botones -->
-                    <a href="signUp.php">
-                        <button type="button" class="btn btn-danger">
-                            Registro
-                        </button>
-                    </a>
-                </div>
-            </li>
-        </ul>
-
-        <!-- Formulario de búsqueda -->
-        <form class="d-flex my-2 my-lg-0 ms-lg-4">
-            <input
-                class="form-control me-sm-2"
-                type="text"
-                placeholder="Search"
-            />
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-                Search
-            </button>
-        </form>
-    </div>
-</nav>
+<?php include('./views/header.php'); ?>
 
 <div class="container">
     <div class="vehicle-info">
@@ -271,7 +193,8 @@ if ($tipo == "c") {
         </div>
 
         <!-- Botón para contactar -->
-        <a href="contactar.php" class="btn btn-primary mt-3">Contactar</a>
+        <a href="perfilPublico.php?vendedor_id=<?= $id ?>" class="btn btn-primary mt-3">Contactar</a>
+
       
 
     </div>
@@ -284,7 +207,7 @@ if ($tipo == "c") {
         <?php endif; ?>
     </div>
 </div>
-
+<?php include('./views/footer.php'); ?>
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -21,7 +21,7 @@ if (!isset($_SESSION['user_id'])) {
 } else {
     // Si el usuario está autenticado, acceder a la sesión
     $user_id = $_SESSION['user_id'];
-    echo "Bienvenido, usuario con ID: " . $user_id;
+
 }
 $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
 $vehiculos_por_pagina = 9;  // Tres por fila para que se vean tres cards por fila
@@ -40,114 +40,54 @@ $total_paginas = calcularPaginas($vehiculos_por_pagina);
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
    <title>Bootstrap5</title>
    <style>
+      
    </style>
 </head>
+
 <body>
-<nav class="navbar navbar-expand-sm navbar-dark bg-primary">
-    <a class="navbar-brand" href="#">MotoCoches</a>
-    <button
-        class="navbar-toggler d-lg-none"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapsibleNavId"
-        aria-controls="collapsibleNavId"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-    ></button>
+<?php include('./views/header.php'); ?>
+<?php
+if (!isset($_SESSION['user_id'])) {
+    echo "No ha iniciado sesión.";
+    // Si no está autenticado, redirigir o mostrar el mensaje correspondiente
+} else {
+    include('./views/aside.php'); 
+
+}
+?>
+
+<div class="container-fluid mt-4">
     
-    <div class="collapse navbar-collapse" id="collapsibleNavId">
-        <!-- Menú principal de navegación -->
-        <ul class="navbar-nav me-auto mt-2 mt-lg-0">
-            <li class="nav-item">
-                <a class="nav-link active" href="index.php" aria-current="page">
-                    Home <span class="visually-hidden">(current)</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="perfil.php" aria-current="page">
-                    Perfil 
-                </a>
-            </li>
-            <li class="nav-item dropdown">
-                <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    id="dropdownId"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                >
-                    ¿Vender?
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownId">
-                    <a class="dropdown-item" href="formCoche.php">Coches</a>
-                    <a class="dropdown-item" href="formMoto.php">Motos</a>
-                </div>
-            </li>
-        </ul>
-        
-        <!-- Botones de sesión y registro -->
-        <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-            <!-- Botón Iniciar sesión -->
-            <li class="nav-item">
-                <div class="d-grid gap-3">
-                    <a href="login.php">
-                        <button type="button" class="btn btn-danger">
-                            Iniciar sesión
-                        </button>
-                    </a>
-                </div>
-            </li>
-            <!-- Botón Registro -->
-            <li class="nav-item">
-                <div class="d-grid gap-3 ms-4"> <!-- ms-4 agrega margen izquierdo entre los botones -->
-                    <a href="signUp.php">
-                        <button type="button" class="btn btn-danger">
-                            Registro
-                        </button>
-                    </a>
-                </div>
-            </li>
-        </ul>
-
-        <!-- Formulario de búsqueda -->
-        <form class="d-flex my-2 my-lg-0 ms-lg-4">
-            <input
-                class="form-control me-sm-2"
-                type="text"
-                placeholder="Search"
-            />
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-                Search
-            </button>
-        </form>
-    </div>
-</nav>
-<div class="container mt-4">
     <div class="row">
-        <div class="col-12 text-center">
-            <ul class="pagination justify-content-center">
-                <?php if ($pagina > 1): ?>
-                    <li class="page-item">
-                        <a class="page-link" href="?pagina=<?php echo $pagina - 1; ?>">Anterior</a>
-                    </li>
-                <?php endif; ?>
-
-                <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
-                    <li class="page-item <?php if ($i == $pagina) echo 'active'; ?>">
-                        <a class="page-link" href="?pagina=<?php echo $i; ?>"><?php echo $i; ?></a>
-                    </li>
-                <?php endfor; ?>
-
-                <?php if ($pagina < $total_paginas): ?>
-                    <li class="page-item">
-                        <a class="page-link" href="?pagina=<?php echo $pagina + 1; ?>">Siguiente</a>
-                    </li>
-                <?php endif; ?>
-            </ul>
+        <!-- Sidebar -->
+        <div class="col-md-3 sidebar">
+        <!-- no eliminar esto(es para la estructura de la pagina)--> 
         </div>
-    </div>
-</div>
+        <div class="col-md-9">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 text-center mt-5">
+                        <ul class="pagination justify-content-center">
+                            <?php if ($pagina > 1): ?>
+                                <li class="page-item">
+                                    <a class="page-link" href="?pagina=<?php echo $pagina - 1; ?>">Anterior</a>
+                                </li>
+                            <?php endif; ?>
+
+                            <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+                                <li class="page-item <?php if ($i == $pagina) echo 'active'; ?>">
+                                    <a class="page-link" href="?pagina=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                </li>
+                            <?php endfor; ?>
+
+                            <?php if ($pagina < $total_paginas): ?>
+                                <li class="page-item">
+                                    <a class="page-link" href="?pagina=<?php echo $pagina + 1; ?>">Siguiente</a>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                </div>
 <div class="container mt-4">
     <h3>Filtros de Búsqueda</h3>
     <form id="filterForm" method="GET" action="index.php"> <!-- Aquí cambias index.php a pagina_vehiculos.php -->
@@ -259,7 +199,7 @@ $total_paginas = calcularPaginas($vehiculos_por_pagina);
 <?php 
     mostrarVehiculos($pagina, $vehiculos_por_pagina);
 ?>
-<?php include('footer.php'); ?>
+<?php include('./views/footer.php'); ?>
 
 
     
