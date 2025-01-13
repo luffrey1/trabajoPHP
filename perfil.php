@@ -51,6 +51,10 @@ if (!$usuario) {
        .profile-section {
            margin-bottom: 15px;
        }
+
+       .misV{
+        width: 60%;
+       }
    </style>
 </head>
 <body>
@@ -101,13 +105,16 @@ if (!$usuario) {
                         </div>
                     </div>
                 </div>
-                
+                <br>
                 <div class="text-center mt-4">
                     <a href="ajustes.php" class="btn btn-warning">Editar Perfil</a>
                 </div>
+
             </div>
         </div>
     </div>
+
+    <div class="text-center mt-5"><a href="vehiculos.php" class="btn btn-success misV">Ver mis vehículos</a></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

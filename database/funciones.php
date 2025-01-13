@@ -8,7 +8,7 @@ require_once __DIR__ . '/../model/Moto.php';
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
-    $pass = "1234"; // Sandia4you/1234
+    $pass = "Sandia4you"; // Sandia4you/1234
     $dbname = "daw";
     return new mysqli($server, $user, $pass, $dbname);
 }
@@ -428,7 +428,9 @@ function obtenerImagenVehiculo($matricula) {
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("s", $matricula);
     $stmt->execute();
+
     $stmt->bind_result($foto);
+
     $stmt->fetch();
 
     $stmt->close();
@@ -436,6 +438,7 @@ function obtenerImagenVehiculo($matricula) {
 
     return $foto ? $foto : null;
 }
+
 
 
 
@@ -925,9 +928,7 @@ function vehiculosUsuario($id,$pagina = 1, $vehiculos_por_pagina = 3) {
         echo '                <input type="hidden" name="matricula" value="' . htmlspecialchars($row['matricula']) . '">';
         echo '                <button type="submit" name="borrar" class="btn btn-danger">Borrar</button>';
         echo '            </form>';
-
-
-
+        echo '            <a href="editarVehiculo.php?matricula=' . urlencode($row['matricula']) . '" class="btn btn-warning">Editar</a>';
         echo '        </div>';
         echo '    </div>';
         echo '</div>';
@@ -945,6 +946,57 @@ function vehiculosUsuario($id,$pagina = 1, $vehiculos_por_pagina = 3) {
     $result->free();
     $conexion->close();
 }
+
+
+function vehiculoPorMatricula($matricula) {
+    $c = conectar(); 
+
+    $sql = "SELECT * FROM vehiculo WHERE matricula = ?";
+    $pS = $c->prepare($sql); 
+    $pS->bind_param("s", $matricula);
+    $pS->execute(); 
+
+    $result = $pS->get_result();
+    $vehiculo = $result->fetch_assoc(); // Obtener el resultado como un array asociativo
+
+    $pS->close();
+    $c->close();
+
+    return $vehiculo; 
+}
+
+//solo para tipo c
+function actualizarCoche($matricula, $color, $combustible, $precio, $n_puertas, $carroceria, $cv, $airbags, $foto) {
+    $c = conectar();
+
+    $sql = "UPDATE vehiculo 
+            SET color = ?, combustible = ?, precio = ?, n_puertas = ?, carroceria = ?, cv = ?, airbag = ?, foto=?
+            WHERE matricula = ?";
+    $pS = $c->prepare($sql); // Preparar la consulta
+    $pS->bind_param("ssdissisb", $color, $combustible, $precio, $n_puertas, $carroceria, $cv, $airbags, $matricula, $foto); // Asignar los parámetros
+    $pS->execute(); // Ejecutar la consulta
+
+    $pS->close();
+    $c->close();
+}
+
+//solo para tipo m
+function actualizarMoto($matricula, $color, $combustible, $precio, $cc, $tipo_moto, $baul, $foto) {
+    $c = conectar();
+
+    $sql = "UPDATE vehiculo 
+            SET color = ?, combustible = ?, precio = ?, cc = ?, tipo_moto = ?, baul = ?, foto=?
+            WHERE matricula = ?";
+    $pS = $c->prepare($sql); 
+    $pS->bind_param("ssdissib", $color, $combustible, $precio, $cc, $tipo_moto, $baul, $matricula, $foto); // Asignar los parámetros
+    $pS->execute(); // Ejecutar la consulta
+
+    $pS->close();
+    $c->close();
+}
+
+
+
 
 
 

@@ -143,21 +143,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </nav>
     <div class="container rounded bg-white mt-5 mb-5">
-         <div class="row">
+        <div class="row">
             <div class="col-md-3 border-right">
                 <div class="d-flex flex-column align-items-center text-center p-3 py-5">
-                <div class="col-md-3 border-right">
-    <div class="d-flex flex-column align-items-center text-center p-3 py-5">
-        <?php if ($imagen_perfil): ?>
-            <img class="profile-image rounded-circle" width="150px" src="data:image/jpeg;base64,<?= base64_encode($imagen_perfil) ?>" alt="Foto de perfil">
-        <?php else: ?>
-            <img class="profile-image rounded-circle" width="150px" src="https://t4.ftcdn.net/jpg/03/49/49/79/360_F_349497933_Ly4im8BDmHLaLzgyKg2f2yZOvJjBtlw5.webp" alt="Imagen predeterminada">
-        <?php endif; ?>
+                    <div class="col-md-3 border-right">
+                        <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                            <?php if ($imagen_perfil): ?>
+                                <img class="profile-image rounded-circle" width="150px" src="data:image/jpeg;base64,<?= base64_encode($imagen_perfil) ?>" alt="Foto de perfil">
+                            <?php else: ?>
+                                <img class="profile-image rounded-circle" width="150px" src="https://t4.ftcdn.net/jpg/03/49/49/79/360_F_349497933_Ly4im8BDmHLaLzgyKg2f2yZOvJjBtlw5.webp" alt="Imagen predeterminada">
+                            <?php endif; ?>
         
-    </div>
-</div>
-
-
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-9">
