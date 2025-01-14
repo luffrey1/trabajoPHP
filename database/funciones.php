@@ -843,7 +843,7 @@ function vehiculosUsuario($id,$pagina = 1, $vehiculos_por_pagina = 3) {
 
     // Filtrar por color
     if ($color) {
-        $sql .= " AND color LIKE '%$color%'";
+        $sql .= " AND color LIKE '%$color%'"; 
     }
 
     // Filtrar por caballos
@@ -965,6 +965,7 @@ function vehiculoPorMatricula($matricula) {
     return $vehiculo; 
 }
 
+
 //solo para tipo c
 function actualizarCoche($matricula, $color, $combustible, $precio, $n_puertas, $carroceria, $cv, $airbags, $foto) {
     $c = conectar();
@@ -988,11 +989,21 @@ function actualizarMoto($matricula, $color, $combustible, $precio, $cc, $tipo_mo
             SET color = ?, combustible = ?, precio = ?, cc = ?, tipo_moto = ?, baul = ?, foto=?
             WHERE matricula = ?";
     $pS = $c->prepare($sql); 
-    $pS->bind_param("ssdissib", $color, $combustible, $precio, $cc, $tipo_moto, $baul, $matricula, $foto); // Asignar los parámetros
+    $pS->bind_param("ssdissbs", $color, $combustible, $precio, $cc, $tipo_moto, $baul,  $foto,$matricula); // Asignar los parámetros
     $pS->execute(); // Ejecutar la consulta
 
     $pS->close();
     $c->close();
+}
+function obtenerTipoV($matricula) {
+    $conexion = conectar(); 
+    $sql = "SELECT tipo FROM vehiculo WHERE matricula = ?";
+    $prepared = $conexion->prepare($sql);
+    $prepared->bind_param("s", $matricula);
+    $prepared->execute();
+    $prepared->bind_result($tipo);
+    $prepared->fetch();
+    return $tipo; 
 }
 
 

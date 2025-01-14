@@ -118,11 +118,11 @@ if (isset($_GET['matricula'])) {
                     <div class="col col-6">
                     <p class="vehicle-detail"><strong>Matrícula:</strong> <?php echo $vehiculo->getMatricula(); ?></p>
                     <p class="vehicle-detail"><strong>Color:</strong> <?php echo $vehiculo->getColor(); ?></p>
-                    <p class="vehicle-detail"><strong>Combustible:</strong> <?php echo $vehiculo->getCombustible();; ?></p>
-                    <p class="vehicle-detail"><strong>Precio:</strong> <?php echo $vehiculo->getPrecio();; ?>€</p>
+                    <p class="vehicle-detail"><strong>Combustible:</strong> <?php echo $vehiculo->getCombustible(); ?></p>
+                    <p class="vehicle-detail"><strong>Precio:</strong> <?php echo $vehiculo->getPrecio(); ?>€</p>
                     </div>
                     <div class="col col-6">
-                    <?php
+<?php
                 if ($tipo == "c") {
                 echo "<p class='vehicle-detail'><strong>Caballos:</strong> " . $vehiculo->getCaballos() . "</p>";
                 } else {
@@ -205,6 +205,7 @@ if ($tipo == "c") {
         <?php else: ?>
             <p>Detalles del vehículo no disponibles.</p>
         <?php endif; ?>
+        
     </div>
 </div>
 <?php include('./views/footer.php'); ?>
