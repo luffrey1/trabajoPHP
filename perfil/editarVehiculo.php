@@ -1,10 +1,10 @@
 <?php
 session_start();
-require('./database/funciones.php');
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/database/funciones.php';
 
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: /trabajoPHP/inicio/login.php");
     exit();
 }
 

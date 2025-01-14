@@ -1,19 +1,27 @@
 <?php
-require_once __DIR__ . '/../model/Usuario.php';
-require_once __DIR__ . '/../model/Vehiculo.php';
-require_once __DIR__ . '/../model/Coche.php';
-require_once __DIR__ . '/../model/Moto.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Usuario.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Vehiculo.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Coche.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Moto.php';
 
 
+/**
+ * Conectar a la base de datos
+ *
+ * @return object
+ */
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
-    $pass = "Sandia4you"; // Sandia4you/1234
+    $pass = "1234"; // Sandia4you/1234
     $dbname = "daw";
     return new mysqli($server, $user, $pass, $dbname);
 }
 
 
+/**
+ * Crear la tabla Usuario
+ */ 
 function crearTabla() {
     $conexion = conectar();
     // estan sin not null porque eso luego se lo pedimos al usuario que 
@@ -35,6 +43,12 @@ function crearTabla() {
          $conexion->query($sql);
 }
 
+/**
+ * Sanitizar los datos de entrada
+ *
+ * @param string $data
+ * @return string
+ */
 function securizar($data) {
     if (is_null($data) || $data === '') {
         return '';
@@ -45,7 +59,11 @@ function securizar($data) {
     return $data;
 }
 
-
+/**
+ * Insertar un nuevo usuario en la base de datos
+ *
+ * @param Usuario $usuario
+ */
 function insertarUsuario($usuario) {
     $conexion = conectar();
     $sql = "INSERT INTO Usuario (id, contra, direccion, CP, cVendidos, tlf, email, nombre, apellidos, foto) 
@@ -82,6 +100,11 @@ function insertarUsuario($usuario) {
 }
 
 
+/**
+ * Para crear la tabla vehiculo en la DB 
+ *
+ * @return void
+ */
 function crearTablaVehiculo() {
     $conexion = conectar();
 
@@ -110,6 +133,12 @@ function crearTablaVehiculo() {
     $conexion->query($sql);
 }
 
+/**
+ * Insertar un nuevo coche en la base de datos
+ *
+ * @param Coche $coche
+ * @return bool
+ */
 function insertarCoche($coche) {
     // Conexión a la base de datos
     $conexion = conectar();
@@ -189,8 +218,12 @@ function insertarCoche($coche) {
     return true;
 }
 
-
-
+/**
+ * Insertar una moto en la base de datos
+ *
+ * @param Moto $moto
+ * @return bool
+ */
 function insertarMoto($moto){
     $conexion = conectar();
     
@@ -280,6 +313,13 @@ function insertarMoto($moto){
 // v: esta tabla es para almacenar todos los vehículos comprados, por el usuario que fueron comprados,
 // su vendedor y la fecha en que fueron comprados. de esta tabla se puede sacar la cantidad de coches
 // comprados o vendidos por un usuario tb, a través de un SELECT.
+
+
+/**
+ * Creacion de la tabla ventas en la base de datos
+ *
+ * @return void
+ */
 function crearTablaVenta(){
     $c = conectar();
 
@@ -302,6 +342,13 @@ function crearTablaVenta(){
 //esta función será para insertas una venta. Lo que podemos hacer es en el catalogo poner botones en cada coche que pnga
 // "comprar" y que por ahora así se realice la compra. Lo de las tarjetas a lo mejor se podría hacer más tarde
 //pero por ahora que sea algo así, de forma simbolica.
+
+/**
+ * Insertar una nueva venta en la base de datos
+ *
+ * @param Venta $venta
+ * @return bool
+ */
 function nuevaVenta($venta){
     $c = conectar();
 
@@ -322,6 +369,14 @@ function nuevaVenta($venta){
 
 }
 
+
+/**
+ * Sirve para verificar la entrada de un usuario en login
+ *
+ * @param  mixed $id
+ * @param  mixed $contra
+ * @return bool
+ */
 function verificarUsuario( $id, $contra) {
 
     $conexion = conectar();
@@ -343,6 +398,12 @@ function verificarUsuario( $id, $contra) {
 }
 
 
+/**
+ * Verificar si un usuario existe en la base de datos
+ *
+ * @param string $id
+ * @return bool
+ */
 function verificarId($id):bool {
     $conexion = conectar();
     $sql = "SELECT * from Usuario where id = ?";
@@ -355,8 +416,23 @@ function verificarId($id):bool {
     } else {
         return true;
     }
+    return null; // Return null if tipo is not 'c' or 'm'
 }
 
+
+/**
+ * Sirve para actualizar un usuario en la base de datos
+ *
+ * @param  mixed $user_id
+ * @param  mixed $nombre
+ * @param  mixed $apellidos
+ * @param  mixed $direccion
+ * @param  mixed $cp
+ * @param  mixed $tlf
+ * @param  mixed $email
+ * @param  mixed $foto_url
+ * @return bool
+ */
 function actualizarUsuario($user_id, $nombre, $apellidos, $direccion, $cp, $tlf, $email, $foto_url = null) {
     $conexion = conectar();
     if ($foto_url !== null) { 
@@ -397,9 +473,12 @@ function actualizarUsuario($user_id, $nombre, $apellidos, $direccion, $cp, $tlf,
 }
 
 
-
-
-
+/**
+ * Procesar una imagen para almacenarla en la base de datos
+ *
+ * @param  mixed $campo
+ * @return void
+ */
 function procesarImagenParaBD($campo) {
     if (isset($_FILES[$campo]) && $_FILES[$campo]['error'] == 0) {
         $datos = file_get_contents($_FILES[$campo]['tmp_name']);
@@ -408,19 +487,32 @@ function procesarImagenParaBD($campo) {
     return ['error' => 'Error al procesar la imagen.'];
 }
 
-
-
-
+/**
+ * Procesar una imagen de la foto de perfil del usuario para mostrarla en la página ya que lo devuelve
+ *
+ * @param  mixed $datos
+ * @return string
+ */
 function obtenerImagenUsuario($user_id) {
     $conexion = conectar(); 
     $sql = "SELECT foto FROM Usuario WHERE id = ?";
     $prepared = $conexion->prepare($sql);
     $prepared->bind_param("s", $user_id);
     $prepared->execute();
+
     $prepared->bind_result($foto);
     $prepared->fetch();
     return $foto; // Devuelve los datos binarios de la imagen
 }
+//D:Nose porque da error antes no lo daba pero funciona 
+
+
+/**
+ * Obtener la imagen de un vehiculo para mostrarla en alguna parte del codigo
+ *
+ * @param  mixed $matricula
+ * @return void
+ */
 function obtenerImagenVehiculo($matricula) {
     $conexion = conectar();
 
@@ -428,20 +520,20 @@ function obtenerImagenVehiculo($matricula) {
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("s", $matricula);
     $stmt->execute();
-
     $stmt->bind_result($foto);
-
     $stmt->fetch();
-
     $stmt->close();
     $conexion->close();
-
     return $foto ? $foto : null;
 }
+//D:Nose porque da error antes no lo daba pero funciona 
 
-
-
-
+/**
+ * Obtener los datos de un usuario para mostrarlos o utilizarlos en alguna parte del código.
+ *
+ * @param  mixed $user_id
+ * @return object
+ */
 function obtenerDatosUsuario($id) {
     $conexion = conectar();
 
@@ -487,6 +579,13 @@ function obtenerDatosUsuario($id) {
     return null; // No se encontró el Usuario
 }
 
+/**
+ * Obtener los datos de un vehículo para mostrarlos o utilizarlos en alguna parte del código.
+ *
+ * @param  mixed $matricula
+ * @param  mixed $tipo
+ * @return void
+ */
 function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
     $conexion = conectar();
 
@@ -604,7 +703,7 @@ function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
         echo '            <p class="card-text">Carrocería: ' . ($row['carroceria']) . '</p>';
         echo '            <p class="card-text">Airbags: ' . ($row['airbag']) . '</p>';
         echo '            <p class="card-text">Vendedor: ' . ($row['vendedor']) . '</p>';
-          echo '            <a href="./contactar.php?matricula=' . urlencode($row['matricula']) . '&tipo=' . urlencode($row['tipo']) . '" class="btn btn-primary">Contactar</a>';
+          echo '            <a href="/trabajoPHP/online/contactar.php?matricula=' . urlencode($row['matricula']) . '&tipo=' . urlencode($row['tipo']) . '" class="btn btn-primary">Contactar</a>';
 
 
 
@@ -627,7 +726,17 @@ function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
 }
 
 
-
+/**
+ * Calcular el número total de páginas para la paginación
+ *
+ * @param  mixed $vehiculos_por_pagina
+ * @param  mixed $tipo
+ * @param  mixed $precio
+ * @param  mixed $color
+ * @param  mixed $cv
+ * @param  mixed $carroceria
+ * @return void
+ */
 function calcularPaginas($vehiculos_por_pagina = 10, $tipo = null, $precio = null, $color = null, $cv = null, $carroceria = null) {
     $conexion = conectar();
     
@@ -696,6 +805,14 @@ function calcularPaginas($vehiculos_por_pagina = 10, $tipo = null, $precio = nul
 
     return $total_paginas;
 }
+ 
+/**
+ * Obtener los datos de un vehículo para mostrarlos o utilizarlos en alguna parte del código.
+ *
+ * @param  mixed $matricula
+ * @param  mixed $tipo
+ * @return object
+ */
 function obtenerDatosVehiculo($matricula,$tipo) {
     $conexion = conectar();
     if ($tipo == "c") {
@@ -760,16 +877,33 @@ function obtenerDatosVehiculo($matricula,$tipo) {
         }
     }
    
+
+
+/**
+ * Obtener los datos de un vehículo para mostrarlos o utilizarlos en alguna parte del código.
+ *  
+ * @param  mixed $matricula
+ * @param  mixed $tipo
+ * @return void
+ */
 function obtenerNombreUsuario($user_id) {
     $conexion = conectar(); 
     $sql = "SELECT nombre FROM Usuario WHERE id = ?";
     $prepared = $conexion->prepare($sql);
     $prepared->bind_param("s", $user_id);
     $prepared->execute();
+    $nombre = null;
     $prepared->bind_result($nombre);
     $prepared->fetch();
     return $nombre; 
 }
+
+/**
+ * Comprar un vehículo
+ *
+ * @param  mixed $matricula
+ * @return void
+ */
 function comprarVehiculo($matricula) {
     $conexion = conectar(); 
     $sql = "UPDATE Vehiculo SET comprado = 's' WHERE matricula = ?";
@@ -788,6 +922,12 @@ function editarVehiculo(){
 }
 
 
+/**
+ * Borrar un vehículo de la base de datos
+ *
+ * @param  mixed $matricula
+ * @return void
+ */
 function borrarVehiculo($matricula) {
     $conexion = conectar(); // Conexión a la base de datos
     $sql = "DELETE FROM vehiculo WHERE matricula = ?";
@@ -806,7 +946,14 @@ function borrarVehiculo($matricula) {
     return $resultado;
 }
 
-
+/**
+ * Obtener los vehículos de un usuario
+ *
+ * @param  mixed $id
+ * @param  mixed $pagina
+ * @param  mixed $vehiculos_por_pagina
+ * @return void
+ */
 function vehiculosUsuario($id,$pagina = 1, $vehiculos_por_pagina = 3) {
     $conexion = conectar();
 
@@ -947,7 +1094,12 @@ function vehiculosUsuario($id,$pagina = 1, $vehiculos_por_pagina = 3) {
     $conexion->close();
 }
 
-
+/**
+ * Obtener todos los datos de un vehiculo por su matricula 
+ *
+ * @param  mixed $matricula
+ * @return void
+ */
 function vehiculoPorMatricula($matricula) {
     $c = conectar(); 
 
@@ -967,6 +1119,20 @@ function vehiculoPorMatricula($matricula) {
 
 
 //solo para tipo c
+/**
+ * Actualizar un coche en la base de datos
+ *
+ * @param  mixed $matricula
+ * @param  mixed $color
+ * @param  mixed $combustible
+ * @param  mixed $precio
+ * @param  mixed $n_puertas
+ * @param  mixed $carroceria
+ * @param  mixed $cv
+ * @param  mixed $airbags
+ * @param  mixed $foto
+ * @return void
+ */
 function actualizarCoche($matricula, $color, $combustible, $precio, $n_puertas, $carroceria, $cv, $airbags, $foto) {
     $c = conectar();
 
@@ -982,6 +1148,20 @@ function actualizarCoche($matricula, $color, $combustible, $precio, $n_puertas, 
 }
 
 //solo para tipo m
+ 
+/**
+ * Actualizar una moto en la base de datos
+ *
+ * @param  mixed $matricula
+ * @param  mixed $color
+ * @param  mixed $combustible
+ * @param  mixed $precio
+ * @param  mixed $cc
+ * @param  mixed $tipo_moto
+ * @param  mixed $baul
+ * @param  mixed $foto
+ * @return void
+ */
 function actualizarMoto($matricula, $color, $combustible, $precio, $cc, $tipo_moto, $baul, $foto) {
     $c = conectar();
 
@@ -995,12 +1175,20 @@ function actualizarMoto($matricula, $color, $combustible, $precio, $cc, $tipo_mo
     $pS->close();
     $c->close();
 }
+ 
+/**
+ * Obtener el tipo de un vehículo por su matricula(para utilizar en otras funciones como obtenerDatosVehiculo)
+ *
+ * @param  mixed $matricula
+ * @return void
+ */
 function obtenerTipoV($matricula) {
     $conexion = conectar(); 
     $sql = "SELECT tipo FROM vehiculo WHERE matricula = ?";
     $prepared = $conexion->prepare($sql);
     $prepared->bind_param("s", $matricula);
     $prepared->execute();
+    $tipo = null;
     $prepared->bind_result($tipo);
     $prepared->fetch();
     return $tipo; 

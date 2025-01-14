@@ -4,7 +4,8 @@ session_start();
 
 // Incluir la biblioteca de Stripe (si no lo has hecho ya)
 require_once('vendor/autoload.php');
-require("./database/funciones.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/database/funciones.php';
+
 
 // Tu clave secreta de Stripe
 \Stripe\Stripe::setApiKey('sk_test_51QfhMpFhEizoamwmJ1MvAyB1ChTNVbxyzoSfuGeRbIn1X2W2bjFjM75gecEnDWZ0PzHmJoay01V6z7TBScQkG1r200DmG6LFkE'); // Reemplaza con tu clave secreta de Stripe
@@ -65,7 +66,7 @@ echo "<p>Total pagado: <strong>" . number_format($precio / 100, 2) . "€</stron
 
                 <!-- Botón para volver a la página principal -->
                 <div class="text-center">
-                    <a href="index.php" class="btn btn-primary">Volver a la página principal</a>
+                    <a href="/trabajoPHP/index.php" class="btn btn-primary">Volver a la página principal</a>
                 </div>
             </div>
         </div>

@@ -1,9 +1,11 @@
 <?php
 session_start(); 
-include("./model/Vehiculo.php");
-include("./model/Coche.php");
-include("./model/Moto.php");
-require("./database/funciones.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Usuario.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Vehiculo.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Coche.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Moto.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/database/funciones.php';
+
 
 crearTabla();
 
@@ -12,7 +14,7 @@ $idErr = $contraErr = "";
 $errores = false;
 //Si hay sesion activa redirige al index
 if (isset($_SESSION['user_id'])) {
-    header("Location: index.php");
+    header("Location: /trabajoPHP/index.php");
     exit();
 }
 
@@ -48,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 setcookie('user_id', $id, time() + (30 * 24 * 60 * 60), "/"); //  30 dias
             }
     
-            header("Location: index.php"); // Redirigir a la página principal
+            header("Location: /trabajoPHP/index.php");
             exit();
         } else {
             $contraErr = "Usuario o contraseña incorrectos";
@@ -193,7 +195,7 @@ a[target='_blank'] {
     <div class="container d-flex justify-content-center align-items-center vh-75">
         <div class="card border bg-white p-4" style="width: 28rem;">
             <h3 class="text-center pt-3 font-weight-bold">Login</h3>
-            <form action="login.php" method="POST">
+            <form action="/trabajoPHP/inicio/login.php" method="POST">
                 <div class="mb-3">
                     <label for="id" class="form-label">Nombre de usuario o correo:</label>
                     <div class="input-group">

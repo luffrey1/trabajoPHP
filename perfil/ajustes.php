@@ -1,9 +1,9 @@
 <?php
 session_start();
-require("./database/funciones.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/database/funciones.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); 
+    header("Location: /trabajoPHP/inicio/login.php"); 
     exit();
 }
 
@@ -58,90 +58,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>Ajustes de Perfil</title>
 </head>
+<style>
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: #f8f9fa;
+        color: black;
+        text-align: center;
+    }
+    </style>
 <body>
-<nav class="navbar navbar-expand-sm navbar-dark bg-primary">
-    <a class="navbar-brand" href="#">MotoCoches</a>
-    <button
-        class="navbar-toggler d-lg-none"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapsibleNavId"
-        aria-controls="collapsibleNavId"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-    ></button>
-    
-    <div class="collapse navbar-collapse" id="collapsibleNavId">
-        <!-- Menú principal de navegación -->
-        <ul class="navbar-nav me-auto mt-2 mt-lg-0">
-            <li class="nav-item">
-                <a class="nav-link " href="index.php" aria-current="page">
-                    Home <span class="visually-hidden">(current)</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="perfil.php" aria-current="page">
-                    Perfil 
-                </a>
-            </li>
-            <li class="nav-item dropdown">
-                <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    id="dropdownId"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                >
-                    ¿Vender?
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownId">
-                    <a class="dropdown-item" href="formCoche.php">Coches</a>
-                    <a class="dropdown-item" href="formMoto.php">Motos</a>
-                </div>
-            </li>
-        </ul>
-        
-        <!-- Botones de sesión y registro -->
-        <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-            <!-- Botón Iniciar sesión -->
-            <li class="nav-item">
-                <div class="d-grid gap-3">
-                    <a href="login.php">
-                        <button type="button" class="btn btn-danger">
-                            Iniciar sesión
-                        </button>
-                    </a>
-                </div>
-            </li>
-            <!-- Botón Registro -->
-            <li class="nav-item">
-                <div class="d-grid gap-3 ms-4"> <!-- ms-4 agrega margen izquierdo entre los botones -->
-                    <a href="signUp.php">
-                        <button type="button" class="btn btn-danger">
-                            Registro
-                        </button>
-                    </a>
-                </div>
-            </li>
-        </ul>
-
-        <!-- Formulario de búsqueda -->
-        <form class="d-flex my-2 my-lg-0 ms-lg-4">
-            <input
-                class="form-control me-sm-2"
-                type="text"
-                placeholder="Search"
-            />
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
-                Search
-            </button>
-        </form>
-    </div>
-</nav>
+<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/header.php'; ?>
     <div class="container rounded bg-white mt-5 mb-5">
         <div class="row">
             <div class="col-md-3 border-right">
@@ -161,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="col-md-9">
                 <div class="p-3 py-5">
                     <h4>Ajustes de Perfil</h4>
-                    <form action="ajustes.php" method="POST" enctype="multipart/form-data">
+                    <form action="/trabajoPHP/perfil/ajustes.php" method="POST" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="nombre">Nombre:</label>
                             <input type="text" class="form-control" id="nombre" name="nombre" value="<?= $usuario->getNombre()?>">
@@ -203,6 +136,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
             </div>
         </div>
+        
     </div>
+    <div class="footer">
+    <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/footer.php'; ?>
+    </div>
+  
 </body>
 </html>

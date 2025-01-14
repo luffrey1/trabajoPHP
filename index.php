@@ -10,7 +10,7 @@ crearTablaVehiculo();
 
 if (!isset($_SESSION['recaptcha_verified']) || $_SESSION['recaptcha_verified'] !== true) {
     // Si no está verificado, redirigir a recaptcha.php
-    header('Location: recaptcha.php');
+    header('Location: /trabajoPHP/online/recaptcha.php');
     exit();
 }
 

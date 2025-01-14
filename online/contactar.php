@@ -1,6 +1,6 @@
 <?php
 session_start();
-require("./database/funciones.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/database/funciones.php';
 // Verificamos si la matrícula está pasada en la URL
 
 
@@ -105,7 +105,7 @@ if (isset($_GET['matricula'])) {
     </style>
 </head>
 <body>
-<?php include('./views/header.php'); ?>
+<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/header.php'; ?>
 
 <div class="container">
     <div class="vehicle-info">
@@ -170,7 +170,7 @@ if ($tipo == "c") {
 
 <div class="mt-4 text-center">
     <!-- Botón para proceder a la compra -->
-    <a href="pago.php?matricula=<?php echo urlencode($vehiculo->getMatricula()); ?>&tipo=<?php echo urlencode($tipo); ?>" class="buy-button">Comprar coche</a>
+    <a href="/trabajoPHP/tarjeta/pago.php?matricula=<?php echo urlencode($vehiculo->getMatricula()); ?>&tipo=<?php echo urlencode($tipo); ?>" class="buy-button">Comprar coche</a>
 
   
     
@@ -193,7 +193,7 @@ if ($tipo == "c") {
         </div>
 
         <!-- Botón para contactar -->
-        <a href="perfilPublico.php?vendedor_id=<?= $id ?>" class="btn btn-primary mt-3">Contactar</a>
+        <a href="/trabajoPHP/online/perfilPublico.php?vendedor_id=<?= $id ?>" class="btn btn-primary mt-3">Contactar</a>
 
       
 
@@ -208,7 +208,7 @@ if ($tipo == "c") {
         
     </div>
 </div>
-<?php include('./views/footer.php'); ?>
+<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/footer.php'; ?>
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>

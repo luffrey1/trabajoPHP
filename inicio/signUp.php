@@ -1,10 +1,11 @@
 <?php
 session_start();
 
-include("./model/Vehiculo.php");
-include("./model/Coche.php");
-include("./model/Moto.php");
-require("./database/funciones.php");
+require_once __DIR__ . '/../model/Usuario.php';
+require_once __DIR__ . '/../model/Vehiculo.php';
+require_once __DIR__ . '/../model/Coche.php';
+require_once __DIR__ . '/../model/Moto.php';
+require_once __DIR__ . '/../database/funciones.php';
 
 crearTabla();
 crearTablaVehiculo();
@@ -62,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         if (verificarId($id)) {
             insertarUsuario($usuario);
-            Header("Location: login.php");
+            Header("Location: /trabajoPHP/inicio/login.php");
         } else {
             echo "
             <div class='alert alert-danger alert-dismissible fade show' role='alert'>
@@ -117,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="container d-flex justify-content-center align-items-center vh-75">
     <div class="card border bg-white p-4" style="width: 28rem;">
         <h3 class="text-center pt-3 font-weight-bold">Registro</h3>
-        <form action="signUp.php" method="POST" enctype="multipart/form-data">
+        <form action="/trabajoPHP/inicio/signUp.php" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="id" class="form-label">Nombre de usuario:</label>
                 <input type="text" class="form-control" name="id" id="id" value="<?= ($id); ?>">
@@ -136,7 +137,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <small class="form-text text-danger"><?= $contra1Err; ?></small>
             </div>
             <div class="text-center pt-4 text-muted">
-                    ¿Ya tienes una cuenta? <a href="./login.php" class="text-primary">Login</a>
+                    ¿Ya tienes una cuenta? <a href="/trabajoPHP/inicio/login.php" class="text-primary">Login</a>
                 </div>
             <?= $contrasErr; ?>
 

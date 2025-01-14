@@ -1,6 +1,6 @@
 <?php
     session_start();
-    require("./database/funciones.php");
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/database/funciones.php';
 
     
     $pagina = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
@@ -14,9 +14,9 @@
         $matricula = $_POST['matricula']; // Obtener la matrícula enviada por el formulario
     
         if (borrarVehiculo($matricula)) {
-            echo '<div class="alert alert-success text-center mt-5">El vehículo con matrícula ' . htmlspecialchars($matricula) . ' fue eliminado con éxito.</div>';
+            echo '<div class="alert alert-success text-center mt-5">El vehículo con matrícula ' . ($matricula) . ' fue eliminado con éxito.</div>';
         } else {
-            echo '<div class="alert alert-danger text-center mt-5">Error al eliminar el vehículo con matrícula ' . htmlspecialchars($matricula) . '.</div>';
+            echo '<div class="alert alert-danger text-center mt-5">Error al eliminar el vehículo con matrícula ' . ($matricula) . '.</div>';
         }
     }
 

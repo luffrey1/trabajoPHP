@@ -5,9 +5,11 @@ error_reporting(E_ALL);
 
 session_start();
 
-include("./model/Vehiculo.php");
-include("./model/Moto.php");
-require("./database/funciones.php");
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Usuario.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Vehiculo.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Coche.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Moto.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/database/funciones.php';
 
 // Crear tabla de vehículo si no existe
 crearTablaVehiculo();
@@ -19,7 +21,7 @@ $errores = false;
 
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: /trabajoPHP/inicio/login.php");
     exit();
 }
 
@@ -154,7 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-<?php include('./views/header.php'); ?>
+<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/header.php'; ?>
 
 <?php if ($errores): ?>
     <div class="alert alert-danger" role="alert">
@@ -163,7 +165,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php endif; ?>
 
 <div class="container">
-    <form action="./formMoto.php" method="POST" enctype="multipart/form-data" class="vehiculo p-4 bg-light rounded shadow w-100">
+    <form action="/trabajoPHP/forms/formMoto.php" method="POST" enctype="multipart/form-data" class="vehiculo p-4 bg-light rounded shadow w-100">
         <!-- Primera fila: Matrícula y Precio -->
         <div class="row mb-3">
             <div class="col-md-6">
@@ -240,7 +242,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </div>
 
 
-<?php include('./views/footer.php'); ?>
+<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/footer.php'; ?>
 
 </body>
 </html>
