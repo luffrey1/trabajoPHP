@@ -133,7 +133,7 @@ include "views/header.php";
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="precio" class="form-label">Precio:</label>
-                                    <input type="number" class="form-control" id="precio" name="precio" value=" <?= $vehiculo->getPrecio() ?>">
+                                    <input type="number" class="form-control" id="precio" name="precio" value="<?= $vehiculo->getPrecio() ?>">
                                 </div>
                             </div>
                         </div>
