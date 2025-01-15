@@ -2,6 +2,7 @@
 session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/database/funciones.php';
 $ajustesPath = '/trabajoPHP/perfil/ajustes.php';
+$vehiculos = '/trabajoPHP/perfil/vehiculos.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: /trabajoPHP/inicio/login.php"); 
@@ -114,7 +115,7 @@ if (!$usuario) {
         </div>
     </div>
 
-    <div class="text-center mt-5"><a  href="<?= $ajustesPath; ?>" class="btn btn-success misV">Ver mis vehículos</a></div>
+    <div class="text-center mt-5"><a  href="<?= $vehiculos; ?>" class="btn btn-success misV">Ver mis vehículos</a></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

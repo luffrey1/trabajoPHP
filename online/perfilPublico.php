@@ -8,22 +8,21 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
 
 // Obtener los datos del usuario
-$usuario = obtenerDatosUsuario($user_id);
-$imagen_perfil = obtenerImagenUsuario($user_id);
+
 
 if (isset($_GET['vendedor_id'])) {
     $vendedor_id = $_GET['vendedor_id'];
+    $usuario = obtenerDatosUsuario($vendedor_id);
+$imagen_perfil = obtenerImagenUsuario($vendedor_id);
 } else {
-    // Si no se recibe el ID, redirigir o mostrar un error.
     echo "Error: No se ha encontrado el ID del vendedor.";
     exit();
 }
 
-// Obtener el ID del vendedor desde la sesión
-$vendedor_id = $_SESSION['vendedor_id'];
+
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -53,6 +52,15 @@ $vendedor_id = $_SESSION['vendedor_id'];
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
             margin-top: 15vh;
         }
+        .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: #f8f9fa;
+        color: black;
+        text-align: center;
+    }
 
        
 
@@ -61,7 +69,7 @@ $vendedor_id = $_SESSION['vendedor_id'];
 </head>
 <body>
    
-    <?php include('./views/header.php');?>
+<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/header.php'; ?>
   
 
     <div class="container ">
@@ -69,7 +77,7 @@ $vendedor_id = $_SESSION['vendedor_id'];
             <div class="col-md-3 d-flex flex-column align-items-center">
                 <div class="d-flex flex-column align-items-center text-center p-3 py-5">
                     <?php if ($imagen_perfil): ?>
-                        <img class="profile-image rounded-circle" src="data:image/jpeg;base64,<?= base64_encode($imagen_perfil) ?>" alt="Foto de perfil">
+                        <img class="profile-image rounded-circle" src="data:image/jpeg;base64,<?= base64_encode($imagen_perfil) ?>" alt="Foto de perfil" style="width:200px; height:150px;" >
                     <?php else: ?>
                         <img class="profile-image rounded-circle" src="https://t4.ftcdn.net/jpg/03/49/49/79/360_F_349497933_Ly4im8BDmHLaLzgyKg2f2yZOvJjBtlw5.webp" alt="Imagen predeterminada">
                     <?php endif; ?>
@@ -102,5 +110,9 @@ $vendedor_id = $_SESSION['vendedor_id'];
             </div>
         </div>
     </div>
+    <div class="footer">
+    <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/footer.php'; ?>
+    </div>
+   
 </body>
 </html>

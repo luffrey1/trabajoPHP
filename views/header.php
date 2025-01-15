@@ -74,8 +74,6 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
                 <li class="nav-item">
                     <div class="d-grid gap-2 d-md-block">
                     <a href="<?= $loginPath; ?>">
-
-
                             <button type="button" class="btn btn-danger">Iniciar sesión</button>
 
                         </a>

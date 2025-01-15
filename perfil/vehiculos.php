@@ -32,7 +32,7 @@
     <title>Mis Vehículos</title>
 </head>
 <body>
-<?php include('./views/header.php'); ?>
+<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/header.php'; ?>
 
         <div class="col-md-9">
             <div class="container mt-3">
@@ -69,6 +69,6 @@
         vehiculosUsuario($_SESSION['user_id'], $pagina, $vehiculos_por_pagina);
     ?>
 
-    <?php include('./views/footer.php'); ?>
+<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/footer.php'; ?>
 </body>
 </html>

@@ -13,7 +13,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Moto.php';
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
-    $pass = "1234"; // Sandia4you/1234
+    $pass = "Sandia4you"; // Sandia4you/1234
     $dbname = "daw";
     return new mysqli($server, $user, $pass, $dbname);
 }
@@ -292,16 +292,6 @@ function insertarMoto($moto){
         return false;
     }
 
-    // Guardar datos en el objeto
-    $moto->setMatricula($matricula);
-    $moto->setColor($color);
-    $moto->setCombustible($combustible);
-    $moto->setPrecio($precio);
-    $moto->setCilindrada($cc);
-    $moto->setTipo_m($tipo_moto);
-    $moto->setBaul($baul);
-    $moto->setVendedor($moto->getVendedor());
-    $moto->setImagen($imagen);
 
     // Liberar recursos
     $preparedStatement->close();
@@ -537,38 +527,32 @@ function obtenerImagenVehiculo($matricula) {
 function obtenerDatosUsuario($id) {
     $conexion = conectar();
 
-    // Definir la consulta SQL
     $sql = "SELECT id, nombre, apellidos, email, tlf, direccion, cp, foto, cVendidos FROM Usuario WHERE id = ?";
     
-    // Preparar la consulta
     $prepared = $conexion->prepare($sql);
     if ($prepared === false) {
         die("Error al preparar la consulta: " . $conexion->error);
     }
 
-    // Vincular el parámetro $id
-    $prepared->bind_param("s", $id); // "s" indica que el parámetro es una cadena (String)
+    $prepared->bind_param("s", $id); 
 
-    // Ejecutar la consulta
     $prepared->execute();
 
-    // Obtener los resultados
     $result = $prepared->get_result();
     
-    // Verificar si se obtuvieron resultados
     $data = $result->fetch_assoc();
 
     if ($data) {
         // Aseguramos que cVendidos no sea nulo y sea un entero
         $cVendidos = isset($data['cVendidos']) ? (int)$data['cVendidos'] : 0;
 
-        // Crear el objeto Usuario con los datos obtenidos
+       
         return new Usuario(
             $data['id'], 
             '', // No se devuelve la contraseña
             $data['direccion'], 
             $data['cp'], 
-            $cVendidos, // Asignamos el valor de cVendidos
+            $cVendidos, 
             $data['tlf'], 
             $data['email'], 
             $data['nombre'], 
@@ -576,7 +560,7 @@ function obtenerDatosUsuario($id) {
             $data['foto']
         );
     }
-    return null; // No se encontró el Usuario
+    return null; 
 }
 
 /**
@@ -606,7 +590,7 @@ function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
     $baul = isset($_GET['baul']) ? $_GET['baul'] : '';
 
     // Construir la consulta SQL con los filtros
-    $sql = "SELECT tipo,matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto 
+    $sql = "SELECT tipo,matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag,cc,tipo_moto,baul, vendedor, foto 
             FROM vehiculo 
             WHERE 1=1 AND comprado = 'n'"; // Comienza la consulta con un WHERE siempre verdadero
 
@@ -698,10 +682,15 @@ function mostrarVehiculos($pagina = 1, $vehiculos_por_pagina = 10) {
         echo '            <p class="card-text">Color: ' . ($row['color']) . '</p>';
         echo '            <p class="card-text">Combustible: ' . ($row['combustible']) . '</p>';
         echo '            <p class="card-text">Precio: €' . number_format($row['precio'], 2) . '</p>';
-        echo '            <p class="card-text">Caballos: ' . ($row['cv']) . '</p>';
-        echo '            <p class="card-text">Número de Puertas: ' . ($row['n_puertas']) . '</p>';
-        echo '            <p class="card-text">Carrocería: ' . ($row['carroceria']) . '</p>';
-        echo '            <p class="card-text">Airbags: ' . ($row['airbag']) . '</p>';
+        if ($row['tipo'] == "c") {
+            echo '            <p class="card-text">Caballos: ' . ($row['cv']) . '</p>';
+            echo '            <p class="card-text">Número de Puertas: ' . ($row['n_puertas']) . '</p>';
+            echo '            <p class="card-text">Carrocería: ' . ($row['carroceria']) . '</p>';
+        } else if ($row['tipo'] == "m") {
+            echo '            <p class="card-text">Cilindrada: ' . ($row['cc']) . '</p>';
+            echo '            <p class="card-text">Tipo de Moto: ' . ($row['tipo_moto']) . '</p>';
+            echo '            <p class="card-text">Baúl: ' . ($row['baul'] ? "Sí" : "No") . '</p>';
+        }
         echo '            <p class="card-text">Vendedor: ' . ($row['vendedor']) . '</p>';
           echo '            <a href="/trabajoPHP/online/contactar.php?matricula=' . urlencode($row['matricula']) . '&tipo=' . urlencode($row['tipo']) . '" class="btn btn-primary">Contactar</a>';
 
@@ -974,64 +963,9 @@ function vehiculosUsuario($id,$pagina = 1, $vehiculos_por_pagina = 3) {
     $baul = isset($_GET['baul']) ? $_GET['baul'] : '';
 
     // Construir la consulta SQL con los filtros
-    $sql = "SELECT tipo,matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag, vendedor, foto 
-            FROM vehiculo 
-            WHERE 1=1 AND comprado = 'n' AND vendedor='$id'"; // Comienza la consulta con un WHERE siempre verdadero
-
-    // Filtrar por tipo de vehículo
-    if ($tipo) {
-        $sql .= " AND tipo = '$tipo'";
-    }
-
-    // Filtrar por precio
-    if ($precio) {
-        $sql .= " AND precio <= $precio";
-    }
-
-    // Filtrar por color
-    if ($color) {
-        $sql .= " AND color LIKE '%$color%'"; 
-    }
-
-    // Filtrar por caballos
-    if ($cv) {
-        $sql .= " AND cv >= $cv";
-    }
-
-    // Filtrar por carrocería
-    if ($carroceria) {
-        $sql .= " AND carroceria LIKE '%$carroceria%'";
-    }
-
-    // Filtrar por combustible
-    if ($combustible) {
-        $sql .= " AND combustible = '$combustible'";
-    }
-
-    // Filtrar por número de puertas
-    if ($n_puertas) {
-        $sql .= " AND n_puertas = $n_puertas";
-    }
-
-    // Filtrar por airbags
-    if ($airbag) {
-        $sql .= " AND airbag >= $airbag";
-    }
-
-    // Filtrar por cilindrada (cc)
-    if ($cc) {
-        $sql .= " AND cc >= $cc";
-    }
-
-    // Filtrar por tipo de moto
-    if ($tipo_moto) {
-        $sql .= " AND tipo_moto = '$tipo_moto'";
-    }
-
-    // Filtrar por baúl
-    if ($baul !== '') {
-        $sql .= " AND baul = $baul";
-    }
+    $sql = "SELECT tipo,matricula, color, combustible, precio, cv, n_puertas, carroceria, airbag,cc,tipo_moto,baul, vendedor, foto 
+    FROM vehiculo 
+    WHERE 1=1 AND comprado = 'n'"; // Comienza la consulta con un WHERE siempre verdadero
 
     // Añadir la paginación
     $sql .= " LIMIT ?, ?"; // El límite de la consulta
@@ -1057,7 +991,7 @@ function vehiculosUsuario($id,$pagina = 1, $vehiculos_por_pagina = 3) {
 
         // Codificar la imagen en base64 si existe
         $imgBase64 = $row['foto'] ? "data:image/jpeg;base64," . base64_encode($row['foto']) : "./database/1.jpeg"; // Ruta de imagen predeterminada
-
+        
         echo '<div class="col-md-4 mb-4">'; // Columna para cada tarjeta
         echo '    <div class="card">';
         echo '        <img src="' . $imgBase64 . '" class="card-img-top" alt="Imagen del vehículo">';
@@ -1066,16 +1000,20 @@ function vehiculosUsuario($id,$pagina = 1, $vehiculos_por_pagina = 3) {
         echo '            <p class="card-text">Color: ' . ($row['color']) . '</p>';
         echo '            <p class="card-text">Combustible: ' . ($row['combustible']) . '</p>';
         echo '            <p class="card-text">Precio: €' . number_format($row['precio'], 2) . '</p>';
-        echo '            <p class="card-text">Caballos: ' . ($row['cv']) . '</p>';
-        echo '            <p class="card-text">Número de Puertas: ' . ($row['n_puertas']) . '</p>';
-        echo '            <p class="card-text">Carrocería: ' . ($row['carroceria']) . '</p>';
-        echo '            <p class="card-text">Airbags: ' . ($row['airbag']) . '</p>';
+        if ($row['tipo'] == "c") {
+            echo '            <p class="card-text">Caballos: ' . ($row['cv']) . '</p>';
+            echo '            <p class="card-text">Número de Puertas: ' . ($row['n_puertas']) . '</p>';
+            echo '            <p class="card-text">Carrocería: ' . ($row['carroceria']) . '</p>';
+        } else if ($row['tipo'] == "m") {
+            echo '            <p class="card-text">Cilindrada: ' . ($row['cc']) . '</p>';
+            echo '            <p class="card-text">Tipo de Moto: ' . ($row['tipo_moto']) . '</p>';
+            echo '            <p class="card-text">Baúl: ' . ($row['baul'] ? "Sí" : "No") . '</p>';
+        }
         echo '            <p class="card-text">Vendedor: ' . ($row['vendedor']) . '</p>';
-        echo '            <form method="POST" action="" class="d-inline">';
-        echo '                <input type="hidden" name="matricula" value="' . htmlspecialchars($row['matricula']) . '">';
-        echo '                <button type="submit" name="borrar" class="btn btn-danger">Borrar</button>';
-        echo '            </form>';
-        echo '            <a href="editarVehiculo.php?matricula=' . urlencode($row['matricula']) . '" class="btn btn-warning">Editar</a>';
+          echo '            <a href="/trabajoPHP/perfil/editarVehiculo.php?matricula=' . urlencode($row['matricula']) . '&tipo=' . urlencode($row['tipo']) . '" class="btn btn-primary">Editar</a>';
+
+
+
         echo '        </div>';
         echo '    </div>';
         echo '</div>';

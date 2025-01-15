@@ -114,9 +114,9 @@ if (!isset($_SESSION['user_id'])) {
             <!-- Filtro de Rango de Precio -->
             <div class="col-md-3 mb-3">
                 <label for="precio">Precio (hasta)</label>
-                <input type="range" id="precio" name="precio" min="0" max="50000" step="1000" class="form-control"
-                    value="<?= isset($_GET['precio']) ? $_GET['precio'] : 50000 ?>">
-                <small class="form-text text-muted">Modificar el rango de precios</small>
+                <input type="range" id="precio" name="precio" min="0" max="100000" step="1000" class="form-control"
+                    value="<?= isset($_GET['precio']) ? $_GET['precio'] : 100000 ?>">
+                <small class="form-text text-muted">0------------25------------50------------75------------100</small>
             </div>
 
             <!-- Filtro de Color -->
@@ -150,7 +150,7 @@ if (!isset($_SESSION['user_id'])) {
                     <option value="gasolina" <?= isset($_GET['combustible']) && $_GET['combustible'] == 'gasolina' ? 'selected' : '' ?>>Gasolina</option>
                     <option value="diesel" <?= isset($_GET['combustible']) && $_GET['combustible'] == 'diesel' ? 'selected' : '' ?>>Diesel</option>
                     <option value="electricidad" <?= isset($_GET['combustible']) && $_GET['combustible'] == 'electricidad' ? 'selected' : '' ?>>Eléctrico</option>
-                    <option value="hibrido" <?= isset($_GET['combustible']) && $_GET['combustible'] == 'hibrido' ? 'selected' : '' ?>>Híbrido</option>
+                    <option value="hibrido" <?= isset($_GET['combustible']) && $_GET['combustible'] == 'gas natural' ? 'selected' : '' ?>>Gas Natural</option>
                 </select>
             </div>
 
@@ -180,13 +180,8 @@ if (!isset($_SESSION['user_id'])) {
             <!-- Filtro de Tipo de Moto -->
             <div class="col-md-3 mb-3">
                 <label for="tipo_moto">Tipo de Moto:</label>
-                <select id="tipo_moto" name="tipo_moto" class="form-control">
-                    <option value="">Todos</option>
-                    <option value="scooter" <?= isset($_GET['tipo_moto']) && $_GET['tipo_moto'] == 'scooter' ? 'selected' : '' ?>>Scooter</option>
-                    <option value="deportiva" <?= isset($_GET['tipo_moto']) && $_GET['tipo_moto'] == 'deportiva' ? 'selected' : '' ?>>Deportiva</option>
-                    <option value="chopper" <?= isset($_GET['tipo_moto']) && $_GET['tipo_moto'] == 'chopper' ? 'selected' : '' ?>>Chopper</option>
-                    <option value="touring" <?= isset($_GET['tipo_moto']) && $_GET['tipo_moto'] == 'touring' ? 'selected' : '' ?>>Touring</option>
-                </select>
+                <input type="text" id="tipo_moto" name="tipo_moto" class="form-control" 
+                    value="<?= isset($_GET['tipo_moto']) ? $_GET['tipo_moto'] : '' ?>">
             </div>
 
             <!-- Filtro de Baúl (Sí o No) -->

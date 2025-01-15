@@ -186,7 +186,7 @@ if ($tipo == "c") {
         <!-- Imagen de perfil centrada -->
         <div class="vendedor d-flex flex-column justify-content-center align-items-center">
             <?php if ($imagen): ?>
-                <img class="imagen profile-image rounded-circle w-50" src="data:image/jpeg;base64,<?= base64_encode($imagen) ?>" alt="Foto de perfil">
+                <img class="imagen profile-image rounded-circle w-50" src="data:image/jpeg;base64,<?= base64_encode($imagen) ?>" alt="Foto de perfil"  style="width:200px; height:100px;">
             <?php else: ?>
                 <img class="imagen profile-image rounded-circle w-50" src="https://t4.ftcdn.net/jpg/03/49/49/79/360_F_349497933_Ly4im8BDmHLaLzgyKg2f2yZOvJjBtlw5.webp" alt="Imagen predeterminada">
             <?php endif; ?>

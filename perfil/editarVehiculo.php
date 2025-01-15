@@ -40,6 +40,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
         $foto = file_get_contents($_FILES['foto']['tmp_name']);
+    } else {
+        
     }
     
 
@@ -55,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $cc = $_POST['cc'];
         $tipo_moto = $_POST['tipo_moto'];
         $baul = isset($_POST['baul']) ? 1 : 0;
-
+   
         actualizarMoto($matricula, $color, $combustible, $precio, $cc, $tipo_moto, $baul, $foto);
     }
 
@@ -77,9 +79,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body>
 
-<?php 
-include "views/header.php";
-?>
+
+<?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/header.php'; ?>
+
     <div class="container mt-5">
         <div class="card">
             <div class="card-body">
@@ -196,7 +198,7 @@ include "views/header.php";
                             <div class="col-12">
                                 <div class="mb-3">
                                     <label for="foto" class="form-label">Imagen:</label>
-                                    <input type="file" class="form-control" id="foto" name="foto" value ="">
+                                    <input type="file" class="form-control" id="foto" name="foto" >
                                 </div>
                             </div>
                         </div>
@@ -214,8 +216,6 @@ include "views/header.php";
         </div>
     </div>
     
-<?php 
-include "views/footer.php";
-?>
+    <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/footer.php'; ?>
 </body>
 </html>

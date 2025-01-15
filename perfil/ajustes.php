@@ -12,12 +12,7 @@ $user_id = $_SESSION['user_id'];
 // Obtener los datos del usuario
 $usuario = obtenerDatosUsuario($user_id);
 $imagen_perfil = obtenerImagenUsuario($user_id);
-$nombre = null;
-$apellidos = null;
-$direccion = null;
-$cp = null;
-$tlf = null;
-$email = null;
+
 
 if (!$usuario) {
     echo "No se han encontrado datos del usuario.";
@@ -26,12 +21,12 @@ if (!$usuario) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Procesar los cambios
-    $nombre = !empty($_POST["nombre"]) ? $_POST["nombre"] : $usuario['nombre'];
-    $apellidos = !empty($_POST["apellidos"]) ? $_POST["apellidos"] : $usuario['apellidos'];
-    $direccion = !empty($_POST["direccion"]) ? $_POST["direccion"] : $usuario['direccion'];
-    $cp = !empty($_POST["cp"]) ? $_POST["cp"] : $usuario['CP'];
-    $tlf = !empty($_POST["tlf"]) ? $_POST["tlf"] : $usuario['tlf'];
-    $email = !empty($_POST["email"]) ? $_POST["email"] : $usuario['email'];
+    $nombre = !empty($_POST["nombre"]) ? $_POST["nombre"] : $usuario->getNombre();
+    $apellidos = !empty($_POST["apellidos"]) ? $_POST["apellidos"] :$usuario->getApellidos();
+    $direccion = !empty($_POST["direccion"]) ? $_POST["direccion"] : $usuario->getDireccion();
+    $cp = !empty($_POST["cp"]) ? $_POST["cp"] : $usuario->getCp();
+    $tlf = !empty($_POST["tlf"]) ? $_POST["tlf"] : $usuario->getTlf();
+    $email = !empty($_POST["email"]) ? $_POST["email"] : $usuario->getEmail();
 
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
         // Procesar la nueva foto
