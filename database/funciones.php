@@ -903,12 +903,7 @@ function comprarVehiculo($matricula) {
     $conexion->close();
 }
 
-// pensar si es necesaria esta función (supongo qu sí pero tengo dudas)
-function editarVehiculo(){
-  $conexion = conectar();
-  
-  $sql= '';
-}
+
 
 
 /**
@@ -1107,7 +1102,7 @@ function actualizarMoto($matricula, $color, $combustible, $precio, $cc, $tipo_mo
             SET color = ?, combustible = ?, precio = ?, cc = ?, tipo_moto = ?, baul = ?, foto=?
             WHERE matricula = ?";
     $pS = $c->prepare($sql); 
-    $pS->bind_param("ssdissbs", $color, $combustible, $precio, $cc, $tipo_moto, $baul,  $foto,$matricula); // Asignar los parámetros
+    $pS->bind_param("ssdissbs", $color, $combustible, $precio, $cc, $tipo_moto, $baul,  $foto, $matricula); // Asignar los parámetros
     $pS->execute(); // Ejecutar la consulta
 
     $pS->close();
