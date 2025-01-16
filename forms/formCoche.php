@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errores=true;
     }
 
-    $airbags = (int) ($_POST['airbags']);
+    $airbags = (int)securizar($_POST['airbags']);
     
     if(empty($airbags)){
         $airbagsErr = "Es obligatorio rellenar este campo.";

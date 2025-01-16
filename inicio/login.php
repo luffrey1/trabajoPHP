@@ -26,14 +26,14 @@ if (isset($_COOKIE['user_id'])) {
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST["id"])) {
-        $id = $_POST["id"];
+        $id = securizar($_POST["id"]);
     } else {
         $idErr = "El nombre es obligatorio";
         $errores = true;
     }
 
     if (!empty($_POST["contra"])) {
-        $contra = $_POST["contra"];
+        $contra = securizar($_POST["contra"]);
     } else {
         $contraErr = "Tienes que introducir la contraseña";
         $errores = true;

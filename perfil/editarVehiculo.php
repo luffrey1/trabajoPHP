@@ -33,10 +33,10 @@ $alerta = "";
 
 // Procesar el formulario
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $color = $_POST['color'];
-    $combustible = $_POST['combustible'];
-    $precio = $_POST['precio'];
-    $foto =obtenerImagenVehiculo($matricula);
+    $color = securizar($_POST['color']);
+    $combustible = securizar($_POST['combustible']);
+    $precio = securizar($_POST['precio']);
+    $foto =securizar(obtenerImagenVehiculo($matricula));
     
 
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === 0) {
@@ -46,26 +46,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
     
     if ($tipo === 'c') { 
-        $n_puertas = $_POST['n_puertas'];
-        $carroceria = $_POST['carroceria'];
-        $cv = $_POST['cv'];
-        $airbags = $_POST['airbags'];
+        $n_puertas = securizar( $_POST['n_puertas']);
+        $carroceria = securizar($_POST['carroceria']);
+        $cv = securizar($_POST['cv']);
+        $airbags = securizar($_POST['airbags']);
 
         actualizarCoche($matricula, $color, $combustible, $precio, $n_puertas, $carroceria, $cv, $airbags, $foto);
     } elseif ($tipo === 'm') { 
-        $cc = $_POST['cc'];
-        $tipo_moto = $_POST['tipo_moto'];
+        $cc = securizar($_POST['cc']);
+        $tipo_moto = securizar($_POST['tipo_moto']);
         $baul = isset($_POST['baul']) ? 1 : 0;
    
         actualizarMoto($matricula, $color, $combustible, $precio, $cc, $tipo_moto, $baul, $foto);
     }
-    
-
-
-   
-
-
-
     $success_message = "<div class='alert alert-success'>El vehículo se actualizó correctamente.</div>";
 
 

@@ -17,21 +17,21 @@ $errores = false;
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validación de datos
     if (!empty($_POST["id"])) {
-        $id = $_POST["id"];
+        $id = securizar($_POST["id"]);
     } else {
         $idErr = "El ID es obligatorio";
         $errores = true;
     }
 
     if (!empty($_POST["contra"])) {
-        $contra = $_POST["contra"];
+        $contra = securizar($_POST["contra"]);
     } else {
         $contraErr = "Tienes que introducir la contraseña";
         $errores = true;
     }
 
     if (!empty($_POST["contra1"])) {
-        $contra1 = $_POST["contra1"];
+        $contra1 = securizar($_POST["contra1"]);
     } else {
         $contra1Err = "Tienes que introducir de nuevo la contraseña";
         $errores = true;

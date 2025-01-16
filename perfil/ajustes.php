@@ -21,12 +21,12 @@ if (!$usuario) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Procesar los cambios
-    $nombre = !empty($_POST["nombre"]) ? $_POST["nombre"] : $usuario->getNombre();
-    $apellidos = !empty($_POST["apellidos"]) ? $_POST["apellidos"] :$usuario->getApellidos();
-    $direccion = !empty($_POST["direccion"]) ? $_POST["direccion"] : $usuario->getDireccion();
-    $cp = !empty($_POST["cp"]) ? $_POST["cp"] : $usuario->getCp();
-    $tlf = !empty($_POST["tlf"]) ? $_POST["tlf"] : $usuario->getTlf();
-    $email = !empty($_POST["email"]) ? $_POST["email"] : $usuario->getEmail();
+    $nombre = !empty($_POST["nombre"]) ? securizar($_POST["nombre"]) : $usuario->getNombre();
+    $apellidos = !empty($_POST["apellidos"]) ? securizar($_POST["apellidos"]) :$usuario->getApellidos();
+    $direccion = !empty($_POST["direccion"]) ? securizar($_POST["direccion"]) : $usuario->getDireccion();
+    $cp = !empty($_POST["cp"]) ? securizar($_POST["cp"]) : $usuario->getCp();
+    $tlf = !empty($_POST["tlf"]) ? securizar($_POST["tlf"]) : $usuario->getTlf();
+    $email = !empty($_POST["email"]) ? securizar($_POST["email"]) : $usuario->getEmail();
 
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
         // Procesar la nueva foto
