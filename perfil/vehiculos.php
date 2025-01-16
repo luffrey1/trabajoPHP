@@ -9,14 +9,15 @@
     // Calcular el total de páginas
     $total_paginas = calcularPaginas($vehiculos_por_pagina);
 
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['borrar'])) {
-        $matricula = $_POST['matricula']; // Obtener la matrícula enviada por el formulario
-    
-        if (borrarVehiculo($matricula)) {
-            echo '<div class="alert alert-success text-center mt-5">El vehículo con matrícula ' . ($matricula) . ' fue eliminado con éxito.</div>';
-        } else {
-            echo '<div class="alert alert-danger text-center mt-5">Error al eliminar el vehículo con matrícula ' . ($matricula) . '.</div>';
+    $alerta = "";
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['borrar'])) {
+        $matricula = $_GET['matricula'] ?? null;
+      
+        
+        if (borrarVehiculo($matricula) == true) {
+            $alerta = '<div class="alert alert-success text-center mt-5">El vehículo con matrícula ' . ($matricula) . ' fue eliminado con éxito.</div>';
+        } else if (borrarVehiculo($matricula) == false) {
+            $alerta = '<div class="alert alert-danger text-center mt-5">Error al eliminar el vehículo con matrícula ' . ($matricula) . '.</div>';
         }
     }
 
@@ -33,7 +34,7 @@
 </head>
 <body>
 <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/header.php'; ?>
-
+    <?php echo $alerta;?>
         <div class="col-md-9">
             <div class="container mt-3">
                 <div class="row">

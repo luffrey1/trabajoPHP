@@ -28,7 +28,7 @@ if (!$vehiculo) {
     exit();
 }
 
-
+$alerta = "";
 
 
 // Procesar el formulario
@@ -37,15 +37,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $combustible = $_POST['combustible'];
     $precio = $_POST['precio'];
     $foto =obtenerImagenVehiculo($matricula);
-
-    if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-        $foto = file_get_contents($_FILES['foto']['tmp_name']);
-    } else {
-        
-    }
     
 
-
+    if (isset($_FILES['foto']) && $_FILES['foto']['error'] === 0) {
+        $foto = file_get_contents($_FILES['foto']['tmp_name']); // Leer los datos binarios de la imagen
+    } else {
+     
+    }
+    
     if ($tipo === 'c') { 
         $n_puertas = $_POST['n_puertas'];
         $carroceria = $_POST['carroceria'];
@@ -60,6 +59,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
    
         actualizarMoto($matricula, $color, $combustible, $precio, $cc, $tipo_moto, $baul, $foto);
     }
+    
+
+
+   
+
+
 
     $success_message = "<div class='alert alert-success'>El vehículo se actualizó correctamente.</div>";
 
@@ -75,12 +80,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <title>Editar Vehículo</title>
+    <title>Editar Vehículo </title>
 </head>
 <body>
 
 
 <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/header.php'; ?>
+
 
     <div class="container mt-5">
         <div class="card">
@@ -101,11 +107,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         </div>
                     </div>
                
-                    <form method="POST">
+                    <form method="POST" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-12">
                                 <div class="mb-3">
-                                    <label for="matricula" class="form-label">Matrícula:</label>
+                                    <label for="matricula" class="form-label">Matrícula: <?php var_dump($foto);?></label>
                                     <input type="text" class="form-control" id="matricula" name="matricula" value="<?= $vehiculo->getMatricula()?>" readonly>
                                 </div>
                             </div>
@@ -120,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="combustible" class="form-label">Combustible:</label>
+                                    <label for="combustible" class="form-label">Combustible: </label>
                                     <select class="form-select" id="combustible" name="combustible">
                                         <option value="gasolina" <?php $vehiculo->getCombustible() === 'gasolina' ? 'selected' : '' ?>>Gasolina</option>
                                         <option value="diesel"  <?php $vehiculo->getCombustible() === 'diesel' ? 'selected' : '' ?>>Diesel</option>
@@ -198,7 +204,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <div class="col-12">
                                 <div class="mb-3">
                                     <label for="foto" class="form-label">Imagen:</label>
-                                    <input type="file" class="form-control" id="foto" name="foto" >
+                                    <input type="file" class="form-control" id="foto" name="foto" value="<?php $foto ?>;">
                                 </div>
                             </div>
                         </div>

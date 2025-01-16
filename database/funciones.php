@@ -489,7 +489,7 @@ function obtenerImagenUsuario($user_id) {
     $prepared = $conexion->prepare($sql);
     $prepared->bind_param("s", $user_id);
     $prepared->execute();
-
+    $foto = false;
     $prepared->bind_result($foto);
     $prepared->fetch();
     return $foto; // Devuelve los datos binarios de la imagen
@@ -510,11 +510,12 @@ function obtenerImagenVehiculo($matricula) {
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("s", $matricula);
     $stmt->execute();
+    $foto = false;
     $stmt->bind_result($foto);
     $stmt->fetch();
     $stmt->close();
     $conexion->close();
-    return $foto ? $foto : null;
+    return $foto;
 }
 //D:Nose porque da error antes no lo daba pero funciona 
 
@@ -1005,6 +1006,10 @@ function vehiculosUsuario($id,$pagina = 1, $vehiculos_por_pagina = 3) {
             echo '            <p class="card-text">Baúl: ' . ($row['baul'] ? "Sí" : "No") . '</p>';
         }
         echo '            <p class="card-text">Vendedor: ' . ($row['vendedor']) . '</p>';
+        echo '<form method="POST action="" class="d-inline">';
+        echo '<input type="hidden" name="matricula" value="' . ($row['matricula']) . '">';
+        echo '<button type="submit" name="borrar" class="btn btn-danger">Borrar</button>';
+        echo '</form>';
           echo '            <a href="/trabajoPHP/perfil/editarVehiculo.php?matricula=' . urlencode($row['matricula']) . '&tipo=' . urlencode($row['tipo']) . '" class="btn btn-primary">Editar</a>';
 
 
@@ -1069,16 +1074,33 @@ function vehiculoPorMatricula($matricula) {
 function actualizarCoche($matricula, $color, $combustible, $precio, $n_puertas, $carroceria, $cv, $airbags, $foto) {
     $c = conectar();
 
-    $sql = "UPDATE vehiculo 
-            SET color = ?, combustible = ?, precio = ?, n_puertas = ?, carroceria = ?, cv = ?, airbag = ?, foto=?
-            WHERE matricula = ?";
-    $pS = $c->prepare($sql); // Preparar la consulta
-    $pS->bind_param("ssdissisb", $color, $combustible, $precio, $n_puertas, $carroceria, $cv, $airbags, $matricula, $foto); // Asignar los parámetros
+    if ($foto !== null) {
+        $sql = "UPDATE vehiculo 
+                SET color = ?, combustible = ?, precio = ?, n_puertas = ?, carroceria = ?, cv = ?, airbag = ?, foto = ?
+                WHERE matricula = ?";
+        $pS = $c->prepare($sql); // Preparar la consulta
+        $pS->bind_param("ssdisiibs", $color, $combustible, $precio, $n_puertas, $carroceria, $cv, $airbags, $foto, $matricula);
+    } else {
+        $sql = "UPDATE vehiculo 
+                SET color = ?, combustible = ?, precio = ?, n_puertas = ?, carroceria = ?, cv = ?, airbag = ?
+                WHERE matricula = ?";
+        $pS = $c->prepare($sql); // Preparar la consulta
+        $pS->bind_param("ssdisiis", $color, $combustible, $precio, $n_puertas, $carroceria, $cv, $airbags, $matricula);
+    }
+
     $pS->execute(); // Ejecutar la consulta
+
+    if ($pS->affected_rows === 0) {
+        echo "No se actualizó ningún registro. Verifica si los valores son iguales a los existentes.";
+    } else {
+        echo "Vehículo actualizado correctamente.";
+    }
 
     $pS->close();
     $c->close();
 }
+
+
 
 //solo para tipo m
  
@@ -1102,7 +1124,7 @@ function actualizarMoto($matricula, $color, $combustible, $precio, $cc, $tipo_mo
             SET color = ?, combustible = ?, precio = ?, cc = ?, tipo_moto = ?, baul = ?, foto=?
             WHERE matricula = ?";
     $pS = $c->prepare($sql); 
-    $pS->bind_param("ssdissbs", $color, $combustible, $precio, $cc, $tipo_moto, $baul,  $foto, $matricula); // Asignar los parámetros
+    $pS->bind_param("ssdisibs", $color, $combustible, $precio, $cc, $tipo_moto, $baul,  $matricula, $foto); // Asignar los parámetros
     $pS->execute(); // Ejecutar la consulta
 
     $pS->close();
