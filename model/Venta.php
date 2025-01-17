@@ -1,70 +1,56 @@
 <?php
 
 class Venta{
-
-    public String $codigoVenta;
-    public String $idVehiculo;
-    public String $idComprador;
-    public String $idVendedor;
+    public Vehiculo $vehiculo;
+    public Usuario $comprador;
+    public Usuario $vendedor;
     public DateTime $fechaVenta;
 
-    public function __construct(String $codigoVenta, String $idVehiculo, String $idComprador, String $idVendedor, DateTime $fechaVenta){
-        $this->codigoVenta = $codigoVenta;
-        $this->idVehiculo = $idVehiculo;
-        $this->idComprador = $idComprador;
-        $this->idVendedor = $idVendedor;
+    public function __construct(Vehiculo $vehiculo, Usuario $comprador, Usuario $vendedor, DateTime $fechaVenta){
+        $this->vehiculo = $vehiculo;
+        $this->comprador = $comprador;
+        $this->vendedor = $vendedor;
         $this->fechaVenta = $fechaVenta;
     }
 
     
-    public function getCodigoVenta()
+
+
+    public function getvehiculo()
     {
-        return $this->codigoVenta;
+        return $this->vehiculo;
     }
 
-    public function setCodigoVenta($codigoVenta)
+
+    public function setvehiculo($vehiculo)
     {
-        $this->codigoVenta = $codigoVenta;
+        $this->vehiculo = $vehiculo;
+
+        return $this;
+    }
+
+    public function getcomprador()
+    {
+        return $this->comprador;
+    }
+
+    public function setcomprador($comprador)
+    {
+        $this->comprador = $comprador;
 
         return $this;
     }
 
 
-    public function getIdVehiculo()
+    public function getvendedor()
     {
-        return $this->idVehiculo;
+        return $this->vendedor;
     }
 
 
-    public function setIdVehiculo($idVehiculo)
+    public function setvendedor($vendedor)
     {
-        $this->idVehiculo = $idVehiculo;
-
-        return $this;
-    }
-
-    public function getIdComprador()
-    {
-        return $this->idComprador;
-    }
-
-    public function setIdComprador($idComprador)
-    {
-        $this->idComprador = $idComprador;
-
-        return $this;
-    }
-
-
-    public function getIdVendedor()
-    {
-        return $this->idVendedor;
-    }
-
-
-    public function setIdVendedor($idVendedor)
-    {
-        $this->idVendedor = $idVendedor;
+        $this->vendedor = $vendedor;
 
         return $this;
     }

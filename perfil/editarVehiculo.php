@@ -36,33 +36,58 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $color = securizar($_POST['color']);
     $combustible = securizar($_POST['combustible']);
     $precio = securizar($_POST['precio']);
-    $foto =securizar(obtenerImagenVehiculo($matricula));
-    
+    $vendedor = obtenerVendedor($matricula);
 
+    // Verificar si hay una nueva imagen
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === 0) {
-        $foto = file_get_contents($_FILES['foto']['tmp_name']); // Leer los datos binarios de la imagen
+        $foto = file_get_contents($_FILES['foto']['tmp_name']);
+        $vehiculo->setImagen($foto); // Actualiza la imagen en el objeto
     } else {
-     
+        $foto = $vehiculo->getImagen(); // Mantener la imagen existente
     }
     
-    if ($tipo === 'c') { 
-        $n_puertas = securizar( $_POST['n_puertas']);
+    
+
+    if ($tipo === 'c') {
+        $n_puertas = securizar($_POST['n_puertas']);
         $carroceria = securizar($_POST['carroceria']);
         $cv = securizar($_POST['cv']);
         $airbags = securizar($_POST['airbags']);
 
-        actualizarCoche($matricula, $color, $combustible, $precio, $n_puertas, $carroceria, $cv, $airbags, $foto);
-    } elseif ($tipo === 'm') { 
+        $vehiculo = new Coche(
+            $matricula,
+            $color,
+            $combustible,
+            $precio,
+            $vehiculo->getVendedor(),
+            $n_puertas,
+            $cv,
+            $carroceria,
+            $airbags,
+            $foto
+        );
+        actualizarCoche($vehiculo);
+    } elseif ($tipo === 'm') {
         $cc = securizar($_POST['cc']);
         $tipo_moto = securizar($_POST['tipo_moto']);
         $baul = isset($_POST['baul']) ? 1 : 0;
-   
-        actualizarMoto($matricula, $color, $combustible, $precio, $cc, $tipo_moto, $baul, $foto);
+        $vehiculo = new Moto(
+            $matricula,
+            $color,
+            $combustible,
+            $precio,
+            $vehiculo->getVendedor(),
+            $cc,
+            $tipo_moto,
+            $baul,
+            $foto
+        );
+        actualizarMoto($vehiculo);
     }
+
     $success_message = "<div class='alert alert-success'>El vehículo se actualizó correctamente.</div>";
-
-
 }
+
 
 ?>
 <!DOCTYPE html>
@@ -104,7 +129,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <div class="row">
                             <div class="col-12">
                                 <div class="mb-3">
-                                    <label for="matricula" class="form-label">Matrícula: <?php var_dump($foto);?></label>
+                                    <label for="matricula" class="form-label">Matrícula: </label>
                                     <input type="text" class="form-control" id="matricula" name="matricula" value="<?= $vehiculo->getMatricula()?>" readonly>
                                 </div>
                             </div>

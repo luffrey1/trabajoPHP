@@ -189,15 +189,13 @@ function insertarCoche($coche) {
 
     // Enviar el contenido del BLOB
     if (!empty($imagen)) {
-        $preparedStatement->send_long_data(10, $imagen); // Índice 10 corresponde a 'foto'
-    }
+        $preparedStatement->send_long_data(10, $imagen); 
 
     // Ejecutar la consulta y verificar
     if (!$preparedStatement->execute()) {
-        $preparedStatement->close();
-        $conexion->close();
-        die("Error al insertar el vehículo: " . $preparedStatement->error);
+        die("Error en la consulta SQL: " . $preparedStatement->error);
     }
+    
 
     // Guardar los datos en el objeto Coche (POO)
     $coche->setMatricula($matricula);
@@ -216,6 +214,7 @@ function insertarCoche($coche) {
     $conexion->close();
 
     return true;
+}
 }
 
 /**
@@ -314,7 +313,7 @@ function crearTablaVenta(){
     $c = conectar();
 
     $sql = "CREATE TABLE IF NOT EXISTS venta(
-        codigo_venta VARCHAR(50) PRIMARY KEY,
+        codigo_venta INT AUTO_INCREMENT PRIMARY KEY,
         id_vehiculo VARCHAR(50) NOT NULL,
         id_comprador VARCHAR(50) NOT NULL,
         id_vendedor VARCHAR(50) NOT NULL,
@@ -795,6 +794,7 @@ function calcularPaginas($vehiculos_por_pagina = 10, $tipo = null, $precio = nul
 
     return $total_paginas;
 }
+
  
 /**
  * Obtener los datos de un vehículo para mostrarlos o utilizarlos en alguna parte del código.
@@ -1060,45 +1060,81 @@ function vehiculoPorMatricula($matricula) {
 /**
  * Actualizar un coche en la base de datos
  *
- * @param  mixed $matricula
- * @param  mixed $color
- * @param  mixed $combustible
- * @param  mixed $precio
- * @param  mixed $n_puertas
- * @param  mixed $carroceria
- * @param  mixed $cv
- * @param  mixed $airbags
- * @param  mixed $foto
- * @return void
+ * @param  mixed $coche
+ * @return bool
  */
-function actualizarCoche($matricula, $color, $combustible, $precio, $n_puertas, $carroceria, $cv, $airbags, $foto) {
-    $c = conectar();
-
-    if ($foto !== null) {
-        $sql = "UPDATE vehiculo 
-                SET color = ?, combustible = ?, precio = ?, n_puertas = ?, carroceria = ?, cv = ?, airbag = ?, foto = ?
-                WHERE matricula = ?";
-        $pS = $c->prepare($sql); // Preparar la consulta
-        $pS->bind_param("ssdisiibs", $color, $combustible, $precio, $n_puertas, $carroceria, $cv, $airbags, $foto, $matricula);
-    } else {
-        $sql = "UPDATE vehiculo 
-                SET color = ?, combustible = ?, precio = ?, n_puertas = ?, carroceria = ?, cv = ?, airbag = ?
-                WHERE matricula = ?";
-        $pS = $c->prepare($sql); // Preparar la consulta
-        $pS->bind_param("ssdisiis", $color, $combustible, $precio, $n_puertas, $carroceria, $cv, $airbags, $matricula);
+function actualizarCoche($coche) {
+    $conexion = conectar();
+    if ($conexion->connect_error) {
+        die("Error de conexión: " . $conexion->connect_error);
     }
 
-    $pS->execute(); // Ejecutar la consulta
+    $color = $coche->getColor();
+    $combustible = $coche->getCombustible();
+    $precio = $coche->getPrecio();
+    $cv = $coche->getCaballos();
+    $n_puertas = $coche->getPuertas();
+    $carroceria = $coche->getCarroceria();
+    $airbag = $coche->getAirbag();
+    $imagen = $coche->getImagen();
+    $matricula = $coche->getMatricula();
 
-    if ($pS->affected_rows === 0) {
-        echo "No se actualizó ningún registro. Verifica si los valores son iguales a los existentes.";
+    // Verificar si se proporciona una nueva imagen
+    if (empty($imagen)) {
+        $sql = "UPDATE vehiculo 
+                SET color = ?, combustible = ?, precio = ?, cv = ?, n_puertas = ?, 
+                    carroceria = ?, airbag = ? 
+                WHERE matricula = ?";
+        $preparedStatement = $conexion->prepare($sql);
+        if (!$preparedStatement) {
+            die("Error preparando la consulta: " . $conexion->error);
+        }
+
+       
+        $preparedStatement->bind_param(
+            'ssdiisss',
+            $color, $combustible, $precio, $cv, $n_puertas, 
+            $carroceria, $airbag, $matricula
+        );
     } else {
-        echo "Vehículo actualizado correctamente.";
+        $sql = "UPDATE vehiculo 
+                SET color = ?, combustible = ?, precio = ?, cv = ?, n_puertas = ?, 
+                    carroceria = ?, airbag = ?, foto = ? 
+                WHERE matricula = ?";
+        $preparedStatement = $conexion->prepare($sql);
+        if (!$preparedStatement) {
+            die("Error preparando la consulta: " . $conexion->error);
+        }
+
+       
+        $null = null;
+        $preparedStatement->bind_param(
+            'ssdiissbs',
+            $color, $combustible, $precio, $cv, $n_puertas, 
+            $carroceria, $airbag, $null, $matricula
+        );
+
+        // Enviar los datos binarios de la imagen
+        $preparedStatement->send_long_data(7, $imagen);
     }
 
-    $pS->close();
-    $c->close();
+  
+   // var_dump($color, $combustible, $precio, $cv, $n_puertas, $carroceria, $airbag, $imagen, $matricula);
+
+   
+    if (!$preparedStatement->execute()) {
+        die("Error ejecutando la consulta: " . $preparedStatement->error);
+    }
+    echo "Actualización completada correctamente";
+
+    $preparedStatement->close();
+    $conexion->close();
+
+    return true;
 }
+
+
+
 
 
 
@@ -1107,28 +1143,60 @@ function actualizarCoche($matricula, $color, $combustible, $precio, $n_puertas, 
 /**
  * Actualizar una moto en la base de datos
  *
- * @param  mixed $matricula
- * @param  mixed $color
- * @param  mixed $combustible
- * @param  mixed $precio
- * @param  mixed $cc
- * @param  mixed $tipo_moto
- * @param  mixed $baul
- * @param  mixed $foto
- * @return void
+ * @param  mixed $moto
+ * @return bool
  */
-function actualizarMoto($matricula, $color, $combustible, $precio, $cc, $tipo_moto, $baul, $foto) {
-    $c = conectar();
+function actualizarMoto($moto) {
+    $conexion = conectar();
+    if ($conexion->connect_error) {
+        die("Error de conexión: " . $conexion->connect_error);
+    }
+    $color = $moto->getColor();
+    $combustible = $moto->getCombustible();
+    $precio = $moto->getPrecio();
+    $cc = $moto->getCilindrada();
+    $tipo_moto = $moto->getTipo_m();
+    $baul = $moto->getBaul();
+    $imagen = $moto->getImagen();
+    $matricula = $moto->getMatricula();
 
-    $sql = "UPDATE vehiculo 
-            SET color = ?, combustible = ?, precio = ?, cc = ?, tipo_moto = ?, baul = ?, foto=?
-            WHERE matricula = ?";
-    $pS = $c->prepare($sql); 
-    $pS->bind_param("ssdisibs", $color, $combustible, $precio, $cc, $tipo_moto, $baul,  $matricula, $foto); // Asignar los parámetros
-    $pS->execute(); // Ejecutar la consulta
+    if (empty($imagen)) {
+        $sql =   $sql = "UPDATE vehiculo 
+        SET color = ?, combustible = ?, precio = ?, cc = ?, tipo_moto = ?, baul = ?
+        WHERE matricula = ?";
+        $preparedStatement = $conexion->prepare($sql);
+        if (!$preparedStatement) {
+            die("Error preparando la consulta: " . $conexion->error);
+        }
+        $preparedStatement->bind_param(
+          "ssdisis", $color, $combustible, $precio, $cc, $tipo_moto, $baul,  $matricula
+        );
+    } else {
+        $sql =   $sql = "UPDATE vehiculo 
+        SET color = ?, combustible = ?, precio = ?, cc = ?, tipo_moto = ?, baul = ?, foto=?
+        WHERE matricula = ?";
+        $preparedStatement = $conexion->prepare($sql);
+        if (!$preparedStatement) {
+            die("Error preparando la consulta: " . $conexion->error);
+        }
+        $null = null;
+        $preparedStatement->bind_param(
+            "ssdisibs", $color, $combustible, $precio, $cc, $tipo_moto, $baul, $null ,$matricula
+          );
+            // Enviar los datos binarios de la imagen
+        $preparedStatement->send_long_data(6, $imagen);
+}
+$preparedStatement->send_long_data(7, $imagen);
+if (!$preparedStatement->execute()) {
+    die("Error ejecutando la consulta: " . $preparedStatement->error);
+}
+echo "Actualización completada correctamente";
 
-    $pS->close();
-    $c->close();
+$preparedStatement->close();
+$conexion->close();
+
+return true;
+
 }
  
 /**
@@ -1149,17 +1217,55 @@ function obtenerTipoV($matricula) {
     return $tipo; 
 }
 
+/**
+ * Obtener el vendedor en base a la matricula para utilizar en alguna funcion si tener que sobrecargar pidiendo todos los datos
+ *
+ * @param  mixed $matricula
+ * @return void
+ */
+function obtenerVendedor($matricula) {
+    $conexion = conectar();
+    $sql ="SELECT vendedor from vehiculo where matricula = ?";
+    $prepared = $conexion->prepare($sql);
+    $prepared->bind_param("s", $matricula);
+    $prepared->execute();
+    $tipo = null;
+    $prepared->bind_result($vendedor);
+    $prepared->fetch();
+    return $vendedor; 
+}
+
+/**
+ * Registrar la venta de un vehiculo en la db
+ *
+ * @param  mixed $venta
+ */
+function registrarVenta($venta) {
+    $conexion = conectar();
+    $sql = "INSERT INTO venta (id_vehiculo, id_comprador, id_vendedor, fecha_venta)
+            VALUES (?, ?, ?, ?)";
+    $ps = $conexion->prepare($sql);
+    
+    // Obtener los datos de la venta
+    $id_vehiculo = $venta->getVehiculo()->getMatricula();
+    $id_comprador = $venta->getComprador()->getId();
+    $id_vendedor = $venta->getVendedor()->getId();
+    
+
+    $fecha_venta = $venta->getFechaVenta()->format('Y-m-d H:i:s');
+    
+    // Enlazar los parámetros
+    $ps->bind_param(
+        'ssss',  
+        $id_vehiculo, $id_comprador, $id_vendedor, $fecha_venta
+    );
 
 
-
-
-
-
-
-
-
-
-
-
+    $ps->execute();
+    
+  
+    $ps->close();
+    $conexion->close();
+}
 
 ?>

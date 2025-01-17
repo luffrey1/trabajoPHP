@@ -184,7 +184,7 @@ body {
 ?>
 
 <div class="container d-flex justify-content-center align-items-center vh-100">
-    <form action="trabajoPHP/forms/formCoche.php" method="POST" enctype="multipart/form-data" class="vehiculo p-4 bg-light rounded shadow w-100">
+    <form action="/trabajoPHP/forms/formCoche.php" method="POST" enctype="multipart/form-data" class="vehiculo p-4 bg-light rounded shadow w-100">
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="matricula" class="form-label">Matrícula: *</label>

@@ -1,21 +1,26 @@
 <?php
 session_start(); 
 require 'vendor/autoload.php';
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/database/funciones.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Venta.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Vehiculo.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Usuario.php';
 
 \Stripe\Stripe::setApiKey('sk_test_51QfhMpFhEizoamwmJ1MvAyB1ChTNVbxyzoSfuGeRbIn1X2W2bjFjM75gecEnDWZ0PzHmJoay01V6z7TBScQkG1r200DmG6LFkE');
 if (isset($_GET['matricula'])) {
+
     $matricula = $_GET['matricula'];
-    // Guardamos los detalles del vehículo en la sesión
+    
     if (isset($_GET['tipo'])) {
         $tipo = $_GET['tipo'];
     
-        
-        $vehiculo = obtenerDatosVehiculo($matricula,$tipo);
+   
     }
+    $vehiculo = obtenerDatosVehiculo($matricula,$tipo);
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $token = $_POST['stripeToken'];
-
+  
     // Verifica que el token haya sido recibido
     if (!$token) {
         die('Error: No se ha recibido el token de Stripe');
@@ -33,7 +38,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Verifica si el pago fue exitoso
         if ($charge->status == 'succeeded') {
             echo "Pago realizado exitosamente. Gracias por su compra.";
-            // Aquí puedes agregar lógica para redirigir a una página de confirmación o gracias.
+
+           
+            $id1 = obtenerVendedor($matricula);
+            $vendedor = obtenerDatosUsuario($id1);
+            $id = $_SESSION['user_id'];
+            $comprador = obtenerDatosUsuario($id);
+            $fecha= time();
+            $fechaDateTime = new DateTime();
+            $fechaDateTime->setTimestamp($fecha);
+            $venta = new Venta (
+                $vehiculo,
+                $comprador,
+                $vendedor,
+                $fechaDateTime
+            );
+            registrarVenta($venta);
+            comprarVehiculo($matricula);
+            
         } else {
             echo "El pago no se pudo procesar.";
         }

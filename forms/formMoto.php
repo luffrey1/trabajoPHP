@@ -105,9 +105,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Insertar el coche en la base de datos
         if (insertarMoto($vehiculo)) {
-            echo "<div class='alert alert-success'>Vehículo registrado con éxito.</div>";
+            echo "<div class='alert alert-success alerta'>Vehículo registrado con éxito.</div>";
         } else {
-            echo "<div class='alert alert-danger'>Error al registrar el vehículo.</div>";
+            echo "<div class='alert alert-danger alerta'>Error al registrar el vehículo.</div>";
         }
     }
    
@@ -151,6 +151,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
        .errores {
            color: red;
        }
+       .alerta {
+        margin-top: 55px;
+       }
 
    </style>
 </head>
@@ -159,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/header.php'; ?>
 
 <?php if ($errores): ?>
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-danger alerta" role="alert">
         <?php echo $notificacionError; ?>
     </div>
 <?php endif; ?>
