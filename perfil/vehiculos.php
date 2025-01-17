@@ -38,9 +38,10 @@
         <div class="col-md-9">
             <div class="container mt-3">
                 <div class="row">
-                    <div class = "col-12 text-center mt-5">
-                        <h3>Mis Vehículos</h3>
-                    </div>
+                <div class="col-12 text-center mt-5">
+                    <h3 class="fw-bold display-5">Mis Vehículos</h3>
+                </div>
+
                     <div class="col-12 text-center mt-5">
                         <ul class="pagination justify-content-center">
                             <?php if ($pagina > 1): ?>

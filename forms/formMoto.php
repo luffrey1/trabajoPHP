@@ -162,9 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/header.php'; ?>
 
 <?php if ($errores): ?>
-    <div class="alert alert-danger alerta" role="alert">
         <?php echo $notificacionError; ?>
-    </div>
 <?php endif; ?>
 
 <div class="container">

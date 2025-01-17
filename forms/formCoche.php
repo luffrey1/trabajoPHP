@@ -67,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $caballos = (int)securizar($_POST['caballos']);
 
     if ($caballos <= 0) {
-        $caballosErr = "Es obligatorio rellenar este campo.";
+        $caballosErr = "Es obligatorio rellenar este campo con un número.";
         $errores = true;
     }
 

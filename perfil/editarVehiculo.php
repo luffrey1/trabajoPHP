@@ -3,6 +3,14 @@ session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/database/funciones.php';
 
 
+$colorErr = $combustibleErr = $precioErr ="";
+
+$n_puertasErr = $caballosErr = $carroceriaErr = $airbagsErr = $fotoErr= "";
+
+$cilindradaErr = $tipo_motoErr = "";
+$errores = false;
+
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: /trabajoPHP/inicio/login.php");
     exit();
@@ -33,9 +41,23 @@ $alerta = "";
 
 // Procesar el formulario
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $color = securizar($_POST['color']);
+
+    $color =  securizar($_POST['color'] ?? '');
+
+    if(empty($color)){
+        $colorErr = "Este campo no puede quedar vacío.";
+        $errores=true;
+    }
+
     $combustible = securizar($_POST['combustible']);
-    $precio = securizar($_POST['precio']);
+
+    $precio = (float)securizar($_POST['precio']);
+
+    if(empty($precio)){
+        $precioErr = "Este campo no puede quedar vacío.";
+        $errores=true;
+    }
+
     $vendedor = obtenerVendedor($matricula);
 
     // Verificar si hay una nueva imagen
@@ -49,40 +71,87 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     
 
     if ($tipo === 'c') {
-        $n_puertas = securizar($_POST['n_puertas']);
-        $carroceria = securizar($_POST['carroceria']);
-        $cv = securizar($_POST['cv']);
-        $airbags = securizar($_POST['airbags']);
+        $n_puertas = (int)securizar($_POST['n_puertas']);
+        if ($n_puertas <= 0) {
+            $n_puertasErr = "Este campo no puede quedar vacío.";
+            $errores = true;
+        }
+    
+        $carroceria = securizar($_POST['carroceria'] ?? '');
+        if(empty($carroceria)){
+            $carroceriaErr = "Este campo no puede quedar vacío.";
+            $errores=true;
+        }
 
-        $vehiculo = new Coche(
-            $matricula,
-            $color,
-            $combustible,
-            $precio,
-            $vehiculo->getVendedor(),
-            $n_puertas,
-            $cv,
-            $carroceria,
-            $airbags,
-            $foto
-        );
-        actualizarCoche($vehiculo);
+        $cv = (int)securizar($_POST['cv']);
+        if ($cv <= 0) {
+            $caballosErr = "Este campo no puede quedar vacío o rellenelo con un número válido.";
+            $errores = true;
+        }
+
+        $airbags = (int)securizar($_POST['airbags']);
+        if(empty($airbags)){
+            $airbagsErr = "Este campo no puede quedar vacío.";
+            $errores=true;
+        }
+
+        if ($errores) {
+            $notificacionError=  "<div class='alert alert-danger'>No actualizado.</div>";
+        } else {
+
+            $vehiculo = new Coche(
+                $matricula,
+                $color,
+                $combustible,
+                $precio,
+                $vehiculo->getVendedor(),
+                $n_puertas,
+                $cv,
+                $carroceria,
+                $airbags,
+                $foto
+            );
+
+            actualizarCoche($vehiculo);
+        }
+
+        
     } elseif ($tipo === 'm') {
-        $cc = securizar($_POST['cc']);
-        $tipo_moto = securizar($_POST['tipo_moto']);
+
+        $cc = (int)securizar($_POST['cc']);
+
+        if ($cilindrada <= 0) {
+            $cilindradaErr = "Este campo no puede quedar vacío.";
+            $errores = true;
+        }
+
+        $tipo_moto = securizar($_POST['tipo_moto'] ?? '');
+
+        if(empty($tipo_moto)){
+            $tipo_motoErr = "Este campo no puede quedar vacío.";
+            $errores=true;
+        }
+
         $baul = isset($_POST['baul']) ? 1 : 0;
-        $vehiculo = new Moto(
-            $matricula,
-            $color,
-            $combustible,
-            $precio,
-            $vehiculo->getVendedor(),
-            $cc,
-            $tipo_moto,
-            $baul,
-            $foto
-        );
-        actualizarMoto($vehiculo);
+
+        if ($errores) {
+            $notificacionError=  "<div class='alert alert-danger'>No actualizado.</div>";
+        } else {
+
+            $vehiculo = new Moto(
+                $matricula,
+                $color,
+                $combustible,
+                $precio,
+                $vehiculo->getVendedor(),
+                $cc,
+                $tipo_moto,
+                $baul,
+                $foto
+            );
+
+            actualizarMoto($vehiculo);
+        }
     }
 
     $success_message = "<div class='alert alert-success'>El vehículo se actualizó correctamente.</div>";
@@ -100,10 +169,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <title>Editar Vehículo </title>
 </head>
+<style>
+    .alert{
+        margin-top: 50px;
+    }
+    .errores{
+        color: red;
+    }
+</style>
 <body>
 
 
 <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/header.php'; ?>
+<?php 
+    if ($errores){
+        echo $notificacionError;
+    } else {
+        echo $success_message;
+    }
+?>
 
 
     <div class="container mt-5">
@@ -140,6 +224,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 <div class="mb-3">
                                     <label for="color" class="form-label">Color:</label>
                                     <input type="text" class="form-control" id="color" name="color" value="<?= $vehiculo->getColor()?>">
+                                    <span class="errores"><?php echo $colorErr; ?></span>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -160,6 +245,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 <div class="mb-3">
                                     <label for="precio" class="form-label">Precio:</label>
                                     <input type="number" class="form-control" id="precio" name="precio" value="<?= $vehiculo->getPrecio() ?>">
+                                    <span class="errores"><?php echo $precioErr; ?></span>
                                 </div>
                             </div>
                         </div>
@@ -170,12 +256,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                     <div class="mb-3">
                                         <label for="n_puertas" class="form-label">Número de Puertas:</label>
                                         <input type="number" class="form-control" id="n_puertas" name="n_puertas" value="<?= $vehiculo->getPuertas() ?>">
+                                        <span class="errores"><?php echo $n_puertasErr; ?></span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="carroceria" class="form-label">Carrocería:</label>
                                         <input type="text" class="form-control" id="carroceria" name="carroceria" value="<?= $vehiculo->getCarroceria() ?>">
+                                        <span class="errores"><?php echo $carroceriaErr; ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -184,12 +272,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                     <div class="mb-3">
                                         <label for="cv" class="form-label">Caballos:</label>
                                         <input type="number" class="form-control" id="cv" name="cv" value="<?= $vehiculo->getCaballos() ?>">
+                                        <span class="errores"><?php echo $caballosErr; ?></span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="airbags" class="form-label">Airbags:</label>
                                         <input type="number" class="form-control" id="airbags" name="airbags" value="<?= $vehiculo->getAirbag() ?>">
+                                        <span class="errores"><?php echo $airbagsErr; ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -199,12 +289,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                     <div class="mb-3">
                                         <label for="cc" class="form-label">Cilindrada:</label>
                                         <input type="number" class="form-control" id="cc" name="cc" value="<?= $vehiculo->getCilindrada() ?>">
+                                        <span class="errores"><?php echo $cilindradaErr; ?></span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="tipo_moto" class="form-label">Tipo de Moto:</label>
                                         <input type="text" class="form-control" id="tipo_moto" name="tipo_moto" value="<?= $vehiculo->getTipo_m() ?>">
+                                        <span class="errores"><?php echo $tipo_motoErr; ?></span>
                                     </div>
                                 </div>
                             </div>
