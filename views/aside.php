@@ -5,10 +5,11 @@ $profilePath = '/trabajoPHP/perfil/perfil.php';
 $ajustesPath = '/trabajoPHP/perfil/ajustes.php';
 $vehiculosPath = '/trabajoPHP/perfil/vehiculos.php';
 if (isset($_POST['logout'])) {
+    //Se eliminan las variables de sesión
     session_start();
     session_unset();
     session_destroy(); 
-
+  //Si existe la cookie, se elimina
     if (isset($_COOKIE['user_id'])) {
         setcookie('user_id', '', time() - 3600, "/"); 
     }

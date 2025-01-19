@@ -1,20 +1,20 @@
 <?php
-// Asegúrate de que la sesión esté iniciada para acceder a la información del vehículo
+
 session_start();
 
-// Incluir la biblioteca de Stripe (si no lo has hecho ya)
+// Incluir la biblioteca de Stripe 
 require_once('vendor/autoload.php');
 require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/database/funciones.php';
-
+require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Venta.php';
 
 // Tu clave secreta de Stripe
-\Stripe\Stripe::setApiKey('sk_test_51QfhMpFhEizoamwmJ1MvAyB1ChTNVbxyzoSfuGeRbIn1X2W2bjFjM75gecEnDWZ0PzHmJoay01V6z7TBScQkG1r200DmG6LFkE'); // Reemplaza con tu clave secreta de Stripe
-
+\Stripe\Stripe::setApiKey('sk_test_51QfhMpFhEizoamwmJ1MvAyB1ChTNVbxyzoSfuGeRbIn1X2W2bjFjM75gecEnDWZ0PzHmJoay01V6z7TBScQkG1r200DmG6LFkE');
 // Obtener los datos del formulario
 $precio = $_POST['precio'];
+$tipo = $_POST['tipo'];
 $matricula = $_POST['matricula'];
-$stripeToken = $_POST['stripeToken']; // Este es el token enviado desde el formulario
-
+$stripeToken = $_POST['stripeToken']; 
+$vehiculo = obtenerDatosVehiculo($matricula,$tipo);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -35,22 +35,37 @@ $stripeToken = $_POST['stripeToken']; // Este es el token enviado desde el formu
                 try {
                     // Crear el cargo usando la API de Stripe
                     $charge = \Stripe\Charge::create([
-                        'amount' => $precio, // El precio debe estar en centavos (ej. 1000 para 10.00)
-                        'currency' => 'eur', // Puedes ajustar la moneda a la que estés usando
+                        'amount' => $precio, 
+                        'currency' => 'eur', 
                         'description' => 'Compra del vehículo',
                         'source' => $stripeToken,
                     ]);
 
-                    // Si el pago fue exitoso
+                    // Aqui el pago se realiza si te funcionan las extensiones que hay que activar en PHP.INI
                     echo "<div class='alert alert-success'>";
                     echo "<h4>¡Compra exitosa!</h4>";
                     echo "<p>Has comprado el vehículo con matrícula: <strong>" . $matricula . "</strong></p>";
 echo "<p>Total pagado: <strong>" . number_format($precio / 100, 2) . "€</strong></p>";
                     echo "</div>";
+                    $id1 = obtenerVendedor($matricula);
+                    $vendedor = obtenerDatosUsuario($id1);
+                    $id = $_SESSION['user_id'];
+                    $comprador = obtenerDatosUsuario($id);
+                    $fecha= time();
+                    $fechaDateTime = new DateTime();
+                    $fechaDateTime->setTimestamp($fecha);
+                    $venta = new Venta (
+                        $vehiculo,
+                        $comprador,
+                        $vendedor,
+                        $fechaDateTime
+                    );
+                    registrarVenta($venta);
                     comprarVehiculo($matricula);
 
+
                 } catch (\Stripe\Exception\CardException $e) {
-                    // Si ocurre un error con el pago (por ejemplo, tarjeta rechazada)
+                    // Si ocurre un error con el pago 
                     echo "<div class='alert alert-danger'>";
                     echo "<h4>Error en la compra</h4>";
                     echo "<p>Lo sentimos, hubo un problema al procesar tu pago. Intenta de nuevo más tarde.</p>";
@@ -72,7 +87,7 @@ echo "<p>Total pagado: <strong>" . number_format($precio / 100, 2) . "€</stron
         </div>
     </div>
 
-    <!-- Scripts de Bootstrap -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

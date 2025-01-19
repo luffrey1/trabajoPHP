@@ -8,10 +8,6 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-
-// Obtener los datos del usuario
-
-
 if (isset($_GET['vendedor_id'])) {
     $vendedor_id = $_GET['vendedor_id'];
     $usuario = obtenerDatosUsuario($vendedor_id);
@@ -20,8 +16,6 @@ $imagen_perfil = obtenerImagenUsuario($vendedor_id);
     echo "Error: No se ha encontrado el ID del vendedor.";
     exit();
 }
-
-
 
 ?>
 <!DOCTYPE html>

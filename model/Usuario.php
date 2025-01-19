@@ -36,7 +36,7 @@ class Usuario {
         $this->imagen = $imagen;
     }
 
-    // Métodos Setters
+
     public function setId(string $id): void { $this->id = $id; }
     public function setContra(string $contra): void { $this->contra = $contra; }
     public function setDireccion(?string $direccion): void { $this->direccion = $direccion; }
@@ -48,7 +48,7 @@ class Usuario {
     public function setApellidos(?string $apellidos): void { $this->apellidos = $apellidos; }
     public function setImagen($imagen): void { $this->imagen = $imagen; }
 
-    // Métodos Getters
+
     public function getId(): string { return $this->id; }
     public function getContra(): string { return $this->contra; }
     public function getDireccion(): string { return $this->direccion ?? ''; }
@@ -60,7 +60,7 @@ class Usuario {
     public function getApellidos(): string { return $this->apellidos ?? ''; }
     public function getImagen() { return $this->imagen; }
 
-    // Método mágico __toString para representar el objeto como string
+
     public function __toString() {
         return "{$this->id}";
     }

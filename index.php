@@ -18,7 +18,7 @@ if (!isset($_SESSION['recaptcha_verified']) || $_SESSION['recaptcha_verified'] !
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['user_id'])) {
     echo "No ha iniciado sesión.";
-    // Si no está autenticado, redirigir o mostrar el mensaje correspondiente
+    // Si no está autenticado, redirigir 
 } else {
     // Si el usuario está autenticado, acceder a la sesión
     $user_id = $_SESSION['user_id'];
@@ -40,9 +40,7 @@ $total_paginas = calcularPaginas($vehiculos_por_pagina);
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
    <title>Bootstrap5</title>
-   <style>
-      
-   </style>
+
 </head>
 
 <body>
@@ -50,7 +48,7 @@ $total_paginas = calcularPaginas($vehiculos_por_pagina);
 <?php
 if (!isset($_SESSION['user_id'])) {
     echo "No ha iniciado sesión.";
-    // Si no está autenticado, redirigir o mostrar el mensaje correspondiente
+   
 } else {
     include('./views/aside.php'); 
 
@@ -65,7 +63,6 @@ if (!isset($_SESSION['user_id'])) {
         <?php
             if (!isset($_SESSION['user_id'])) {
                 
-                // Si no está autenticado, redirigir o mostrar el mensaje correspondiente
             } else {
                 echo '<div class="col-md-3 sidebar">';
   
@@ -100,7 +97,7 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
 <div class="container mt-4">
     <h3>Filtros de Búsqueda</h3>
-    <form id="filterForm" method="GET" action="index.php"> <!-- Aquí cambias index.php a pagina_vehiculos.php -->
+    <form id="filterForm" method="GET" action="index.php"> 
         <div class="row">
             <!-- Filtro de Tipo de Vehículo -->
             <div class="col-md-3 mb-3">

@@ -24,10 +24,6 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: /trabajoPHP/inicio/login.php");
     exit();
 }
-
-// Función para validar campos
-
-
 // Procesar formulario
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user_id = $_SESSION['user_id'];
@@ -124,38 +120,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+   
+   <link rel="stylesheet" href=../views/formMoto.css>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
    <title>Motos</title>
-   <style>
-       body {
-           display: flex;
-           flex-direction: column;
-           height: 100vh;
-           margin: 0;
-       }
-       .container {
-            margin-top:100px;
-           flex: 1;
-           display: flex;
-           justify-content: center;
-           align-items: center;
-       }
-       .vehiculo {
-           max-width: 600px;
-           width: 100%;
-           padding: 30px;
-           background-color: #f8f9fa;
-           border-radius: 8px;
-           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-       }
-       .errores {
-           color: red;
-       }
-       .alerta {
-        margin-top: 55px;
-       }
 
-   </style>
 </head>
 <body>
 

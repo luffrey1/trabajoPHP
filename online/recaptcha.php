@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obtener la respuesta del reCAPTCHA
     $recaptcha_response = $_POST['g-recaptcha-response'];
 
-    // Validar la respuesta del reCAPTCHA con Google (sin necesidad de clave secreta)
+    // Validar la respuesta del reCAPTCHA con Google
     $response = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=6Ldq6LAqAAAAADFOB56yOeeuO3b_kGMhvJvD7Z5n&response=$recaptcha_response");
     $responseKeys = json_decode($response, true);
 

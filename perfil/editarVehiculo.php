@@ -39,7 +39,7 @@ if (!$vehiculo) {
 $alerta = "";
 
 
-// Procesar el formulario
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $color =  securizar($_POST['color'] ?? '');

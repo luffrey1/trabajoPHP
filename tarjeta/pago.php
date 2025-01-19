@@ -14,8 +14,6 @@ if (isset($_GET['matricula'])) {
     
     if (isset($_GET['tipo'])) {
         $tipo = $_GET['tipo'];
-    
-   
     }
     $vehiculo = obtenerDatosVehiculo($matricula,$tipo);
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -29,17 +27,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     try {
         // Realiza el cargo a la tarjeta usando el token
         $charge = \Stripe\Charge::create([
-            'amount' => 1000,  // Monto en centavos (ej. 10.00€)
+            'amount' => 1000,  
             'currency' => 'eur',
             'source' => $token,
             'description' => 'Compra de Vehículo',
         ]);
 
-        // Verifica si el pago fue exitoso
+        // Aqui se realizara la funcion registrarventa si no te funciona la siguiente pagina por el PHP.INI
         if ($charge->status == 'succeeded') {
             echo "Pago realizado exitosamente. Gracias por su compra.";
-
-           
             $id1 = obtenerVendedor($matricula);
             $vendedor = obtenerDatosUsuario($id1);
             $id = $_SESSION['user_id'];
@@ -85,8 +81,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div id="card-element" class="form-control my-4"></div>
         <div id="card-errors" role="alert" class="text-danger"></div>
         
-        <input type="hidden" name="precio" value="<?php echo $vehiculo->getPrecio(); ?>"> <!-- Precio en centavos -->
-        <input type="hidden" name="matricula" value="<?php echo $vehiculo->getMatricula(); ?>"> <!-- ID del vehículo -->
+        <input type="hidden" name="precio" value="<?php echo $vehiculo->getPrecio(); ?>">
+        <input type="hidden" name="matricula" value="<?php echo $vehiculo->getMatricula(); ?>"> 
+        <input type="hidden" name="tipo" value="<?php echo $tipo ?>">
         
         <button class="btn btn-success w-100" type="submit">Proceder al Pago</button>
     </form>
@@ -94,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-    var stripe = Stripe('pk_test_51QfhMpFhEizoamwmxovNYyIv902Go0fxzV3z6GtTmVmyn4UznJzbsJFfS9quht5iAZFlJwTDCjGNEyenXbD9L5E000ujzClQsz'); // Reemplaza con tu clave publicable
+    var stripe = Stripe('pk_test_51QfhMpFhEizoamwmxovNYyIv902Go0fxzV3z6GtTmVmyn4UznJzbsJFfS9quht5iAZFlJwTDCjGNEyenXbD9L5E000ujzClQsz'); 
     var elements = stripe.elements();
     var card = elements.create('card');
     card.mount('#card-element');

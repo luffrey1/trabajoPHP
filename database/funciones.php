@@ -13,7 +13,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/model/Moto.php';
 function conectar() {
     $server = "127.0.0.1"; // localhost
     $user = "root";
-    $pass = "Sandia4you"; // Sandia4you/1234
+    $pass = "1234"; // Sandia4you/1234
     $dbname = "daw";
     return new mysqli($server, $user, $pass, $dbname);
 }

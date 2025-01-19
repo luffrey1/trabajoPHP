@@ -6,25 +6,14 @@ $carPath = '/trabajoPHP/forms/formCoche.php';
 $motoPath = '/trabajoPHP/forms/formMoto.php';
 $index = '/trabajoPHP/index.php';
 
-if (isset($_POST['logout'])) {
-    session_start();
-    session_unset();
-    session_destroy(); 
 
-    if (isset($_COOKIE['user_id'])) {
-        setcookie('user_id', '', time() - 3600, "/"); 
-    }
-
-    header("Location: /trabajoPHP/inicio/login.php");
-    exit();
-}
 
 $paginaActual = basename($_SERVER['PHP_SELF']);
 ?>
 
 <header style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; width: 100%; padding: 0;">
     <nav class="navbar navbar-expand-sm navbar-dark bg-primary" style="height: 50px;">
-        <a class="navbar-brand" href="<?= $index; ?>">MotoCoches</a>
+        <a class="navbar-brand" style="margin-left:20px"href="<?= $index; ?>">MotoCoches</a>
         <button
             class="navbar-toggler d-lg-none"
             type="button"
@@ -74,7 +63,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
                 <li class="nav-item">
                     <div class="d-grid gap-2 d-md-block">
                     <a href="<?= $loginPath; ?>">
-                            <button type="button" class="btn btn-danger">Iniciar sesión</button>
+                            <button type="button" style="margin-right:10px;" class="btn btn-danger">Iniciar sesión</button>
 
                         </a>
                     </div>
@@ -82,7 +71,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
                 <li class="nav-item">
                     <div class="d-grid gap-2 d-md-block ms-2">
                     <a href="<?= $signUpPath; ?>">
-                            <button type="button" class="btn btn-danger">Registro</button>
+                            <button type="button" style="margin-right:30px;" class="btn btn-danger">Registro</button>
                         </a>
                     </div>
                 </li>

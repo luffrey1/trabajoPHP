@@ -1,9 +1,9 @@
 <?php
 session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/database/funciones.php';
+
+
 // Verificamos si la matrícula está pasada en la URL
-
-
 if (isset($_GET['matricula'])) {
     $matricula = $_GET['matricula'];
     // Guardamos los detalles del vehículo en la sesión
@@ -40,69 +40,9 @@ if (isset($_GET['matricula'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <title>Detalles del Vehículo</title>
-    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href=../views/contactar.css>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .vehicle-info {
-            margin-top: 20px;
-            padding: 30px;
-            border-radius: 10px;
-            background-color: #f8f9fa;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .vehicle-info img {
-            width: 100%;
-            height: auto;
-            max-width: 400px; /* Establece un tamaño fijo para todas las imágenes */
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            margin-left: 14vh;
-        }
-
-        .buy-button {
-            background-color: #28a745;
-            color: white;
-            padding: 15px 40px;
-            text-align: center;
-            font-size: 18px;
-            border-radius: 5px;
-            text-decoration: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .buy-button:hover {
-            background-color: #218838;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-        }
-
-        .vehicle-detail {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin-top: 40px;
-        }
-
-        h2 {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .card {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .imagen {
-            margin-right:13vh;
-        }
-        .vendedor {
-            
-        }
-    
-    </style>
+ 
 </head>
 <body>
 <?php require_once $_SERVER['DOCUMENT_ROOT'] . '/trabajoPHP/views/header.php'; ?>
